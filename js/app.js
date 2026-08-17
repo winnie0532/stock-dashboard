@@ -6,7 +6,8 @@ import {
     calculateAverageVolume,
     calculateRSI,
     calculateKD,
-    calculateMACD
+    calculateMACD,
+    calculatePriceChange
 } from "./indicators.js";
 
 
@@ -24,6 +25,13 @@ async function init() {
 
         const latest = data[data.length - 1];
 
+        // =========================
+        // 近期漲跌幅
+        // =========================
+
+        const priceChange5 = calculatePriceChange(data, 5);
+        const priceChange20 = calculatePriceChange(data, 20);
+        const priceChange60 = calculatePriceChange(data, 60);
 
         // =========================
         // MA 均線
@@ -97,6 +105,12 @@ async function init() {
             date: latest.date,
             price: latest.close,
 
+            performance: {
+                change5: priceChange5,
+                change20: priceChange20,
+                change60: priceChange60
+            },
+
             technical: {
                 ma5,
                 ma20,
@@ -130,6 +144,10 @@ async function init() {
         // Debug
         // =========================
 
+        console.log("5日漲跌幅:", priceChange5);
+        console.log("20日漲跌幅:", priceChange20);
+        console.log("60日漲跌幅:", priceChange60);
+
         console.log("最新股價:", latest.close);
         console.log("技術分析:", analysis);
 
@@ -156,6 +174,26 @@ function renderDashboard(stockData) {
     renderStatus("volumeStatus", stockData.analysis.volume);
     renderStatus("rsiStatus", stockData.analysis.rsi);
     renderStatus("macdStatus", stockData.analysis.macd);
+    renderStatus("kdStatus", stockData.analysis.kd);
+
+    // 近期表現
+    function renderChange(elementId, value) {
+        const element = document.getElementById(elementId);
+
+        element.textContent = `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
+
+        if (value > 0) {
+            element.className = "status-value positive";
+        } else if (value < 0) {
+            element.className = "status-value danger";
+        } else {
+            element.className = "status-value neutral";
+        }
+    }
+
+    renderChange("change5", stockData.performance.change5);
+    renderChange("change20", stockData.performance.change20);
+    renderChange("change60", stockData.performance.change60);
 
     // 今日訊號
     const signalList = document.getElementById("signalList");

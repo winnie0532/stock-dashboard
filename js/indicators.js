@@ -1,3 +1,14 @@
+export function calculatePriceChange(data, days) {
+    if (!data || data.length <= days) {
+        return null;
+    }
+
+    const latestPrice = data[data.length - 1].close;
+    const previousPrice = data[data.length - 1 - days].close;
+
+    return ((latestPrice - previousPrice) / previousPrice) * 100;
+}
+
 export function calculateMA(data, period) {
     if (data.length < period) {
         return null;

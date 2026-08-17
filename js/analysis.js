@@ -1,36 +1,38 @@
-export function analyzeTechnical({
-    latestPrice,
-    ma5,
-    ma20,
-    ma60,
-    ma120,
-    ma240,
-    volumeRatio,
-    rsi,
-    todayKD,
-    yesterdayKD,
-    todayMACD,
-    yesterdayMACD
-}) {
-    return {
-        trend: analyzeTrend(latestPrice, ma20, ma60, ma120, ma240),
-        shortTerm: analyzeShortTerm(latestPrice, ma5, todayKD, yesterdayKD),
-        volume: analyzeVolume(volumeRatio),
-        rsi: analyzeRSI(rsi),
-        macd: analyzeMACD(todayMACD, yesterdayMACD),
-        signals: buildSignals({
-            latestPrice,
-            ma5,
-            ma20,
-            ma60,
-            ma120,
-            ma240,
-            todayKD,
-            yesterdayKD,
-            todayMACD,
-            yesterdayMACD
-        })
-    };
+export function analyzeTechnical({ 
+    latestPrice, 
+    ma5, 
+    ma20, 
+    ma60, 
+    ma120, 
+    ma240, 
+    volumeRatio, 
+    rsi, 
+    todayKD, 
+    yesterdayKD, 
+    todayMACD, 
+    yesterdayMACD 
+}) { 
+    return { 
+        trend: analyzeTrend(latestPrice, ma20, ma60, ma120, ma240), 
+        shortTerm: analyzeShortTerm(latestPrice, ma5, todayKD, yesterdayKD), 
+        volume: analyzeVolume(volumeRatio), 
+        rsi: analyzeRSI(rsi), 
+        macd: analyzeMACD(todayMACD, yesterdayMACD), 
+        kd: analyzeKD(todayKD, yesterdayKD),
+
+        signals: buildSignals({ 
+            latestPrice, 
+            ma5, 
+            ma20, 
+            ma60, 
+            ma120, 
+            ma240, 
+            todayKD, 
+            yesterdayKD, 
+            todayMACD, 
+            yesterdayMACD 
+        }) 
+    }; 
 }
 
 function analyzeTrend(price, ma20, ma60, ma120, ma240) {
@@ -180,7 +182,40 @@ function analyzeMACD(today, yesterday) {
         text: "動能持平"
     };
 }
+function analyzeKD(todayKD, yesterdayKD) {
+    if (yesterdayKD.k <= yesterdayKD.d && todayKD.k > todayKD.d) {
+        return {
+            text: "黃金交叉",
+            type: "positive"
+        };
+    }
 
+    if (yesterdayKD.k >= yesterdayKD.d && todayKD.k < todayKD.d) {
+        return {
+            text: "死亡交叉",
+            type: "danger"
+        };
+    }
+
+    if (todayKD.k > todayKD.d) {
+        return {
+            text: "動能偏多",
+            type: "positive"
+        };
+    }
+
+    if (todayKD.k < todayKD.d) {
+        return {
+            text: "動能偏空",
+            type: "danger"
+        };
+    }
+
+    return {
+        text: "中性",
+        type: "neutral"
+    };
+}
 function buildSignals({
     latestPrice,
     ma5,
