@@ -5,7 +5,8 @@ import {
 } from "./institutional.js";
 import {
     fetchStockHistory,
-    fetchInstitutionalHistory
+    fetchInstitutionalHistory,
+    fetchStockInfo
 } from "./api.js";
 import {
     calculateMA,
@@ -17,25 +18,20 @@ import {
 } from "./indicators.js";
 
 
-async function init() {
+async function init(stockId = "2330") {
     try {
+        const stockInfo = await fetchStockInfo(stockId);
+
         // =========================
         // 取得股票資料
         // =========================
 
-        const data = await fetchStockHistory("2330", "2025-07-01");
-
-        if (!data || data.length === 0) {
-            throw new Error("沒有取得股票資料");
-        }
+        const data = await fetchStockHistory(stockId, "2025-07-01");
 
         // 取得法人資料
         
     
-        const institutional = await fetchInstitutionalHistory(
-            "2330",
-            "2025-07-01"
-        );
+        const institutional = await fetchInstitutionalHistory(stockId, "2025-07-01");
 
         const institutionalDaily = organizeInstitutionalData(institutional);
         console.log("法人每日資料:", institutionalDaily);
@@ -120,8 +116,8 @@ async function init() {
 
         // 整理 Dashboard 需要的所有資料
         const stockData = {
-            stockId: "2330",
-            stockName: "台積電",
+            stockId: stockInfo.stockId,
+            stockName: stockInfo.stockName,
             date: latest.date,
             price: latest.close,
 
@@ -373,5 +369,24 @@ function renderDashboard(stockData) {
         stockData.institutional.recent.dealer.day60
     );
 }
+
+const stockInput = document.getElementById("stockInput");
+const stockSearchButton = document.getElementById("stockSearchButton");
+
+stockSearchButton.addEventListener("click", () => {
+    const stockId = stockInput.value.trim();
+
+    if (!stockId) {
+        return;
+    }
+
+    init(stockId);
+});
+
+stockInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+        stockSearchButton.click();
+    }
+});
 
 init();
