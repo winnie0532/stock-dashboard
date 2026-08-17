@@ -142,6 +142,16 @@ async function init() {
             return "今日無 MACD 交叉";
         }
         console.log(getMACDCross(todayMACD, yesterdayMACD));
+
+        function getMACDMomentum(today, yesterday) {
+            if (today.histogram > 0 && today.histogram > yesterday.histogram) return "🟢 多方動能增強";
+            if (today.histogram > 0 && today.histogram < yesterday.histogram) return "🟠 多方動能減弱";
+            if (today.histogram < 0 && today.histogram < yesterday.histogram) return "🔴 空方動能增強";
+            if (today.histogram < 0 && today.histogram > yesterday.histogram) return "🟡 空方動能減弱";
+            return "動能持平";
+        }
+        console.log("MACD 動能:", getMACDMomentum(todayMACD, yesterdayMACD));
+        
         
     } catch (error) {
         console.error("取得股票資料失敗：", error);
