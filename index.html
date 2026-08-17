@@ -1,17 +1,180 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Stock Dashboard</title>
+
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
 
-    <h1>Stock Dashboard</h1>
+    <main class="dashboard">
+
+        <!-- 股票基本資訊 -->
+        <section class="stock-header">
+            <div>
+                <h1>
+                    <span id="stockId">2330</span>
+                    <span id="stockName">台積電</span>
+                </h1>
+
+                <p id="latestDate">--</p>
+            </div>
+
+            <div class="stock-price">
+                <span id="latestPrice">--</span>
+            </div>
+        </section>
+
+
+        <!-- 市場狀態 -->
+        <section class="dashboard-section">
+            <h2>市場狀態</h2>
+
+            <div class="status-list">
+                <div class="status-row">
+                    <span>趨勢</span>
+                    <span id="trendStatus">--</span>
+                </div>
+
+                <div class="status-row">
+                    <span>短線</span>
+                    <span id="shortTermStatus">--</span>
+                </div>
+
+                <div class="status-row">
+                    <span>成交量</span>
+                    <span id="volumeStatus">--</span>
+                </div>
+
+                <div class="status-row">
+                    <span>RSI</span>
+                    <span id="rsiStatus">--</span>
+                </div>
+
+                <div class="status-row">
+                    <span>MACD</span>
+                    <span id="macdStatus">--</span>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 今日訊號 -->
+        <section class="dashboard-section">
+            <h2>今日訊號</h2>
+
+            <div id="signalList" class="signal-list">
+                <p>載入中...</p>
+            </div>
+        </section>
+
+
+        <!-- 詳細技術數據 -->
+        <section class="dashboard-section">
+            <h2>詳細技術數據</h2>
+
+            <div class="technical-grid">
+
+                <!-- 均線 -->
+                <div class="technical-card">
+                    <h3>均線</h3>
+
+                    <div class="data-row">
+                        <span>5MA</span>
+                        <span id="ma5">--</span>
+                    </div>
+
+                    <div class="data-row">
+                        <span>20MA 月線</span>
+                        <span id="ma20">--</span>
+                    </div>
+
+                    <div class="data-row">
+                        <span>60MA 季線</span>
+                        <span id="ma60">--</span>
+                    </div>
+
+                    <div class="data-row">
+                        <span>120MA 半年線</span>
+                        <span id="ma120">--</span>
+                    </div>
+
+                    <div class="data-row">
+                        <span>240MA 年線</span>
+                        <span id="ma240">--</span>
+                    </div>
+                </div>
+
+
+                <!-- 量能 -->
+                <div class="technical-card">
+                    <h3>量能</h3>
+
+                    <div class="data-row">
+                        <span>今日成交量</span>
+                        <span id="volume">--</span>
+                    </div>
+
+                    <div class="data-row">
+                        <span>20日平均量</span>
+                        <span id="avgVolume20">--</span>
+                    </div>
+
+                    <div class="data-row">
+                        <span>量比</span>
+                        <span id="volumeRatio">--</span>
+                    </div>
+                </div>
+
+
+                <!-- 動能 -->
+                <div class="technical-card">
+                    <h3>動能</h3>
+
+                    <div class="data-row">
+                        <span>RSI(14)</span>
+                        <span id="rsi14">--</span>
+                    </div>
+
+                    <div class="data-row">
+                        <span>K</span>
+                        <span id="kdK">--</span>
+                    </div>
+
+                    <div class="data-row">
+                        <span>D</span>
+                        <span id="kdD">--</span>
+                    </div>
+
+                    <div class="data-row">
+                        <span>MACD DIF</span>
+                        <span id="macdDif">--</span>
+                    </div>
+
+                    <div class="data-row">
+                        <span>MACD Signal</span>
+                        <span id="macdSignal">--</span>
+                    </div>
+
+                    <div class="data-row">
+                        <span>Histogram</span>
+                        <span id="macdHistogram">--</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
 
     <script type="module" src="./js/app.js"></script>
 
 </body>
+
 </html>

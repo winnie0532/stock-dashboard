@@ -1,0 +1,260 @@
+:root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, "Noto Sans TC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.dashboard {
+    width: min(1100px, calc(100% - 32px));
+    margin: 40px auto;
+}
+
+
+/* =========================
+   股票 Header
+========================= */
+
+.stock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 28px 32px;
+    margin-bottom: 24px;
+
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+}
+
+.stock-header h1 {
+    margin: 0;
+    font-size: 30px;
+}
+
+#stockId {
+    margin-right: 8px;
+}
+
+#latestDate {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.stock-price {
+    font-size: 38px;
+    font-weight: 700;
+}
+
+
+/* =========================
+   共用 Section
+========================= */
+
+.dashboard-section {
+    padding: 26px 28px;
+    margin-bottom: 24px;
+
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+}
+
+.dashboard-section h2 {
+    margin: 0 0 22px;
+    font-size: 20px;
+}
+
+
+/* =========================
+   市場狀態
+========================= */
+
+.status-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 32px;
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.status-row span:first-child {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.status-row span:last-child {
+    font-weight: 600;
+}
+.status-value {
+    font-weight: 600;
+}
+
+.status-value.positive {
+    color: #047857;
+}
+
+.status-value.warning {
+    color: #b45309;
+}
+
+.status-value.danger {
+    color: #b91c1c;
+}
+
+.status-value.neutral {
+    color: #6b7280;
+}
+
+/* =========================
+   今日訊號
+========================= */
+
+.signal-list {
+    display: grid;
+    gap: 10px;
+}
+
+.signal-item {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border-left: 4px solid transparent;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.signal-item.positive {
+    background: #ecfdf5;
+    border-left-color: #10b981;
+    color: #047857;
+}
+
+.signal-item.warning {
+    background: #fffbeb;
+    border-left-color: #f59e0b;
+    color: #b45309;
+}
+
+.signal-item.danger {
+    background: #fef2f2;
+    border-left-color: #ef4444;
+    color: #b91c1c;
+}
+
+
+/* =========================
+   技術數據
+========================= */
+
+.technical-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.technical-card {
+    padding: 20px;
+
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
+
+.technical-card h3 {
+    margin: 0 0 18px;
+    font-size: 17px;
+}
+
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+
+    font-size: 14px;
+}
+
+.data-row:last-child {
+    border-bottom: none;
+}
+
+.data-row span:first-child {
+    color: var(--muted);
+}
+
+.data-row span:last-child {
+    font-weight: 600;
+    text-align: right;
+}
+
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 800px) {
+    .technical-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .status-list {
+        grid-template-columns: 1fr;
+    }
+
+    .stock-header {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 520px) {
+    .dashboard {
+        width: min(100% - 20px, 1100px);
+        margin: 20px auto;
+    }
+
+    .stock-header {
+        flex-direction: column;
+        gap: 20px;
+
+        padding: 22px;
+    }
+
+    .stock-header h1 {
+        font-size: 24px;
+    }
+
+    .stock-price {
+        font-size: 32px;
+    }
+
+    .dashboard-section {
+        padding: 22px;
+    }
+}
