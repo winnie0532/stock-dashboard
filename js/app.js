@@ -1,6 +1,12 @@
-import { fetchStockHistory } from "./api.js";
 import { analyzeTechnical } from "./analysis.js";
-
+import {
+    organizeInstitutionalData,
+    analyzeInstitutional
+} from "./institutional.js";
+import {
+    fetchStockHistory,
+    fetchInstitutionalHistory
+} from "./api.js";
 import {
     calculateMA,
     calculateAverageVolume,
@@ -22,6 +28,20 @@ async function init() {
         if (!data || data.length === 0) {
             throw new Error("沒有取得股票資料");
         }
+
+        // 取得法人資料
+        
+    
+        const institutional = await fetchInstitutionalHistory(
+            "2330",
+            "2025-07-01"
+        );
+
+        const institutionalDaily = organizeInstitutionalData(institutional);
+        console.log("法人每日資料:", institutionalDaily);
+
+        const institutionalAnalysis = analyzeInstitutional(institutionalDaily);
+        console.log("籌碼分析:", institutionalAnalysis);
 
         const latest = data[data.length - 1];
 
@@ -134,6 +154,7 @@ async function init() {
                 }
             },
 
+            institutional: institutionalAnalysis,
             analysis
         };
 
@@ -150,6 +171,8 @@ async function init() {
 
         console.log("最新股價:", latest.close);
         console.log("技術分析:", analysis);
+
+        console.log("完整股票資料:", stockData);
 
     } catch (error) {
         console.error("取得股票資料失敗：", error);
@@ -231,6 +254,124 @@ function renderDashboard(stockData) {
     document.getElementById("macdDif").textContent = stockData.technical.macd.dif.toFixed(2);
     document.getElementById("macdSignal").textContent = stockData.technical.macd.signal.toFixed(2);
     document.getElementById("macdHistogram").textContent = stockData.technical.macd.histogram.toFixed(2);
+
+    // =========================
+    // 籌碼面
+    // =========================
+
+    function renderInstitutionalValue(elementId, value) {
+        const element = document.getElementById(elementId);
+
+        const lots = value / 1000;
+
+        element.textContent =
+            `${lots >= 0 ? "+" : ""}${Math.round(lots).toLocaleString()} 張`;
+
+        if (lots > 0) {
+            element.className = "status-value positive";
+        } else if (lots < 0) {
+            element.className = "status-value danger";
+        } else {
+            element.className = "status-value neutral";
+        }
+    }
+
+
+    function renderInstitutionalStatus(elementId, status) {
+        const element = document.getElementById(elementId);
+
+        element.textContent = status.text;
+        element.className = `status-value ${status.type}`;
+    }
+
+
+    // 今日法人
+    renderInstitutionalValue(
+        "foreignToday",
+        stockData.institutional.today.foreign
+    );
+
+    renderInstitutionalValue(
+        "trustToday",
+        stockData.institutional.today.trust
+    );
+
+    renderInstitutionalValue(
+        "dealerToday",
+        stockData.institutional.today.dealer
+    );
+
+
+    // 法人狀態
+    renderInstitutionalStatus(
+        "foreignStatus",
+        stockData.institutional.status.foreign
+    );
+
+    renderInstitutionalStatus(
+        "trustStatus",
+        stockData.institutional.status.trust
+    );
+
+    renderInstitutionalStatus(
+        "dealerStatus",
+        stockData.institutional.status.dealer
+    );
+
+
+    // =========================
+    // 近期法人動向
+    // =========================
+
+    // 外資
+    renderInstitutionalValue(
+        "foreign5",
+        stockData.institutional.recent.foreign.day5
+    );
+
+    renderInstitutionalValue(
+        "foreign20",
+        stockData.institutional.recent.foreign.day20
+    );
+
+    renderInstitutionalValue(
+        "foreign60",
+        stockData.institutional.recent.foreign.day60
+    );
+
+
+    // 投信
+    renderInstitutionalValue(
+        "trust5",
+        stockData.institutional.recent.trust.day5
+    );
+
+    renderInstitutionalValue(
+        "trust20",
+        stockData.institutional.recent.trust.day20
+    );
+
+    renderInstitutionalValue(
+        "trust60",
+        stockData.institutional.recent.trust.day60
+    );
+
+
+    // 自營商
+    renderInstitutionalValue(
+        "dealer5",
+        stockData.institutional.recent.dealer.day5
+    );
+
+    renderInstitutionalValue(
+        "dealer20",
+        stockData.institutional.recent.dealer.day20
+    );
+
+    renderInstitutionalValue(
+        "dealer60",
+        stockData.institutional.recent.dealer.day60
+    );
 }
 
 init();

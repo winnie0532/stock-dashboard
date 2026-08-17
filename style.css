@@ -310,3 +310,258 @@ body {
         border-bottom: none;
     }
 }
+
+/* =========================
+   籌碼面
+========================= */
+
+.institutional-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    margin-top: 16px;
+    margin-bottom: 24px;
+}
+
+.institutional-item {
+    padding: 16px;
+
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+.institutional-item h3 {
+    margin: 0 0 12px;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.institutional-item p {
+    margin: 6px 0;
+}
+
+
+/* =========================
+   近期法人動向
+========================= */
+/* =========================
+   近期法人動向
+========================= */
+
+.institutional-table {
+    display: grid;
+    grid-template-columns: 90px repeat(3, 1fr);
+
+    margin-top: 12px;
+
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+.institutional-table > div {
+    padding: 12px 10px;
+
+    border-right: 1px solid var(--border-color, #e5e7eb);
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+
+    text-align: center;
+}
+
+.institutional-table > div:nth-child(4n) {
+    border-right: none;
+}
+
+.institutional-table > div:nth-last-child(-n + 4) {
+    border-bottom: none;
+}
+
+.institutional-header {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.7;
+}
+
+.institutional-label {
+    font-size: 13px;
+    font-weight: 600;
+
+    text-align: left !important;
+}
+
+/* =========================
+   籌碼面
+========================= */
+
+.institutional-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    margin-top: 16px;
+    margin-bottom: 24px;
+}
+
+.institutional-item {
+    padding: 16px;
+
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+.institutional-item h3 {
+    margin: 0 0 12px;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.institutional-item p {
+    margin: 6px 0;
+}
+
+
+/* =========================
+   近期法人動向
+========================= */
+
+.institutional-recent {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    margin-top: 12px;
+}
+
+.institutional-recent > div {
+    padding: 14px 16px;
+
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 10px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.institutional-recent span:first-child {
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+.institutional-recent span:last-child {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* =========================
+   手機版
+========================= */
+
+@media (max-width: 600px) {
+
+    .institutional-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .institutional-item {
+        display: grid;
+        grid-template-columns: 70px 1fr 1fr;
+        align-items: center;
+
+        padding: 12px 14px;
+
+        text-align: left;
+    }
+
+    .institutional-item h3 {
+        margin: 0;
+    }
+
+    .institutional-item p {
+        margin: 0;
+
+        text-align: right;
+    }
+
+    .institutional-recent {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .institutional-recent > div {
+        padding: 12px 14px;
+    }
+}
+
+
+/* =========================
+   手機版
+========================= */
+
+@media (max-width: 600px) {
+
+    .institutional-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .institutional-item {
+        display: grid;
+        grid-template-columns: 70px 1fr 1fr;
+        align-items: center;
+
+        padding: 12px 14px;
+
+        text-align: left;
+    }
+
+    .institutional-item h3 {
+        margin: 0;
+    }
+
+    .institutional-item p {
+        margin: 0;
+
+        text-align: right;
+    }
+
+    .institutional-recent {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .institutional-recent > div {
+        padding: 12px 14px;
+    }
+}
+@media (max-width: 600px) {
+
+    .institutional-table {
+        grid-template-columns: 64px repeat(3, 1fr);
+    }
+
+    .institutional-table > div {
+        padding: 10px 6px;
+        font-size: 12px;
+    }
+
+    .institutional-header,
+    .institutional-label {
+        font-size: 12px;
+    }
+}

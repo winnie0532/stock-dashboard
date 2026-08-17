@@ -28,3 +28,25 @@ export async function fetchStockHistory(stockId, startDate) {
         volume: item.Trading_Volume
     }));
 }
+
+export async function fetchInstitutionalHistory(stockId, startDate) {
+    const params = new URLSearchParams({
+        dataset: "TaiwanStockInstitutionalInvestorsBuySell",
+        data_id: stockId,
+        start_date: startDate
+    });
+
+    const response = await fetch(`${FINMIND_URL}?${params}`);
+
+    if (!response.ok) {
+        throw new Error(`FinMind API error: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (result.status !== 200) {
+        throw new Error(result.msg || "FinMind API error");
+    }
+
+    return result.data;
+}
