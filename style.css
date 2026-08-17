@@ -289,4 +289,24 @@ body {
     .dashboard-section {
         padding: 22px;
     }
+
+    .performance-summary {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .performance-title {
+        margin-bottom: 8px;
+    }
+
+    .performance-item {
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .performance-item:last-child {
+        border-bottom: none;
+    }
 }
