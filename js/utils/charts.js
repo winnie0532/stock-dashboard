@@ -61,6 +61,100 @@ export function renderVolumeChart(data) {
 
 let shortTermChart = null;
 
+// 趨勢圖：股價 + MA20 / MA60 / MA120 / MA240
+export function renderTrendChart(
+    data,
+    ma20History,
+    ma60History,
+    ma120History,
+    ma240History
+) {
+    const canvas = document.getElementById("trendChart");
+
+    if (!canvas) {
+        return;
+    }
+
+    const recentData = data.slice(-250);
+    const recentMA20 = ma20History.slice(-250);
+    const recentMA60 = ma60History.slice(-250);
+    const recentMA120 = ma120History.slice(-250);
+    const recentMA240 = ma240History.slice(-250);
+
+    const labels = recentData.map(item => item.date);
+
+    const prices = recentData.map(item => item.close);
+    const ma20 = recentMA20.map(item => item.value);
+    const ma60 = recentMA60.map(item => item.value);
+    const ma120 = recentMA120.map(item => item.value);
+    const ma240 = recentMA240.map(item => item.value);
+
+    new Chart(canvas, {
+        type: "line",
+
+        data: {
+            labels,
+
+            datasets: [
+                {
+                    label: "股價",
+                    data: prices,
+
+                    borderColor: "#2196f3",
+                    backgroundColor: "rgba(33, 150, 243, 0.10)",
+
+                    fill: true,
+
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+},
+                {
+                    label: "MA20",
+                    data: ma20,
+                    borderColor: "#ff6384",
+                    fill: false,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                },
+                {
+                    label: "MA60",
+                    data: ma60,
+                    borderColor: "#ff9f40",
+                    fill: false,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                },
+                {
+                    label: "MA120",
+                    data: ma120,
+                    borderColor: "#ffcd56",
+                    fill: false,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                },
+                {
+                    label: "MA240",
+                    data: ma240,
+                    borderColor: "#4bc0c0",
+                    fill: false,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
 // 短線趨勢圖：股價 + MA5
 export function renderShortTermChart(data, ma5History) {
     const canvas = document.getElementById("shortTermChart");
@@ -90,6 +184,12 @@ export function renderShortTermChart(data, ma5History) {
                 {
                     label: "股價",
                     data: prices,
+
+                    borderColor: "#2196f3",
+                    backgroundColor: "rgba(33, 150, 243, 0.10)",
+
+                    fill: true,
+
                     borderWidth: 2,
                     pointRadius: 0,
                     tension: 0.2
@@ -97,6 +197,8 @@ export function renderShortTermChart(data, ma5History) {
                 {
                     label: "MA5",
                     data: ma5,
+                    borderColor: "#ff6384",
+                    fill: false,
                     borderWidth: 2,
                     pointRadius: 0,
                     tension: 0.2

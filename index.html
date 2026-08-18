@@ -44,7 +44,7 @@
             <h2>市場狀態</h2>
 
             <div class="status-grid">
-                <div class="status-row">
+                <div class="status-row" id="trendToggle">
                     <span>趨勢</span>
                     <span id="trendStatus">--</span>
                 </div>
@@ -91,6 +91,14 @@
                             id="shortTermChartSection"
                         >
                             <canvas id="shortTermChart"></canvas>
+                        </div>
+
+                        <!-- 中長期趨勢圖 -->
+                        <div
+                            class="detail-chart"
+                            id="trendChartSection"
+                        >
+                            <canvas id="trendChart"></canvas>
                         </div>
 
                     </div>

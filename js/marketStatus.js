@@ -34,20 +34,60 @@ export function analyzeMarketStatus({
 // =========================
 
 function analyzeTrend(price, ma20, ma60, ma120, ma240) {
-    if (price > ma20 && price > ma60 && price > ma120 && price > ma240) {
+
+    // 股價與均線完整多頭排列
+    if (
+        price > ma20 &&
+        ma20 > ma60 &&
+        ma60 > ma120 &&
+        ma120 > ma240
+    ) {
+        return {
+            type: "positive",
+            text: "多頭排列"
+        };
+    }
+
+    // 股價站上所有主要均線
+    if (
+        price > ma20 &&
+        price > ma60 &&
+        price > ma120 &&
+        price > ma240
+    ) {
         return {
             type: "positive",
             text: "中期偏多"
         };
     }
 
-    if (price < ma20 && price < ma60 && price < ma120 && price < ma240) {
+    // 股價與均線完整空頭排列
+    if (
+        price < ma20 &&
+        ma20 < ma60 &&
+        ma60 < ma120 &&
+        ma120 < ma240
+    ) {
+        return {
+            type: "danger",
+            text: "空頭排列"
+        };
+    }
+
+    // 股價跌破所有主要均線
+    if (
+        price < ma20 &&
+        price < ma60 &&
+        price < ma120 &&
+        price < ma240
+    ) {
         return {
             type: "danger",
             text: "中期偏空"
         };
     }
 
+    // 股價與均線方向混合
     return {
         type: "warning",
         text: "趨勢整理"

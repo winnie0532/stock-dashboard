@@ -1,6 +1,7 @@
 import { 
     renderVolumeChart,
-    renderShortTermChart
+    renderShortTermChart,
+    renderTrendChart
  } from "./utils/charts.js";
 import { analyzeMarketStatus } from "./marketStatus.js";
 import { analyzeTechnicalStatus } from "./technicalStatus.js";
@@ -31,12 +32,12 @@ async function init(stockId = "2330") {
         // 取得股票資料
         // =========================
 
-        const data = await fetchStockHistory(stockId, "2025-05-01");
+        const data = await fetchStockHistory(stockId, "2023-05-01");
 
         // 取得法人資料
         
     
-        const institutional = await fetchInstitutionalHistory(stockId, "2025-05-01");
+        const institutional = await fetchInstitutionalHistory(stockId, "2023-05-31");
 
         const institutionalDaily = organizeInstitutionalData(institutional);
         console.log("法人每日資料:", institutionalDaily);
@@ -63,12 +64,19 @@ async function init(stockId = "2330") {
         // =========================
 
         const ma5 = calculateMA(data, 5);
-        const ma20 = calculateMA(data, 20);
-        const ma60 = calculateMA(data, 60);
-        const ma120 = calculateMA(data, 120);
-        const ma240 = calculateMA(data, 240);
-
         const ma5History = calculateMAHistory(data, 5);
+
+        const ma20 = calculateMA(data, 20);
+        const ma20History = calculateMAHistory(data, 20);
+
+        const ma60 = calculateMA(data, 60);
+        const ma60History = calculateMAHistory(data, 60);
+
+        const ma120 = calculateMA(data, 120);
+        const ma120History = calculateMAHistory(data, 120);
+
+        const ma240 = calculateMA(data, 240);
+        const ma240History = calculateMAHistory(data, 240);
 
 
         // =========================
@@ -188,7 +196,14 @@ async function init(stockId = "2330") {
         renderVolumeChart(data);
 
         // 短線詳細分析視窗圖
-        setupDetailOverlay(data, ma5History);
+        setupDetailOverlay(
+            data,
+            ma5History,
+            ma20History,
+            ma60History,
+            ma120History,
+            ma240History
+        );
 
         // =========================
         // Debug
@@ -482,9 +497,17 @@ init();
 // =========================
 // 短線分析視窗圖
 // =========================
-function setupDetailOverlay(data, ma5History) {
+function setupDetailOverlay(
+    data,
+    ma5History,
+    ma20History,
+    ma60History,
+    ma120History,
+    ma240History
+) {
     const volumeToggle = document.getElementById("volumeToggle");
     const shortTermToggle = document.getElementById("shortTermToggle");
+    const trendToggle = document.getElementById("trendToggle");
 
     const detailOverlay = document.getElementById("detailOverlay");
     const closeDetail = document.getElementById("closeDetail");
@@ -492,11 +515,9 @@ function setupDetailOverlay(data, ma5History) {
     const detailTitle = document.getElementById("detailTitle");
     const detailSubtitle = document.getElementById("detailSubtitle");
 
-    const volumeChartSection =
-        document.getElementById("volumeChartSection");
-
-    const shortTermChartSection =
-        document.getElementById("shortTermChartSection");
+    const volumeChartSection = document.getElementById("volumeChartSection");
+    const shortTermChartSection = document.getElementById("shortTermChartSection");
+    const trendChartSection = document.getElementById("trendChartSection");
 
 
     // 成交量
@@ -506,6 +527,7 @@ function setupDetailOverlay(data, ma5History) {
 
         volumeChartSection.style.display = "block";
         shortTermChartSection.style.display = "none";
+        trendChartSection.style.display = "none";
 
         detailOverlay.classList.add("open");
     });
@@ -518,10 +540,33 @@ function setupDetailOverlay(data, ma5History) {
 
         volumeChartSection.style.display = "none";
         shortTermChartSection.style.display = "block";
+        trendChartSection.style.display = "none";
 
         detailOverlay.classList.add("open");
 
         renderShortTermChart(data, ma5History);
+    });
+
+
+    // 趨勢
+    trendToggle.addEventListener("click", () => {
+        detailTitle.textContent = "中長期趨勢";
+        detailSubtitle.textContent =
+            "近 250 個交易日｜股價與 MA20 / MA60 / MA120 / MA240";
+
+        volumeChartSection.style.display = "none";
+        shortTermChartSection.style.display = "none";
+        trendChartSection.style.display = "block";
+
+        detailOverlay.classList.add("open");
+
+        renderTrendChart(
+            data,
+            ma20History,
+            ma60History,
+            ma120History,
+            ma240History
+        );
     });
 
 
