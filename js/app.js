@@ -1,3 +1,4 @@
+import { renderVolumeChart } from "./charts.js";
 import { analyzeTechnical } from "./analysis.js";
 import {
     organizeInstitutionalData,
@@ -26,12 +27,12 @@ async function init(stockId = "2330") {
         // 取得股票資料
         // =========================
 
-        const data = await fetchStockHistory(stockId, "2025-07-01");
+        const data = await fetchStockHistory(stockId, "2025-05-01");
 
         // 取得法人資料
         
     
-        const institutional = await fetchInstitutionalHistory(stockId, "2025-07-01");
+        const institutional = await fetchInstitutionalHistory(stockId, "2025-05-01");
 
         const institutionalDaily = organizeInstitutionalData(institutional);
         console.log("法人每日資料:", institutionalDaily);
@@ -157,6 +158,9 @@ async function init(stockId = "2330") {
         // 顯示到網頁
         renderDashboard(stockData);
 
+        // 成交量圖
+        renderVolumeChart(data);
+
         // =========================
         // Debug
         // =========================
@@ -193,8 +197,7 @@ function renderDashboard(stockData) {
     renderStatus("volumeStatus", stockData.analysis.volume);
     renderStatus("rsiStatus", stockData.analysis.rsi);
     renderStatus("macdStatus", stockData.analysis.macd);
-    renderStatus("kdStatus", stockData.analysis.kd);
-
+    renderStatus("institutionalStatus",stockData.institutional.summary);
     // 近期表現
     function renderChange(elementId, value) {
         const element = document.getElementById(elementId);
@@ -387,6 +390,18 @@ stockInput.addEventListener("keydown", event => {
     if (event.key === "Enter") {
         stockSearchButton.click();
     }
+});
+
+const volumeToggle = document.getElementById("volumeToggle");
+const volumeDetail = document.getElementById("volumeDetail");
+const closeVolumeDetail = document.getElementById("closeVolumeDetail");
+
+volumeToggle.addEventListener("click", () => {
+    volumeDetail.classList.add("open");
+});
+
+closeVolumeDetail.addEventListener("click", () => {
+    volumeDetail.classList.remove("open");
 });
 
 init();

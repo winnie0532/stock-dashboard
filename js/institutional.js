@@ -40,7 +40,25 @@ export function analyzeInstitutional(data) {
 
     const latest = data[data.length - 1];
     const previous = data[data.length - 2];
+    const recent = {
+        foreign: {
+            day5: sumRecent(data, "foreign", 5),
+            day20: sumRecent(data, "foreign", 20),
+            day60: sumRecent(data, "foreign", 60)
+        },
 
+        trust: {
+            day5: sumRecent(data, "trust", 5),
+            day20: sumRecent(data, "trust", 20),
+            day60: sumRecent(data, "trust", 60)
+        },
+
+        dealer: {
+            day5: sumRecent(data, "dealer", 5),
+            day20: sumRecent(data, "dealer", 20),
+            day60: sumRecent(data, "dealer", 60)
+        }
+    };
     return {
         today: {
             foreign: latest.foreign,
@@ -54,25 +72,9 @@ export function analyzeInstitutional(data) {
             dealer: getInstitutionStatus(data, "dealer")
         },
 
-        recent: {
-            foreign: {
-                day5: sumRecent(data, "foreign", 5),
-                day20: sumRecent(data, "foreign", 20),
-                day60: sumRecent(data, "foreign", 60)
-            },
+        recent,
 
-            trust: {
-                day5: sumRecent(data, "trust", 5),
-                day20: sumRecent(data, "trust", 20),
-                day60: sumRecent(data, "trust", 60)
-            },
-
-            dealer: {
-                day5: sumRecent(data, "dealer", 5),
-                day20: sumRecent(data, "dealer", 20),
-                day60: sumRecent(data, "dealer", 60)
-            }
-        },
+        summary: analyzeChipStatus(recent),
 
         previous: {
             foreign: previous?.foreign ?? 0,
@@ -80,7 +82,7 @@ export function analyzeInstitutional(data) {
             dealer: previous?.dealer ?? 0
         }
     };
-}
+    }
 
 
 function sumRecent(data, key, days) {
@@ -149,4 +151,104 @@ function getInstitutionStatus(data, key) {
         type: "danger",
         text: `連 ${streak} 日賣超`
     };
+}
+
+export function analyzeChipStatus(data) {
+    if (!data) {
+        return {
+            text: "資料不足",
+            type: "neutral"
+        };
+    }
+
+    const { foreign, trust, dealer } = data;
+
+    const score5 =
+        getDirectionScore(foreign.day5) +
+        getDirectionScore(trust.day5) +
+        getDirectionScore(dealer.day5);
+
+    const score20 =
+        getDirectionScore(foreign.day20) +
+        getDirectionScore(trust.day20) +
+        getDirectionScore(dealer.day20);
+
+    const score60 =
+        getDirectionScore(foreign.day60) +
+        getDirectionScore(trust.day60) +
+        getDirectionScore(dealer.day60);
+
+    // 資料不足
+    if (
+        score5 === null ||
+        score20 === null ||
+        score60 === null
+    ) {
+        return {
+            text: "資料不足",
+            type: "neutral"
+        };
+    }
+
+    // 短期偏多、中長期偏空
+    if (score5 > 0 && score20 < 0 && score60 < 0) {
+        return {
+            text: "短多長空",
+            type: "warning"
+        };
+    }
+
+    // 短期偏空、中長期偏多
+    if (score5 < 0 && score20 > 0 && score60 > 0) {
+        return {
+            text: "短空長多",
+            type: "warning"
+        };
+    }
+
+    // 三個時間尺度都偏多
+    if (score5 > 0 && score20 > 0 && score60 > 0) {
+        return {
+            text: "籌碼偏多",
+            type: "positive"
+        };
+    }
+
+    // 三個時間尺度都偏空
+    if (score5 < 0 && score20 < 0 && score60 < 0) {
+        return {
+            text: "籌碼偏空",
+            type: "danger"
+        };
+    }
+
+    // 完全沒有明顯方向
+    if (score5 === 0 && score20 === 0 && score60 === 0) {
+        return {
+            text: "籌碼中性",
+            type: "neutral"
+        };
+    }
+
+    return {
+        text: "多空分歧",
+        type: "warning"
+    };
+}
+
+
+function getDirectionScore(value) {
+    if (value === null || value === undefined) {
+        return null;
+    }
+
+    if (value > 0) {
+        return 1;
+    }
+
+    if (value < 0) {
+        return -1;
+    }
+
+    return 0;
 }

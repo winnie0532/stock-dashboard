@@ -161,6 +161,66 @@ body {
     color: #6b7280;
 }
 
+.detail-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: none;
+
+    padding: 32px;
+
+    background: rgba(15, 23, 42, 0.45);
+}
+
+.detail-overlay.open {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.detail-panel {
+    width: min(1200px, 100%);
+    height: min(760px, 100%);
+
+    padding: 28px;
+
+    background: var(--card);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    margin-bottom: 24px;
+}
+
+.detail-header h2 {
+    margin: 0;
+}
+
+.detail-header p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.detail-close {
+    border: none;
+    background: transparent;
+
+    font-size: 32px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.detail-chart {
+    height: calc(100% - 80px);
+}
 /* =========================
    今日訊號
 ========================= */
@@ -467,46 +527,7 @@ body {
 }
 
 
-/* =========================
-   手機版
-========================= */
 
-@media (max-width: 600px) {
-
-    .institutional-grid {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-
-    .institutional-item {
-        display: grid;
-        grid-template-columns: 70px 1fr 1fr;
-        align-items: center;
-
-        padding: 12px 14px;
-
-        text-align: left;
-    }
-
-    .institutional-item h3 {
-        margin: 0;
-    }
-
-    .institutional-item p {
-        margin: 0;
-
-        text-align: right;
-    }
-
-    .institutional-recent {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-
-    .institutional-recent > div {
-        padding: 12px 14px;
-    }
-}
 /* =========================
    股票搜尋
 ========================= */
@@ -611,8 +632,6 @@ body {
     .institutional-recent > div {
         padding: 12px 14px;
     }
-}
-@media (max-width: 600px) {
 
     .institutional-table {
         grid-template-columns: 64px repeat(3, 1fr);
@@ -627,10 +646,6 @@ body {
     .institutional-label {
         font-size: 12px;
     }
-}
-
-@media (max-width: 600px) {
-
     .stock-search {
         gap: 8px;
     }
@@ -647,4 +662,49 @@ body {
 
         white-space: nowrap;
     }
+
+    .institutional-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .institutional-item {
+        display: grid;
+        grid-template-columns: 70px 1fr 1fr;
+        align-items: center;
+
+        padding: 12px 14px;
+
+        text-align: left;
+    }
+
+    .institutional-item h3 {
+        margin: 0;
+    }
+
+    .institutional-item p {
+        margin: 0;
+
+        text-align: right;
+    }
+
+    .institutional-recent {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .institutional-recent > div {
+        padding: 12px 14px;
+    }
+}
+.detail-overlay {
+    padding: 0;
+}
+
+.detail-panel {
+    width: 100%;
+    height: 100%;
+
+    border-radius: 0;
+    padding: 20px;
 }
