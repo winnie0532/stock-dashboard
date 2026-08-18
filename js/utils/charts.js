@@ -1,3 +1,4 @@
+// 成交量趨勢圖：每日成交量 + 20 日均量
 export function renderVolumeChart(data) {
     const canvas = document.getElementById("volumeChart");
 
@@ -46,6 +47,58 @@ export function renderVolumeChart(data) {
                     data: average20,
                     pointRadius: 0,
                     borderWidth: 2,
+                    tension: 0.2
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+let shortTermChart = null;
+
+// 短線趨勢圖：股價 + MA5
+export function renderShortTermChart(data, ma5History) {
+    const canvas = document.getElementById("shortTermChart");
+
+    if (!canvas) {
+        return;
+    }
+
+    const recentData = data.slice(-100);
+    const recentMA5 = ma5History.slice(-100);
+
+    const labels = recentData.map(item => item.date);
+    const prices = recentData.map(item => item.close);
+    const ma5 = recentMA5.map(item => item.value);
+
+    if (shortTermChart) {
+        shortTermChart.destroy();
+    }
+
+    shortTermChart = new Chart(canvas, {
+        type: "line",
+
+        data: {
+            labels,
+
+            datasets: [
+                {
+                    label: "股價",
+                    data: prices,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                },
+                {
+                    label: "MA5",
+                    data: ma5,
+                    borderWidth: 2,
+                    pointRadius: 0,
                     tension: 0.2
                 }
             ]

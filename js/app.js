@@ -1,4 +1,7 @@
-import { renderVolumeChart } from "./charts.js";
+import { 
+    renderVolumeChart,
+    renderShortTermChart
+ } from "./utils/charts.js";
 import { analyzeMarketStatus } from "./marketStatus.js";
 import { analyzeTechnicalStatus } from "./technicalStatus.js";
 import {analyzeInstitutional} from "./institutionalStatus.js";
@@ -15,7 +18,8 @@ import {
     calculateKD,
     calculateMACD,
     organizeInstitutionalData,
-    calculateInstitutionalIndicators
+    calculateInstitutionalIndicators,
+    calculateMAHistory
 } from "./indicators.js";
 
 
@@ -63,6 +67,8 @@ async function init(stockId = "2330") {
         const ma60 = calculateMA(data, 60);
         const ma120 = calculateMA(data, 120);
         const ma240 = calculateMA(data, 240);
+
+        const ma5History = calculateMAHistory(data, 5);
 
 
         // =========================
@@ -181,6 +187,9 @@ async function init(stockId = "2330") {
         // 成交量圖
         renderVolumeChart(data);
 
+        // 短線詳細分析視窗圖
+        setupDetailOverlay(data, ma5History);
+
         // =========================
         // Debug
         // =========================
@@ -191,7 +200,6 @@ async function init(stockId = "2330") {
 
         console.log("最新股價:", latest.close);
         console.log("市場狀態:", marketStatus);
-        console.log("今日訊號:", signals);
 
         console.log("完整股票資料:", stockData);
 
@@ -199,6 +207,9 @@ async function init(stockId = "2330") {
         console.error("取得股票資料失敗：", error);
     }
 }
+
+
+
 function renderDashboard(stockData) {
     // 股票基本資訊
     document.getElementById("stockId").textContent = stockData.stockId;
@@ -458,15 +469,64 @@ stockInput.addEventListener("keydown", event => {
 });
 
 const volumeToggle = document.getElementById("volumeToggle");
-const volumeDetail = document.getElementById("volumeDetail");
-const closeVolumeDetail = document.getElementById("closeVolumeDetail");
+const shortTermToggle = document.getElementById("shortTermToggle");
 
-volumeToggle.addEventListener("click", () => {
-    volumeDetail.classList.add("open");
-});
+const detailOverlay = document.getElementById("detailOverlay");
+const closeDetail = document.getElementById("closeDetail");
 
-closeVolumeDetail.addEventListener("click", () => {
-    volumeDetail.classList.remove("open");
-});
+const volumeChartSection = document.getElementById("volumeChartSection");
+const shortTermChartSection = document.getElementById("shortTermChartSection");
 
 init();
+
+// =========================
+// 短線分析視窗圖
+// =========================
+function setupDetailOverlay(data, ma5History) {
+    const volumeToggle = document.getElementById("volumeToggle");
+    const shortTermToggle = document.getElementById("shortTermToggle");
+
+    const detailOverlay = document.getElementById("detailOverlay");
+    const closeDetail = document.getElementById("closeDetail");
+
+    const detailTitle = document.getElementById("detailTitle");
+    const detailSubtitle = document.getElementById("detailSubtitle");
+
+    const volumeChartSection =
+        document.getElementById("volumeChartSection");
+
+    const shortTermChartSection =
+        document.getElementById("shortTermChartSection");
+
+
+    // 成交量
+    volumeToggle.addEventListener("click", () => {
+        detailTitle.textContent = "成交量分析";
+        detailSubtitle.textContent = "近期成交量與 20 日平均量";
+
+        volumeChartSection.style.display = "block";
+        shortTermChartSection.style.display = "none";
+
+        detailOverlay.classList.add("open");
+    });
+
+
+    // 短線
+    shortTermToggle.addEventListener("click", () => {
+        detailTitle.textContent = "短線趨勢";
+        detailSubtitle.textContent = "近 100 個交易日｜股價與 MA5";
+
+        volumeChartSection.style.display = "none";
+        shortTermChartSection.style.display = "block";
+
+        detailOverlay.classList.add("open");
+
+        renderShortTermChart(data, ma5History);
+    });
+
+
+    // 關閉
+    closeDetail.addEventListener("click", () => {
+        detailOverlay.classList.remove("open");
+    });
+}

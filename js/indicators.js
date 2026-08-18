@@ -283,3 +283,30 @@ export function calculateInstitutionalIndicators(data) {
         }
     };
 }
+
+// MA 歷史資料
+export function calculateMAHistory(data, period) {
+    return data.map((item, index) => {
+        if (index < period - 1) {
+            return {
+                date: item.date,
+                value: null
+            };
+        }
+
+        const recentData = data.slice(
+            index - period + 1,
+            index + 1
+        );
+
+        const total = recentData.reduce(
+            (sum, item) => sum + item.close,
+            0
+        );
+
+        return {
+            date: item.date,
+            value: total / period
+        };
+    });
+}

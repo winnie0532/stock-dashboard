@@ -60,16 +60,15 @@ function analyzeTrend(price, ma20, ma60, ma120, ma240) {
 // =========================
 
 function analyzeShortTerm(price, ma5, todayKD, yesterdayKD) {
-    const kdDeathCross = yesterdayKD.k >= yesterdayKD.d && todayKD.k < todayKD.d;
-    const kdGoldenCross = yesterdayKD.k <= yesterdayKD.d && todayKD.k > todayKD.d;
+    const kdDeathCross =
+        yesterdayKD.k >= yesterdayKD.d &&
+        todayKD.k < todayKD.d;
 
-    if (price < ma5 && kdDeathCross) {
-        return {
-            type: "warning",
-            text: "動能轉弱"
-        };
-    }
+    const kdGoldenCross =
+        yesterdayKD.k <= yesterdayKD.d &&
+        todayKD.k > todayKD.d;
 
+    // 今天剛轉強
     if (price > ma5 && kdGoldenCross) {
         return {
             type: "positive",
@@ -77,6 +76,31 @@ function analyzeShortTerm(price, ma5, todayKD, yesterdayKD) {
         };
     }
 
+    // 今天剛轉弱
+    if (price < ma5 && kdDeathCross) {
+        return {
+            type: "danger",
+            text: "動能轉弱"
+        };
+    }
+
+    // 維持短線強勢
+    if (price > ma5 && todayKD.k > todayKD.d) {
+        return {
+            type: "positive",
+            text: "短線偏強"
+        };
+    }
+
+    // 維持短線弱勢
+    if (price < ma5 && todayKD.k < todayKD.d) {
+        return {
+            type: "danger",
+            text: "短線偏弱"
+        };
+    }
+
+    // 股價與 KD 訊號不同方向
     return {
         type: "neutral",
         text: "短線中性"

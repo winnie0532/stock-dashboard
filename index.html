@@ -49,7 +49,7 @@
                     <span id="trendStatus">--</span>
                 </div>
 
-                <div class="status-row">
+                <div class="status-row" id="shortTermToggle">
                     <span>短線</span>
                     <span id="shortTermStatus">--</span>
                 </div>
@@ -61,22 +61,36 @@
                     </span>
                 </div>
 
-                <div class="detail-overlay" id="volumeDetail">
+                <div class="detail-overlay" id="detailOverlay">
                     <div class="detail-panel">
 
                         <div class="detail-header">
                             <div>
-                                <h2>成交量分析</h2>
-                                <p>近 100 個交易日</p>
+                                <h2 id="detailTitle">詳細分析</h2>
+                                <p id="detailSubtitle">--</p>
                             </div>
 
-                            <button id="closeVolumeDetail" class="detail-close">
+                            <button id="closeDetail" class="detail-close">
                                 ×
                             </button>
                         </div>
 
-                        <div class="detail-chart">
+
+                        <!-- 成交量圖 -->
+                        <div
+                            class="detail-chart"
+                            id="volumeChartSection"
+                        >
                             <canvas id="volumeChart"></canvas>
+                        </div>
+
+
+                        <!-- 短線趨勢圖 -->
+                        <div
+                            class="detail-chart"
+                            id="shortTermChartSection"
+                        >
+                            <canvas id="shortTermChart"></canvas>
                         </div>
 
                     </div>

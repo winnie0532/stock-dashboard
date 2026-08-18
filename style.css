@@ -650,7 +650,7 @@ body {
    手機版
 ========================= */
 
-@media (max-width: 600px) {
+@media (max-width: 520px) {
 
     .institutional-grid {
         grid-template-columns: 1fr;
@@ -749,15 +749,21 @@ body {
     .institutional-recent > div {
         padding: 12px 14px;
     }
-}
-.detail-overlay {
-    padding: 0;
+    /* 成交量詳細頁 */
+    .detail-overlay {
+        padding: 0;
+    }
+
+    .detail-panel {
+        width: 100%;
+        height: 100%;
+
+        border-radius: 0;
+        padding: 20px;
+    }
+
+    .volume-chart-container {
+        height: 60vh;
+    }
 }
 
-.detail-panel {
-    width: 100%;
-    height: 100%;
-
-    border-radius: 0;
-    padding: 20px;
-}
