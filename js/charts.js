@@ -5,21 +5,30 @@ export function renderVolumeChart(data) {
         return;
     }
 
-    const recentData = data.slice(-60);
+    // 完整歷史資料計算每一天的 20 日平均量
+    const volumeData = data.map((item, index) => {
+        let avgVolume20 = null;
+
+        if (index >= 19) {
+            const window = data.slice(index - 19, index + 1);
+            const total = window.reduce((sum, item) => sum + item.volume, 0);
+
+            avgVolume20 = total / 20;
+        }
+
+        return {
+            date: item.date,
+            volume: item.volume,
+            avgVolume20
+        };
+    });
+
+    // 最後才取最近 100 個交易日
+    const recentData = volumeData.slice(-100);
 
     const labels = recentData.map(item => item.date);
     const volumes = recentData.map(item => item.volume);
-
-    const average20 = recentData.map((_, index) => {
-        if (index < 19) {
-            return null;
-        }
-
-        const window = recentData.slice(index - 19, index + 1);
-        const total = window.reduce((sum, item) => sum + item.volume, 0);
-
-        return total / 20;
-    });
+    const average20 = recentData.map(item => item.avgVolume20);
 
     new Chart(canvas, {
         data: {

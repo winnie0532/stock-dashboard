@@ -1,9 +1,12 @@
 import { renderVolumeChart } from "./charts.js";
-import { analyzeTechnical } from "./analysis.js";
+import { analyzeMarketStatus } from "./marketStatus.js";
+import { buildSignals } from "./signals.js";
 import {
     organizeInstitutionalData,
-    analyzeInstitutional
-} from "./institutional.js";
+    calculateInstitutionalIndicators
+} from "./institutionalIndicators.js";
+
+import {analyzeInstitutional} from "./institutionalStatus.js";
 import {
     fetchStockHistory,
     fetchInstitutionalHistory,
@@ -37,7 +40,11 @@ async function init(stockId = "2330") {
         const institutionalDaily = organizeInstitutionalData(institutional);
         console.log("法人每日資料:", institutionalDaily);
 
-        const institutionalAnalysis = analyzeInstitutional(institutionalDaily);
+        const institutionalIndicators = calculateInstitutionalIndicators(institutionalDaily);
+        const institutionalAnalysis = analyzeInstitutional(
+                institutionalDaily,
+                institutionalIndicators
+            );
         console.log("籌碼分析:", institutionalAnalysis);
 
         const latest = data[data.length - 1];
@@ -100,7 +107,7 @@ async function init(stockId = "2330") {
         // 綜合技術分析
         // =========================
 
-        const analysis = analyzeTechnical({
+        const marketStatus = analyzeMarketStatus({
             latestPrice: latest.close,
             ma5,
             ma20,
@@ -109,6 +116,20 @@ async function init(stockId = "2330") {
             ma240,
             volumeRatio,
             rsi: rsi14,
+            todayKD,
+            yesterdayKD,
+            todayMACD,
+            yesterdayMACD,
+            institutionalIndicators
+        });
+
+        const signals = buildSignals({
+            latestPrice: latest.close,
+            ma5,
+            ma20,
+            ma60,
+            ma120,
+            ma240,
             todayKD,
             yesterdayKD,
             todayMACD,
@@ -152,7 +173,9 @@ async function init(stockId = "2330") {
             },
 
             institutional: institutionalAnalysis,
-            analysis
+
+            marketStatus,
+            signals
         };
 
         // 顯示到網頁
@@ -170,7 +193,8 @@ async function init(stockId = "2330") {
         console.log("60日漲跌幅:", priceChange60);
 
         console.log("最新股價:", latest.close);
-        console.log("技術分析:", analysis);
+        console.log("市場狀態:", marketStatus);
+        console.log("今日訊號:", signals);
 
         console.log("完整股票資料:", stockData);
 
@@ -192,12 +216,12 @@ function renderDashboard(stockData) {
         element.textContent = status.text;
         element.className = `status-value ${status.type}`;
     }
-    renderStatus("trendStatus", stockData.analysis.trend);
-    renderStatus("shortTermStatus", stockData.analysis.shortTerm);
-    renderStatus("volumeStatus", stockData.analysis.volume);
-    renderStatus("rsiStatus", stockData.analysis.rsi);
-    renderStatus("macdStatus", stockData.analysis.macd);
-    renderStatus("institutionalStatus",stockData.institutional.summary);
+    renderStatus("trendStatus", stockData.marketStatus.trend);
+    renderStatus("shortTermStatus", stockData.marketStatus.shortTerm);
+    renderStatus("volumeStatus", stockData.marketStatus.volume);
+    renderStatus("rsiStatus", stockData.marketStatus.rsi);
+    renderStatus("macdStatus", stockData.marketStatus.macd);
+    renderStatus("institutionalStatus",stockData.marketStatus.institutional);
     // 近期表現
     function renderChange(elementId, value) {
         const element = document.getElementById(elementId);
@@ -221,7 +245,7 @@ function renderDashboard(stockData) {
     const signalList = document.getElementById("signalList");
     signalList.innerHTML = "";
 
-    stockData.analysis.signals.forEach(signal => {
+    stockData.signals.forEach(signal => {
         const signalItem = document.createElement("p");
 
         signalItem.textContent = signal.text;

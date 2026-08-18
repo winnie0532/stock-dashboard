@@ -1,39 +1,37 @@
-export function analyzeTechnical({ 
-    latestPrice, 
-    ma5, 
-    ma20, 
-    ma60, 
-    ma120, 
-    ma240, 
-    volumeRatio, 
-    rsi, 
-    todayKD, 
-    yesterdayKD, 
-    todayMACD, 
-    yesterdayMACD 
-}) { 
-    return { 
-        trend: analyzeTrend(latestPrice, ma20, ma60, ma120, ma240), 
-        shortTerm: analyzeShortTerm(latestPrice, ma5, todayKD, yesterdayKD), 
-        volume: analyzeVolume(volumeRatio), 
-        rsi: analyzeRSI(rsi), 
-        macd: analyzeMACD(todayMACD, yesterdayMACD), 
-        kd: analyzeKD(todayKD, yesterdayKD),
-
-        signals: buildSignals({ 
-            latestPrice, 
-            ma5, 
-            ma20, 
-            ma60, 
-            ma120, 
-            ma240, 
-            todayKD, 
-            yesterdayKD, 
-            todayMACD, 
-            yesterdayMACD 
-        }) 
-    }; 
+export function analyzeMarketStatus({
+    latestPrice,
+    ma5,
+    ma20,
+    ma60,
+    ma120,
+    ma240,
+    volumeRatio,
+    rsi,
+    todayKD,
+    yesterdayKD,
+    todayMACD,
+    yesterdayMACD,
+    institutionalIndicators
+}) {
+    return {
+        trend: analyzeTrend(latestPrice, ma20, ma60, ma120, ma240),
+        shortTerm: analyzeShortTerm(
+            latestPrice,
+            ma5,
+            todayKD,
+            yesterdayKD
+        ),
+        volume: analyzeVolume(volumeRatio),
+        rsi: analyzeRSI(rsi),
+        macd: analyzeMACD(todayMACD, yesterdayMACD),
+        institutional: analyzeInstitutionalEvent(institutionalIndicators)
+    };
 }
+
+// =========================
+// 首頁欄位：趨勢
+// 判斷依據：目前股價與 20 / 60 / 120 / 240 日均線位置
+// =========================
 
 function analyzeTrend(price, ma20, ma60, ma120, ma240) {
     if (price > ma20 && price > ma60 && price > ma120 && price > ma240) {
@@ -55,6 +53,12 @@ function analyzeTrend(price, ma20, ma60, ma120, ma240) {
         text: "趨勢整理"
     };
 }
+
+// =========================
+// 首頁欄位：短線
+// 判斷依據：目前股價相對 MA5 + KD 是否剛發生交叉
+// =========================
+
 function analyzeShortTerm(price, ma5, todayKD, yesterdayKD) {
     const kdDeathCross = yesterdayKD.k >= yesterdayKD.d && todayKD.k < todayKD.d;
     const kdGoldenCross = yesterdayKD.k <= yesterdayKD.d && todayKD.k > todayKD.d;
@@ -78,6 +82,12 @@ function analyzeShortTerm(price, ma5, todayKD, yesterdayKD) {
         text: "短線中性"
     };
 }
+
+// =========================
+// 首頁欄位：成交量
+// 判斷依據：今日成交量 ÷ 20 日平均成交量
+// =========================
+
 function analyzeVolume(ratio) {
     if (ratio >= 2) {
         return {
@@ -112,6 +122,11 @@ function analyzeVolume(ratio) {
         text: `正常 ${ratio.toFixed(2)}x`
     };
 }
+
+// =========================
+// 首頁欄位：RSI
+// 判斷依據：14 日 RSI 數值區間
+// =========================
 
 function analyzeRSI(rsi) {
     if (rsi >= 70) {
@@ -148,6 +163,11 @@ function analyzeRSI(rsi) {
     };
 }
 
+// =========================
+// 首頁欄位：MACD
+// 判斷依據：今日 Histogram 與昨日 Histogram 的正負與變化
+// =========================
+
 function analyzeMACD(today, yesterday) {
     if (today.histogram > 0 && today.histogram > yesterday.histogram) {
         return {
@@ -182,94 +202,71 @@ function analyzeMACD(today, yesterday) {
         text: "動能持平"
     };
 }
-function analyzeKD(todayKD, yesterdayKD) {
-    if (yesterdayKD.k <= yesterdayKD.d && todayKD.k > todayKD.d) {
+
+// =========================
+// 首頁欄位：籌碼
+// 判斷依據：三大法人近期統計
+// 目的：挑出最值得注意的法人事件
+// =========================
+
+function analyzeInstitutionalEvent(indicators) {
+    if (!indicators) {
         return {
-            text: "黃金交叉",
-            type: "positive"
+            type: "neutral",
+            text: "資料不足"
         };
     }
 
-    if (yesterdayKD.k >= yesterdayKD.d && todayKD.k < todayKD.d) {
+    const { foreign, trust, dealer } = indicators.recent;
+
+    // 外資：20 日賣超，但最近 5 日轉買
+    if (foreign.day20 < 0 && foreign.day5 > 0) {
         return {
-            text: "死亡交叉",
-            type: "danger"
+            type: "positive",
+            text: "外資短線轉買"
         };
     }
 
-    if (todayKD.k > todayKD.d) {
+    // 外資：20 日買超，但最近 5 日轉賣
+    if (foreign.day20 > 0 && foreign.day5 < 0) {
         return {
-            text: "動能偏多",
-            type: "positive"
+            type: "danger",
+            text: "外資短線轉賣"
         };
     }
 
-    if (todayKD.k < todayKD.d) {
+    // 投信
+    if (trust.day20 < 0 && trust.day5 > 0) {
         return {
-            text: "動能偏空",
-            type: "danger"
+            type: "positive",
+            text: "投信短線轉買"
+        };
+    }
+
+    if (trust.day20 > 0 && trust.day5 < 0) {
+        return {
+            type: "danger",
+            text: "投信短線轉賣"
+        };
+    }
+
+    // 自營商
+    if (dealer.day20 < 0 && dealer.day5 > 0) {
+        return {
+            type: "positive",
+            text: "自營商短線轉買"
+        };
+    }
+
+    if (dealer.day20 > 0 && dealer.day5 < 0) {
+        return {
+            type: "danger",
+            text: "自營商短線轉賣"
         };
     }
 
     return {
-        text: "中性",
-        type: "neutral"
+        type: "neutral",
+        text: "籌碼動向中性"
     };
-}
-function buildSignals({
-    latestPrice,
-    ma5,
-    ma20,
-    ma60,
-    ma120,
-    ma240,
-    todayKD,
-    yesterdayKD,
-    todayMACD,
-    yesterdayMACD
-}) {
-    const signals = [];
-
-    if (yesterdayKD.k <= yesterdayKD.d && todayKD.k > todayKD.d) {
-        signals.push({ type: "positive", text: "KD 黃金交叉" });
-    }
-
-    if (yesterdayKD.k >= yesterdayKD.d && todayKD.k < todayKD.d) {
-        signals.push({ type: "danger", text: "KD 死亡交叉" });
-    }
-
-    if (yesterdayMACD.dif <= yesterdayMACD.signal && todayMACD.dif > todayMACD.signal) {
-        signals.push({ type: "positive", text: "MACD 黃金交叉" });
-    }
-
-    if (yesterdayMACD.dif >= yesterdayMACD.signal && todayMACD.dif < todayMACD.signal) {
-        signals.push({ type: "danger", text: "MACD 死亡交叉" });
-    }
-
-    signals.push({
-        type: latestPrice >= ma5 ? "positive" : "warning",
-        text: latestPrice >= ma5 ? "站上 5 日線" : "跌破 5 日線"
-    });
-
-    signals.push({
-        type: latestPrice >= ma20 ? "positive" : "warning",
-        text: latestPrice >= ma20 ? "仍守住月線" : "跌破月線"
-    });
-
-    signals.push({
-        type: latestPrice >= ma60 ? "positive" : "danger",
-        text: latestPrice >= ma60 ? "仍守住季線" : "跌破季線"
-    });
-
-    signals.push({
-        type: latestPrice >= ma120 ? "positive" : "danger",
-        text: latestPrice >= ma120 ? "仍守住半年線" : "跌破半年線"
-    });
-
-    signals.push({
-        type: latestPrice >= ma240 ? "positive" : "danger",
-        text: latestPrice >= ma240 ? "仍守住年線" : "跌破年線"
-    });
-
-    return signals;
 }
