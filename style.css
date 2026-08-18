@@ -257,6 +257,55 @@ body {
     color: #b91c1c;
 }
 
+/* =========================
+   均線狀態
+========================= */
+
+.ma-status {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.ma-status h3 {
+    margin: 0 0 16px;
+    font-size: 15px;
+}
+
+.ma-status-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+}
+
+.ma-status-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 12px 14px;
+
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.ma-label {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.ma-light {
+    font-weight: 600;
+}
+
+.ma-light.positive {
+    color: #047857;
+}
+
+.ma-light.danger {
+    color: #b91c1c;
+}
 
 /* =========================
    技術數據
@@ -368,6 +417,10 @@ body {
 
     .performance-item:last-child {
         border-bottom: none;
+    }
+
+    .ma-status-grid {
+        grid-template-columns: 1fr;
     }
 }
 

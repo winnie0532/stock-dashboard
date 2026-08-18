@@ -121,11 +121,41 @@
         </section>
 
         <!-- 今日訊號 -->
-        <section class="dashboard-section">
-            <h2>今日訊號</h2>
+         <section class="dashboard-section">
+            <h2>技術狀態</h2>
 
-            <div id="signalList" class="signal-list">
-                <p>載入中...</p>
+            <div class="technical-section">
+                <div id="signalList"></div>
+            </div>
+            <div class="ma-status">
+                <h3>均線狀態</h3>
+
+                <div class="ma-status-grid">
+                    <div class="ma-status-item">
+                        <span class="ma-label">5 日線</span>
+                        <span id="ma5Status" class="ma-light">--</span>
+                    </div>
+
+                    <div class="ma-status-item">
+                        <span class="ma-label">月線</span>
+                        <span id="ma20Status" class="ma-light">--</span>
+                    </div>
+
+                    <div class="ma-status-item">
+                        <span class="ma-label">季線</span>
+                        <span id="ma60Status" class="ma-light">--</span>
+                    </div>
+
+                    <div class="ma-status-item">
+                        <span class="ma-label">半年線</span>
+                        <span id="ma120Status" class="ma-light">--</span>
+                    </div>
+
+                    <div class="ma-status-item">
+                        <span class="ma-label">年線</span>
+                        <span id="ma240Status" class="ma-light">--</span>
+                    </div>
+                </div>
             </div>
         </section>
 

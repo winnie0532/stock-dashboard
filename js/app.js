@@ -1,6 +1,6 @@
 import { renderVolumeChart } from "./charts.js";
 import { analyzeMarketStatus } from "./marketStatus.js";
-import { buildSignals } from "./signals.js";
+import { analyzeTechnicalStatus } from "./technicalStatus.js";
 import {analyzeInstitutional} from "./institutionalStatus.js";
 import {
     fetchStockHistory,
@@ -120,7 +120,7 @@ async function init(stockId = "2330") {
             institutionalIndicators
         });
 
-        const signals = buildSignals({
+        const technicalStatus = analyzeTechnicalStatus({
             latestPrice: latest.close,
             ma5,
             ma20,
@@ -172,7 +172,7 @@ async function init(stockId = "2330") {
             institutional: institutionalAnalysis,
 
             marketStatus,
-            signals
+            technicalStatus,
         };
 
         // 顯示到網頁
@@ -242,14 +242,58 @@ function renderDashboard(stockData) {
     const signalList = document.getElementById("signalList");
     signalList.innerHTML = "";
 
-    stockData.signals.forEach(signal => {
+    const events = stockData.technicalStatus.events;
+
+    if (events.length === 0) {
         const signalItem = document.createElement("p");
 
-        signalItem.textContent = signal.text;
-        signalItem.classList.add("signal-item", signal.type);
+        signalItem.textContent = "今日無特殊技術訊號";
+        signalItem.classList.add("signal-item");
 
         signalList.appendChild(signalItem);
-    });
+    } else {
+        events.forEach(event => {
+            const signalItem = document.createElement("p");
+
+            signalItem.textContent = event.text;
+            signalItem.classList.add("signal-item", event.type);
+
+            signalList.appendChild(signalItem);
+        });
+    }
+
+    // 均線狀態
+    function renderMAStatus(elementId, status) {
+        const element = document.getElementById(elementId);
+
+        element.textContent = status.text;
+        element.className = `ma-light ${status.type}`;
+    }
+
+    renderMAStatus(
+        "ma5Status",
+        stockData.technicalStatus.movingAverages.ma5
+    );
+
+    renderMAStatus(
+        "ma20Status",
+        stockData.technicalStatus.movingAverages.ma20
+    );
+
+    renderMAStatus(
+        "ma60Status",
+        stockData.technicalStatus.movingAverages.ma60
+    );
+
+    renderMAStatus(
+        "ma120Status",
+        stockData.technicalStatus.movingAverages.ma120
+    );
+
+    renderMAStatus(
+        "ma240Status",
+        stockData.technicalStatus.movingAverages.ma240
+    );
 
     // MA
     document.getElementById("ma5").textContent = stockData.technical.ma5.toFixed(2);
