@@ -756,14 +756,31 @@ body {
 
     .detail-panel {
         width: 100%;
-        height: 100%;
+        height: auto;
+        min-height: 100%;
 
         border-radius: 0;
-        padding: 20px;
+        padding: 20px 16px;
+    }
+
+    .detail-header {
+        margin-bottom: 16px;
+    }
+
+    .detail-header h2 {
+        font-size: 22px;
+    }
+
+    .detail-header p {
+        font-size: 14px;
+    }
+
+    .detail-chart {
+        height: 360px;
     }
 
     .volume-chart-container {
-        height: 60vh;
+        height: 360px;
     }
 }
 
