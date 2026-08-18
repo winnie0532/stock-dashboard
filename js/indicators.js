@@ -1,3 +1,9 @@
+import { sumRecent } from "./utils/calculations.js";
+
+// =========================
+// 價格
+// =========================
+
 export function calculatePriceChange(data, days) {
     if (!data || data.length <= days) {
         return null;
@@ -8,6 +14,10 @@ export function calculatePriceChange(data, days) {
 
     return ((latestPrice - previousPrice) / previousPrice) * 100;
 }
+
+// =========================
+// 均線 / 成交量
+// =========================
 
 export function calculateMA(data, period) {
     if (data.length < period) {
@@ -38,6 +48,10 @@ export function calculateAverageVolume(data, period = 20) {
 
     return totalVolume / period;
 }
+
+// =========================
+// RSI / KD / MACD
+// =========================
 
 export function calculateRSI(data, period = 14) {
     if (data.length <= period) {
@@ -183,4 +197,89 @@ export function calculateMACD(data, shortPeriod = 12, longPeriod = 26, signalPer
     }
 
     return history;
+}
+
+// =========================
+// 三大法人
+// =========================
+
+// 整理 FinMind 法人原始資料
+export function organizeInstitutionalData(data) {
+    const grouped = {};
+
+    data.forEach(item => {
+        if (!grouped[item.date]) {
+            grouped[item.date] = {
+                date: item.date,
+                foreign: 0,
+                trust: 0,
+                dealer: 0
+            };
+        }
+
+        const netBuy = item.buy - item.sell;
+
+        switch (item.name) {
+            case "Foreign_Investor":
+                grouped[item.date].foreign += netBuy;
+                break;
+
+            case "Investment_Trust":
+                grouped[item.date].trust += netBuy;
+                break;
+
+            case "Dealer_self":
+            case "Dealer_Hedging":
+                grouped[item.date].dealer += netBuy;
+                break;
+        }
+    });
+
+    return Object.values(grouped)
+        .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+
+// 今日、前一日、5 / 20 / 60 日法人統計
+export function calculateInstitutionalIndicators(data) {
+    if (!data || data.length === 0) {
+        return null;
+    }
+
+    const latest = data[data.length - 1];
+    const previous = data[data.length - 2];
+
+    return {
+        today: {
+            foreign: latest.foreign,
+            trust: latest.trust,
+            dealer: latest.dealer
+        },
+
+        recent: {
+            foreign: {
+                day5: sumRecent(data, "foreign", 5),
+                day20: sumRecent(data, "foreign", 20),
+                day60: sumRecent(data, "foreign", 60)
+            },
+
+            trust: {
+                day5: sumRecent(data, "trust", 5),
+                day20: sumRecent(data, "trust", 20),
+                day60: sumRecent(data, "trust", 60)
+            },
+
+            dealer: {
+                day5: sumRecent(data, "dealer", 5),
+                day20: sumRecent(data, "dealer", 20),
+                day60: sumRecent(data, "dealer", 60)
+            }
+        },
+
+        previous: {
+            foreign: previous?.foreign ?? 0,
+            trust: previous?.trust ?? 0,
+            dealer: previous?.dealer ?? 0
+        }
+    };
 }

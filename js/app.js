@@ -1,11 +1,6 @@
 import { renderVolumeChart } from "./charts.js";
 import { analyzeMarketStatus } from "./marketStatus.js";
 import { buildSignals } from "./signals.js";
-import {
-    organizeInstitutionalData,
-    calculateInstitutionalIndicators
-} from "./institutionalIndicators.js";
-
 import {analyzeInstitutional} from "./institutionalStatus.js";
 import {
     fetchStockHistory,
@@ -13,12 +8,14 @@ import {
     fetchStockInfo
 } from "./api.js";
 import {
+    calculatePriceChange,
     calculateMA,
     calculateAverageVolume,
     calculateRSI,
     calculateKD,
     calculateMACD,
-    calculatePriceChange
+    organizeInstitutionalData,
+    calculateInstitutionalIndicators
 } from "./indicators.js";
 
 

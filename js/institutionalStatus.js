@@ -4,10 +4,6 @@
 // data:
 // 每日法人資料
 //
-// indicators:
-// institutionalIndicators.js
-// 算好的 today / previous / recent
-//
 // 回傳：
 // today  → 今日法人買賣超
 // recent → 5 / 20 / 60 日法人買賣超
