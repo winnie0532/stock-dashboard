@@ -105,3 +105,26 @@ export async function fetchMarginData(stockId, startDate) {
 
     return result.data;
 }
+
+// 借券賣出餘額資料
+export async function fetchShortSaleBalanceData(stockId, startDate) {
+    const url =
+        `https://api.finmindtrade.com/api/v4/data` +
+        `?dataset=TaiwanDailyShortSaleBalances` +
+        `&data_id=${stockId}` +
+        `&start_date=${startDate}`;
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error(`取得借券賣出資料失敗：${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (!result.data) {
+        throw new Error("借券賣出資料格式錯誤");
+    }
+
+    return result.data;
+}

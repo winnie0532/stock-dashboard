@@ -15,14 +15,16 @@ import {
     fetchStockHistory,
     fetchInstitutionalHistory,
     fetchStockInfo,
-    fetchMarginData
+    fetchMarginData,
+    fetchShortSaleBalanceData
 } from "./api.js";
 import {
     calculatePriceChange,
     calculateTechnicalIndicators,
     organizeInstitutionalData,
     calculateInstitutionalIndicators,
-    calculateMarginIndicators
+    calculateMarginIndicators,
+    calculateShortSaleIndicators
 } from "./indicators.js";
 
 
@@ -58,6 +60,17 @@ async function init(stockId = "2330") {
 
         const marginStatus = analyzeMargin(marginIndicators);
         renderMarginStatus(marginStatus);
+
+        // 借券餘額資料
+        const shortSaleBalanceData = await fetchShortSaleBalanceData(stockId, "2025-07-01");
+        const shortSaleIndicators = calculateShortSaleIndicators(shortSaleBalanceData);
+
+        console.log("借券賣出指標:", shortSaleIndicators);
+        console.log("借券賣出資料筆數:", shortSaleBalanceData.length);
+        console.log(
+            "借券賣出最後一筆:",
+            shortSaleBalanceData[shortSaleBalanceData.length - 1]
+        );
 
 
         // =========================
@@ -106,7 +119,8 @@ async function init(stockId = "2330") {
 
             priceChange5,
             priceChange20,
-            marginIndicators
+            marginIndicators,
+            shortSaleIndicators
         });
 
         const technicalStatus = analyzeTechnicalStatus({
@@ -175,7 +189,7 @@ async function init(stockId = "2330") {
         // 成交量圖
         renderVolumeChart(data);
 
-        // 短線詳細分析視窗圖
+        // 詳細分析視窗圖
         updateDetailOverlayData({
             data,
 
@@ -192,7 +206,7 @@ async function init(stockId = "2330") {
                 margin5Percent: marginIndicators.margin.day5Percent,
                 margin20Percent: marginIndicators.margin.day20Percent
             },
-            
+
             marginData
         });
         // =========================

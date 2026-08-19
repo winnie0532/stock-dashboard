@@ -19,6 +19,7 @@ export function renderDashboard(stockData) {
     renderStatus("macdStatus", stockData.marketStatus.macd);
     renderStatus("institutionalStatus", stockData.marketStatus.institutional);
     renderStatus("creditStatus", stockData.marketStatus.credit);
+    renderStatus("shortPositionStatus",stockData.marketStatus.shortPosition);
     
     // 近期表現
     function renderChange(elementId, value) {

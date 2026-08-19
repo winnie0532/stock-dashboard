@@ -451,13 +451,97 @@ export function calculateMarginIndicators(data) {
 
         short: {
             today: getBalanceChange("ShortSaleTodayBalance", 1),
+
             day5: getBalanceChange("ShortSaleTodayBalance", 5),
-            day20: getBalanceChange("ShortSaleTodayBalance", 20)
+            day5Percent: getBalanceChangePercent(
+                "ShortSaleTodayBalance",
+                5
+            ),
+
+            day20: getBalanceChange("ShortSaleTodayBalance", 20),
+            day20Percent: getBalanceChangePercent(
+                "ShortSaleTodayBalance",
+                20
+            )
         },
 
         latestBalance: {
             margin: latest.MarginPurchaseTodayBalance,
             short: latest.ShortSaleTodayBalance
         }
+    };
+}
+
+//借券賣出的今日／5 日／20 日餘額變化和變化率
+export function calculateShortSaleIndicators(data) {
+    if (!data || data.length === 0) {
+        return null;
+    }
+
+    const sorted = [...data].sort(
+        (a, b) => new Date(a.date) - new Date(b.date)
+    );
+
+    const latest = sorted[sorted.length - 1];
+
+    function getBalanceChange(days) {
+        const currentBalance =
+            latest.SBLShortSalesCurrentDayBalance;
+
+        if (days === 1) {
+            return (
+                currentBalance -
+                latest.SBLShortSalesPreviousDayBalance
+            );
+        }
+
+        if (sorted.length <= days) {
+            return null;
+        }
+
+        const previous =
+            sorted[sorted.length - 1 - days];
+
+        return (
+            currentBalance -
+            previous.SBLShortSalesCurrentDayBalance
+        );
+    }
+
+    function getBalanceChangePercent(days) {
+        if (sorted.length <= days) {
+            return null;
+        }
+
+        const currentBalance =
+            latest.SBLShortSalesCurrentDayBalance;
+
+        const previous =
+            sorted[sorted.length - 1 - days];
+
+        const previousBalance =
+            previous.SBLShortSalesCurrentDayBalance;
+
+        if (!previousBalance) {
+            return null;
+        }
+
+        return (
+            (currentBalance - previousBalance) /
+            previousBalance
+        ) * 100;
+    }
+
+    return {
+        today: getBalanceChange(1),
+
+        day5: getBalanceChange(5),
+        day5Percent: getBalanceChangePercent(5),
+
+        day20: getBalanceChange(20),
+        day20Percent: getBalanceChangePercent(20),
+
+        latestBalance:
+            latest.SBLShortSalesCurrentDayBalance
     };
 }

@@ -117,7 +117,7 @@ export function setupDetailOverlay() {
         const credit = detailOverlayData.credit;
 
         detailTitle.textContent = "信用籌碼";
-        detailSubtitle.textContent = "股價與融資餘額趨勢";
+        detailSubtitle.textContent = "近 100 個交易日｜股價與融資餘額";
 
         volumeChartSection.style.display = "none";
         shortTermChartSection.style.display = "none";
@@ -144,7 +144,7 @@ export function setupDetailOverlay() {
             detailOverlayData.data,
             detailOverlayData.marginData
         );
-        
+
         detailOverlay.classList.add("open");
     });
 

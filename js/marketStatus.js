@@ -14,7 +14,8 @@ export function analyzeMarketStatus({
     institutionalIndicators,
     priceChange5,
     priceChange20,
-    marginIndicators
+    marginIndicators,
+    shortSaleIndicators
 }) {
     return {
         trend: analyzeTrend(latestPrice, ma20, ma60, ma120, ma240),
@@ -32,6 +33,10 @@ export function analyzeMarketStatus({
             priceChange5,
             priceChange20,
             marginIndicators
+        ),
+        shortPosition: analyzeShortPositionStatus(
+            marginIndicators,
+            shortSaleIndicators
         )
     };
 }
@@ -478,5 +483,218 @@ function analyzeCreditStatus(
         type: "neutral",
         text: "信用籌碼穩定",
         description: "股價與融資餘額皆未出現明顯變化"
+    };
+}
+
+// =========================
+// 首頁欄位：空方籌碼
+//
+// 主要判斷：
+// 20 日決定主要空方結構
+// 5 日用來偵測近期轉折
+// =========================
+function analyzeShortPositionStatus(
+    marginIndicators,
+    shortSaleIndicators
+) {
+    if (
+        !marginIndicators?.short ||
+        !shortSaleIndicators
+    ) {
+        return {
+            type: "neutral",
+            text: "資料不足",
+            description: "目前資料不足，無法判斷空方籌碼"
+        };
+    }
+
+    const marginShort20 =
+        marginIndicators.short.day20Percent;
+
+    const sblShort20 =
+        shortSaleIndicators.day20Percent;
+
+    const marginShortBalance =
+        marginIndicators.latestBalance.short;
+
+    // 借券賣出 API 為股，轉成張
+    const sblShortBalance =
+        shortSaleIndicators.latestBalance / 1000;
+
+
+    // =========================
+    // 判斷方向
+    // =========================
+
+    function getDirection(value) {
+        if (value >= 3) {
+            return "increase";
+        }
+
+        if (value <= -3) {
+            return "decrease";
+        }
+
+        return "neutral";
+    }
+
+    const marginDirection =
+        getDirection(marginShort20);
+
+    const sblDirection =
+        getDirection(sblShort20);
+
+
+    // =========================
+    // 融券規模過小
+    //
+    // 融券餘額 < 100 張時，
+    // 不讓融券百分比主導空方判斷，
+    // 改以借券賣出為主要訊號。
+    // =========================
+
+    if (marginShortBalance < 100) {
+
+        if (sblDirection === "increase") {
+            return {
+                type: "danger",
+                text: "借券空方升溫",
+                description:
+                    "融券部位規模偏小，借券賣出餘額明顯增加"
+            };
+        }
+
+        if (sblDirection === "decrease") {
+            return {
+                type: "positive",
+                text: "借券空方回補",
+                description:
+                    "融券部位規模偏小，借券賣出餘額明顯下降"
+            };
+        }
+
+        return {
+            type: "neutral",
+            text: "空方中性",
+            description:
+                "融券部位規模偏小，借券賣出餘額亦無明顯變化"
+        };
+    }
+
+
+    // =========================
+    // 融券 ↑ + 借券賣出 ↑
+    // =========================
+
+    if (
+        marginDirection === "increase" &&
+        sblDirection === "increase"
+    ) {
+        return {
+            type: "danger",
+            text: "空方升溫",
+            description:
+                "融券與借券賣出餘額同步增加"
+        };
+    }
+
+
+    // =========================
+    // 融券 ↓ + 借券賣出 ↓
+    // =========================
+
+    if (
+        marginDirection === "decrease" &&
+        sblDirection === "decrease"
+    ) {
+        return {
+            type: "positive",
+            text: "空方回補",
+            description:
+                "融券與借券賣出餘額同步下降"
+        };
+    }
+
+
+    // =========================
+    // 一增一減
+    // =========================
+
+    if (
+        (
+            marginDirection === "increase" &&
+            sblDirection === "decrease"
+        ) ||
+        (
+            marginDirection === "decrease" &&
+            sblDirection === "increase"
+        )
+    ) {
+        return {
+            type: "warning",
+            text: "空方分歧",
+            description:
+                marginDirection === "decrease"
+                    ? "融券部位回補，但借券賣出餘額持續增加"
+                    : "融券部位增加，但借券賣出餘額持續下降"
+        };
+    }
+
+
+    // =========================
+    // 只有借券賣出明顯變化
+    // =========================
+
+    if (sblDirection === "increase") {
+        return {
+            type: "warning",
+            text: "借券空方升溫",
+            description:
+                "借券賣出餘額增加，融券變化有限"
+        };
+    }
+
+    if (sblDirection === "decrease") {
+        return {
+            type: "positive",
+            text: "借券空方回補",
+            description:
+                "借券賣出餘額下降，融券變化有限"
+        };
+    }
+
+
+    // =========================
+    // 只有融券明顯變化
+    // =========================
+
+    if (marginDirection === "increase") {
+        return {
+            type: "warning",
+            text: "融券增加",
+            description:
+                "融券餘額增加，借券賣出變化有限"
+        };
+    }
+
+    if (marginDirection === "decrease") {
+        return {
+            type: "positive",
+            text: "融券回補",
+            description:
+                "融券餘額下降，借券賣出變化有限"
+        };
+    }
+
+
+    // =========================
+    // 都沒有明顯變化
+    // =========================
+
+    return {
+        type: "neutral",
+        text: "空方中性",
+        description:
+            "融券與借券賣出餘額皆無明顯變化"
     };
 }

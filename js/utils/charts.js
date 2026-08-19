@@ -247,7 +247,7 @@ export function renderCreditChart(priceData, marginData) {
         return;
     }
 
-    const recentPrices = priceData.slice(-60);
+    const recentPrices = priceData.slice(-100);
 
     const marginMap = new Map(
         marginData.map(item => [
