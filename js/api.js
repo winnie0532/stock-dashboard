@@ -82,3 +82,26 @@ export async function fetchStockInfo(stockId) {
         market: stock.type
     };
 }
+
+//融資融券資料
+export async function fetchMarginData(stockId, startDate) {
+    const url =
+        `https://api.finmindtrade.com/api/v4/data` +
+        `?dataset=TaiwanStockMarginPurchaseShortSale` +
+        `&data_id=${stockId}` +
+        `&start_date=${startDate}`;
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error(`取得融資融券資料失敗：${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (!result.data) {
+        throw new Error("融資融券資料格式錯誤");
+    }
+
+    return result.data;
+}

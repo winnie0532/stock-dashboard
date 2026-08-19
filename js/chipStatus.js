@@ -121,3 +121,84 @@ function getInstitutionStatus(data, key) {
         text: `連 ${streak} 日賣超`
     };
 }
+
+// =========================
+// 信用籌碼
+//
+// indicators:
+// calculateMarginIndicators() 的結果
+//
+// 回傳：
+// 融資 / 融券
+// 今日 / 5 日 / 20 日變化
+// =========================
+
+export function analyzeMargin(indicators) {
+    if (!indicators) {
+        return null;
+    }
+
+    return {
+        margin: {
+            today: indicators.margin.today,
+            day5: indicators.margin.day5,
+            day20: indicators.margin.day20
+        },
+
+        short: {
+            today: indicators.short.today,
+            day5: indicators.short.day5,
+            day20: indicators.short.day20
+        },
+
+        latestBalance: indicators.latestBalance
+    };
+}
+
+export function renderMarginStatus(status) {
+    if (!status) {
+        return;
+    }
+
+    setMarginValue("marginToday", status.margin.today);
+    setMarginValue("margin5", status.margin.day5);
+    setMarginValue("margin20", status.margin.day20);
+
+    setMarginValue("shortToday", status.short.today);
+    setMarginValue("short5", status.short.day5);
+    setMarginValue("short20", status.short.day20);
+}
+
+
+function setMarginValue(elementId, value) {
+    const element = document.getElementById(elementId);
+
+    if (!element) {
+        return;
+    }
+
+    element.classList.remove(
+        "positive",
+        "danger",
+        "neutral"
+    );
+
+    if (value === null || value === undefined) {
+        element.textContent = "--";
+        element.classList.add("neutral");
+        return;
+    }
+
+    const formattedValue = Math.abs(value).toLocaleString();
+
+    if (value > 0) {
+        element.textContent = `+${formattedValue} 張`;
+        element.classList.add("positive");
+    } else if (value < 0) {
+        element.textContent = `-${formattedValue} 張`;
+        element.classList.add("danger");
+    } else {
+        element.textContent = "0 張";
+        element.classList.add("neutral");
+    }
+}

@@ -2,7 +2,11 @@ import { renderDashboard } from "./ui/dashboard.js";
 import { renderVolumeChart } from "./utils/charts.js";
 import { analyzeMarketStatus } from "./marketStatus.js";
 import { analyzeTechnicalStatus } from "./technicalStatus.js";
-import {analyzeInstitutional} from "./institutionalStatus.js";
+import {
+    analyzeInstitutional,
+    analyzeMargin,
+    renderMarginStatus
+} from "./chipStatus.js";
 import {
     setupDetailOverlay,
     updateDetailOverlayData
@@ -10,13 +14,15 @@ import {
 import {
     fetchStockHistory,
     fetchInstitutionalHistory,
-    fetchStockInfo
+    fetchStockInfo,
+    fetchMarginData
 } from "./api.js";
 import {
     calculatePriceChange,
     calculateTechnicalIndicators,
     organizeInstitutionalData,
-    calculateInstitutionalIndicators
+    calculateInstitutionalIndicators,
+    calculateMarginIndicators
 } from "./indicators.js";
 
 
@@ -31,8 +37,6 @@ async function init(stockId = "2330") {
         const data = await fetchStockHistory(stockId, "2023-05-01");
 
         // 取得法人資料
-        
-    
         const institutional = await fetchInstitutionalHistory(stockId, "2023-05-31");
 
         const institutionalDaily = organizeInstitutionalData(institutional);
@@ -44,6 +48,16 @@ async function init(stockId = "2330") {
                 institutionalIndicators
             );
         console.log("籌碼分析:", institutionalAnalysis);
+
+        // 取得融資融券資料
+        const marginData = await fetchMarginData(stockId, "2025-07-01");
+        const marginIndicators = calculateMarginIndicators(marginData);
+        console.log("融資融券指標:", marginIndicators);
+        console.log("融資融券筆數:", marginData.length);
+        console.log("融資融券完整資料:", marginData);
+
+        const marginStatus = analyzeMargin(marginIndicators);
+        renderMarginStatus(marginStatus);
 
 
         // =========================

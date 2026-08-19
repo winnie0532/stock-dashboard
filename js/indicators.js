@@ -380,3 +380,56 @@ export function calculateTechnicalIndicators(data) {
         }
     };
 }
+
+// 融資／融券的「今日、5 日、20 日」餘額差
+export function calculateMarginIndicators(data) {
+    if (!data || data.length === 0) {
+        return null;
+    }
+
+    const sorted = [...data].sort(
+        (a, b) => new Date(a.date) - new Date(b.date)
+    );
+
+    const latest = sorted[sorted.length - 1];
+
+    function getBalanceChange(field, days) {
+        const currentBalance = latest[field];
+
+        if (days === 1) {
+            const yesterdayField =
+                field === "MarginPurchaseTodayBalance"
+                    ? "MarginPurchaseYesterdayBalance"
+                    : "ShortSaleYesterdayBalance";
+
+            return currentBalance - latest[yesterdayField];
+        }
+
+        if (sorted.length <= days) {
+            return null;
+        }
+
+        const previous = sorted[sorted.length - 1 - days];
+
+        return currentBalance - previous[field];
+    }
+
+    return {
+        margin: {
+            today: getBalanceChange("MarginPurchaseTodayBalance", 1),
+            day5: getBalanceChange("MarginPurchaseTodayBalance", 5),
+            day20: getBalanceChange("MarginPurchaseTodayBalance", 20)
+        },
+
+        short: {
+            today: getBalanceChange("ShortSaleTodayBalance", 1),
+            day5: getBalanceChange("ShortSaleTodayBalance", 5),
+            day20: getBalanceChange("ShortSaleTodayBalance", 20)
+        },
+
+        latestBalance: {
+            margin: latest.MarginPurchaseTodayBalance,
+            short: latest.ShortSaleTodayBalance
+        }
+    };
+}
