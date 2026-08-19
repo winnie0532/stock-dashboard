@@ -584,6 +584,68 @@ body {
 }
 
 /* =========================
+   信用籌碼詳細頁
+========================= */
+
+.credit-summary {
+    margin-bottom: 24px;
+}
+
+.credit-summary-header {
+    margin-bottom: 18px;
+}
+
+#creditDetailStatus {
+    margin-bottom: 6px;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+#creditDetailDescription {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.credit-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.credit-summary-item {
+    padding: 14px 16px;
+
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.credit-summary-item span {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.credit-summary-item strong {
+    font-size: 16px;
+}
+
+#creditChartSection {
+    height: 100%;
+}
+
+#creditChart {
+    max-height: 420px;
+}
+
+.credit-chart-container {
+    height: 380px;
+}
+
+/* =========================
    手機版
 ========================= */
 
@@ -684,5 +746,23 @@ body {
 
     .volume-chart-container {
         height: 250px;
+    }
+
+    /* 融資細頁 */
+
+    .credit-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .credit-summary-item {
+        padding: 12px;
+    }
+
+    #creditChart {
+        max-height: 280px;
+    }
+
+    .credit-chart-container {
+        height: 260px;
     }
 }

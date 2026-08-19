@@ -77,29 +77,61 @@
 
 
                         <!-- 成交量圖 -->
-                        <div
-                            class="detail-chart"
-                            id="volumeChartSection"
-                        >
+                        <div class="detail-chart" id="volumeChartSection">
                             <canvas id="volumeChart"></canvas>
                         </div>
 
-
                         <!-- 短線趨勢圖 -->
-                        <div
-                            class="detail-chart"
-                            id="shortTermChartSection"
-                        >
+                        <div class="detail-chart" id="shortTermChartSection">
                             <canvas id="shortTermChart"></canvas>
                         </div>
 
                         <!-- 中長期趨勢圖 -->
-                        <div
-                            class="detail-chart"
-                            id="trendChartSection"
-                        >
+                        <div class="detail-chart" id="trendChartSection">
                             <canvas id="trendChart"></canvas>
                         </div>
+
+                        <!-- 信用籌碼圖表 -->
+                        <div class="detail-chart" id="creditChartSection">
+
+                            <div class="credit-summary" id="creditSummary">
+
+                                <div class="credit-summary-header">
+                                    <div id="creditDetailStatus">--</div>
+                                    <div id="creditDetailDescription">--</div>
+                                </div>
+
+                                <div class="credit-summary-grid">
+
+                                    <div class="credit-summary-item">
+                                        <span>20 日股價</span>
+                                        <strong id="creditPrice20">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>20 日融資</span>
+                                        <strong id="creditMargin20">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>5 日股價</span>
+                                        <strong id="creditPrice5">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>5 日融資</span>
+                                        <strong id="creditMargin5">--</strong>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="credit-chart-container">
+                                <canvas id="creditChart"></canvas>
+                            </div>
+                        </div>
+                        <canvas id="creditChart"></canvas>
 
                     </div>
                 </div>
@@ -119,7 +151,7 @@
                     <span id="institutionalStatus">--</span>
                 </div>
 
-                <div class="status-row">
+                <div class="status-row" id="creditToggle">
                     <span>信用籌碼</span>
                     <span id="creditStatus">--</span>
                 </div>

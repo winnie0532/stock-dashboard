@@ -183,7 +183,17 @@ async function init(stockId = "2330") {
             ma20History: movingAverageHistory.ma20,
             ma60History: movingAverageHistory.ma60,
             ma120History: movingAverageHistory.ma120,
-            ma240History: movingAverageHistory.ma240
+            ma240History: movingAverageHistory.ma240,
+
+            credit: {
+                status: marketStatus.credit,
+                priceChange5,
+                priceChange20,
+                margin5Percent: marginIndicators.margin.day5Percent,
+                margin20Percent: marginIndicators.margin.day20Percent
+            },
+            
+            marginData
         });
         // =========================
         // Debug

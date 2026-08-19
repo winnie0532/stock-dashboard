@@ -1,6 +1,7 @@
 import {
     renderShortTermChart,
-    renderTrendChart
+    renderTrendChart,
+    renderCreditChart
 } from "../utils/charts.js";
 
 let detailOverlayData = null;
@@ -13,6 +14,7 @@ export function setupDetailOverlay() {
     const volumeToggle = document.getElementById("volumeToggle");
     const shortTermToggle = document.getElementById("shortTermToggle");
     const trendToggle = document.getElementById("trendToggle");
+    const creditToggle = document.getElementById("creditToggle");
 
     const detailOverlay = document.getElementById("detailOverlay");
     const closeDetail = document.getElementById("closeDetail");
@@ -23,6 +25,7 @@ export function setupDetailOverlay() {
     const volumeChartSection = document.getElementById("volumeChartSection");
     const shortTermChartSection = document.getElementById("shortTermChartSection");
     const trendChartSection = document.getElementById("trendChartSection");
+    const creditChartSection = document.getElementById("creditChartSection");
 
 
     // =========================
@@ -40,6 +43,7 @@ export function setupDetailOverlay() {
         volumeChartSection.style.display = "block";
         shortTermChartSection.style.display = "none";
         trendChartSection.style.display = "none";
+        creditChartSection.style.display = "none";
 
         detailOverlay.classList.add("open");
     });
@@ -60,6 +64,7 @@ export function setupDetailOverlay() {
         volumeChartSection.style.display = "none";
         shortTermChartSection.style.display = "block";
         trendChartSection.style.display = "none";
+        creditChartSection.style.display = "none";
 
         detailOverlay.classList.add("open");
 
@@ -87,6 +92,7 @@ export function setupDetailOverlay() {
         volumeChartSection.style.display = "none";
         shortTermChartSection.style.display = "none";
         trendChartSection.style.display = "block";
+        creditChartSection.style.display = "none";
 
         detailOverlay.classList.add("open");
 
@@ -99,12 +105,60 @@ export function setupDetailOverlay() {
         );
     });
 
+    // =========================
+    // 信用籌碼
+    // =========================
+
+    creditToggle.addEventListener("click", () => {
+        if (!detailOverlayData?.credit) {
+            return;
+        }
+
+        const credit = detailOverlayData.credit;
+
+        detailTitle.textContent = "信用籌碼";
+        detailSubtitle.textContent = "股價與融資餘額趨勢";
+
+        volumeChartSection.style.display = "none";
+        shortTermChartSection.style.display = "none";
+        trendChartSection.style.display = "none";
+        creditChartSection.style.display = "block";
+
+        // 信用籌碼狀態
+        const statusElement = document.getElementById("creditDetailStatus");
+
+        statusElement.textContent = credit.status.text;
+        statusElement.className = `status-value ${credit.status.type}`;
+
+        // 狀態說明
+        document.getElementById("creditDetailDescription").textContent = credit.status.description;
+        // 20 日
+        document.getElementById("creditPrice20").textContent = formatPercent(credit.priceChange20);
+        document.getElementById("creditMargin20").textContent = formatPercent(credit.margin20Percent);
+
+        // 5 日
+        document.getElementById("creditPrice5").textContent = formatPercent(credit.priceChange5);
+        document.getElementById("creditMargin5").textContent = formatPercent(credit.margin5Percent);
+
+        renderCreditChart(
+            detailOverlayData.data,
+            detailOverlayData.marginData
+        );
+        
+        detailOverlay.classList.add("open");
+    });
 
     // =========================
     // 關閉
     // =========================
 
-    closeDetail.addEventListener("click", () => {
-        detailOverlay.classList.remove("open");
-    });
+    closeDetail.addEventListener("click", () => {detailOverlay.classList.remove("open");});
+}
+
+function formatPercent(value) {
+    if (value === null || value === undefined) {
+        return "--";
+    }
+
+    return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
 }

@@ -363,7 +363,8 @@ function analyzeCreditStatus(
     ) {
         return {
             type: "neutral",
-            text: "資料不足"
+            text: "資料不足",
+            description: "目前資料不足，無法判斷信用籌碼"
         };
     }
 
@@ -384,7 +385,8 @@ function analyzeCreditStatus(
     ) {
         return {
             type: "warning",
-            text: "短線籌碼轉弱"
+            text: "短線籌碼轉弱",
+            description: "中期籌碼偏健康，但近期股價轉弱、融資重新增加"
         };
     }
 
@@ -397,7 +399,8 @@ function analyzeCreditStatus(
     ) {
         return {
             type: "positive",
-            text: "短線籌碼改善"
+            text: "短線籌碼改善",
+            description: "中期籌碼偏弱，但近期股價轉強、融資開始下降"
         };
     }
 
@@ -410,15 +413,25 @@ function analyzeCreditStatus(
     if (priceChange20 >= 5 && margin20 <= -3) {
         return {
             type: "positive",
-            text: "籌碼沉澱"
+            text: "籌碼沉澱",
+            description: "股價走強，融資籌碼持續下降"
         };
     }
 
     // 股價上漲 + 融資增加
     if (priceChange20 >= 5 && margin20 >= 3) {
+        if (margin20 >= 10) {
+            return {
+                type: "danger",
+                text: "融資過熱",
+                description: "股價走強，但融資大幅增加，槓桿籌碼快速升溫"
+            };
+        }
+
         return {
-            type: margin20 >= 10 ? "danger" : "warning",
-            text: margin20 >= 10 ? "融資過熱" : "融資追價"
+            type: "warning",
+            text: "融資追價",
+            description: "股價走強，融資同步增加"
         };
     }
 
@@ -426,7 +439,8 @@ function analyzeCreditStatus(
     if (priceChange20 <= -5 && margin20 <= -3) {
         return {
             type: "warning",
-            text: "融資清洗"
+            text: "融資清洗",
+            description: "股價走弱，融資籌碼同步退出"
         };
     }
 
@@ -434,7 +448,8 @@ function analyzeCreditStatus(
     if (priceChange20 <= -5 && margin20 >= 3) {
         return {
             type: "danger",
-            text: "弱勢加碼"
+            text: "弱勢加碼",
+            description: "股價走弱，但融資反而增加"
         };
     }
 
@@ -446,19 +461,22 @@ function analyzeCreditStatus(
     if (margin20 <= -3) {
         return {
             type: "positive",
-            text: "融資減壓"
+            text: "融資減壓",
+            description: "股價震盪，融資籌碼持續下降"
         };
     }
 
     if (margin20 >= 3) {
         return {
             type: "warning",
-            text: "融資升溫"
+            text: "融資升溫",
+            description: "股價震盪，融資籌碼持續增加"
         };
     }
 
     return {
         type: "neutral",
-        text: "信用籌碼穩定"
+        text: "信用籌碼穩定",
+        description: "股價與融資餘額皆未出現明顯變化"
     };
 }

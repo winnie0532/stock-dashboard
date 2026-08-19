@@ -50,7 +50,7 @@ export function renderVolumeChart(data) {
     // 最後才取最近 100 個交易日
     const recentData = volumeData.slice(-100);
 
-    const labels = recentData.map(item => item.date);
+    const labels = recentData.map(item => formatChartDate(item.date))
     const volumes = recentData.map(item => item.volume);
     const average20 = recentData.map(item => item.avgVolume20);
 
@@ -105,7 +105,7 @@ export function renderTrendChart(
     const recentMA120 = ma120History.slice(-250);
     const recentMA240 = ma240History.slice(-250);
 
-    const labels = recentData.map(item => item.date);
+    const labels = recentData.map(item => formatChartDate(item.date))
 
     const prices = recentData.map(item => item.close);
     const ma20 = recentMA20.map(item => item.value);
@@ -191,7 +191,7 @@ export function renderShortTermChart(data, ma5History) {
     const recentData = data.slice(-100);
     const recentMA5 = ma5History.slice(-100);
 
-    const labels = recentData.map(item => item.date);
+    const labels = recentData.map(item => formatChartDate(item.date))
     const prices = recentData.map(item => item.close);
     const ma5 = recentMA5.map(item => item.value);
 
@@ -237,4 +237,148 @@ export function renderShortTermChart(data, ma5History) {
             plugins: {zoom: chartZoomOptions}
         }
     });
+}
+
+// 趨勢圖：融資融券
+let creditChart = null;
+
+export function renderCreditChart(priceData, marginData) {
+    if (!priceData || !marginData) {
+        return;
+    }
+
+    const recentPrices = priceData.slice(-60);
+
+    const marginMap = new Map(
+        marginData.map(item => [
+            item.date,
+            item.MarginPurchaseTodayBalance
+        ])
+    );
+
+    const merged = recentPrices
+        .map(item => ({
+            date: item.date,
+            price: item.close,
+            margin: marginMap.get(item.date)
+        }))
+        .filter(item => item.margin !== undefined);
+
+    if (merged.length === 0) {
+        return;
+    }
+
+    const canvas = document.getElementById("creditChart");
+    const ctx = canvas.getContext("2d");
+
+    if (creditChart) {
+        creditChart.destroy();
+    }
+
+    creditChart = new Chart(ctx, {
+        type: "line",
+
+        data: {
+            labels: merged.map(item => formatChartDate(item.date)),
+
+            datasets: [
+                {
+                    label: "股價",
+                    data: merged.map(item => item.price),
+                    yAxisID: "priceAxis",
+
+                    borderColor: "#36a2eb",
+                    backgroundColor: "rgba(54, 162, 235, 0.10)",
+
+                    fill: true,
+
+                    tension: 0.25,
+                    pointRadius: 0,
+                    borderWidth: 2
+                },
+                {
+                    label: "融資餘額",
+                    data: merged.map(item => item.margin),
+                    yAxisID: "marginAxis",
+
+                    borderColor: "#ff6384",
+
+                    fill: false,
+
+                    tension: 0.25,
+                    pointRadius: 0,
+                    borderWidth: 2
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            interaction: {
+                mode: "index",
+                intersect: false
+            },
+
+            scales: {
+                priceAxis: {
+                    type: "linear",
+                    position: "left",
+
+                    title: {
+                        display: true,
+                        text: "股價"
+                    }
+                },
+
+                marginAxis: {
+                    type: "linear",
+                    position: "right",
+
+                    title: {
+                        display: true,
+                        text: "融資餘額（張）"
+                    },
+
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            },
+
+            plugins: {
+                legend: {
+                    display: true
+                },
+
+                zoom: {
+                    pan: {
+                        enabled: true,
+                        mode: "x"
+                    },
+
+                    zoom: {
+                        pinch: {
+                            enabled: true
+                        },
+
+                        wheel: {
+                            enabled: true
+                        },
+
+                        mode: "x"
+                    }
+                }
+            }
+        }
+    });
+}
+
+function formatChartDate(date) {
+    if (!date) {
+        return "";
+    }
+
+    return date.slice(5);
 }
