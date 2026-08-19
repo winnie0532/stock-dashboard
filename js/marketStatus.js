@@ -11,7 +11,10 @@ export function analyzeMarketStatus({
     yesterdayKD,
     todayMACD,
     yesterdayMACD,
-    institutionalIndicators
+    institutionalIndicators,
+    priceChange5,
+    priceChange20,
+    marginIndicators
 }) {
     return {
         trend: analyzeTrend(latestPrice, ma20, ma60, ma120, ma240),
@@ -24,7 +27,12 @@ export function analyzeMarketStatus({
         volume: analyzeVolume(volumeRatio),
         rsi: analyzeRSI(rsi),
         macd: analyzeMACD(todayMACD, yesterdayMACD),
-        institutional: analyzeInstitutionalEvent(institutionalIndicators)
+        institutional: analyzeInstitutionalEvent(institutionalIndicators),
+        credit: analyzeCreditStatus(
+            priceChange5,
+            priceChange20,
+            marginIndicators
+        )
     };
 }
 
@@ -332,5 +340,125 @@ function analyzeInstitutionalEvent(indicators) {
     return {
         type: "neutral",
         text: "籌碼動向中性"
+    };
+}
+
+// =========================
+// 首頁欄位：信用籌碼
+//
+// 主要判斷：
+// 20 日股價 × 20 日融資
+// 5 日用來偵測近期轉折
+// =========================
+
+function analyzeCreditStatus(
+    priceChange5,
+    priceChange20,
+    indicators
+) {
+    if (
+        priceChange5 === null ||
+        priceChange20 === null ||
+        !indicators?.margin
+    ) {
+        return {
+            type: "neutral",
+            text: "資料不足"
+        };
+    }
+
+    const margin5 = indicators.margin.day5Percent;
+    const margin20 = indicators.margin.day20Percent;
+
+
+    // =========================
+    // 近期籌碼反轉
+    // =========================
+
+    // 中期籌碼沉澱，但最近轉成弱勢加碼
+    if (
+        priceChange20 >= 5 &&
+        margin20 <= -3 &&
+        priceChange5 <= -3 &&
+        margin5 >= 3
+    ) {
+        return {
+            type: "warning",
+            text: "短線籌碼轉弱"
+        };
+    }
+
+    // 中期偏弱，但最近開始改善
+    if (
+        priceChange20 <= -5 &&
+        margin20 >= 3 &&
+        priceChange5 >= 3 &&
+        margin5 <= -3
+    ) {
+        return {
+            type: "positive",
+            text: "短線籌碼改善"
+        };
+    }
+
+
+    // =========================
+    // 20 日主要結構
+    // =========================
+
+    // 股價上漲 + 融資下降
+    if (priceChange20 >= 5 && margin20 <= -3) {
+        return {
+            type: "positive",
+            text: "籌碼沉澱"
+        };
+    }
+
+    // 股價上漲 + 融資增加
+    if (priceChange20 >= 5 && margin20 >= 3) {
+        return {
+            type: margin20 >= 10 ? "danger" : "warning",
+            text: margin20 >= 10 ? "融資過熱" : "融資追價"
+        };
+    }
+
+    // 股價下跌 + 融資下降
+    if (priceChange20 <= -5 && margin20 <= -3) {
+        return {
+            type: "warning",
+            text: "融資清洗"
+        };
+    }
+
+    // 股價下跌 + 融資增加
+    if (priceChange20 <= -5 && margin20 >= 3) {
+        return {
+            type: "danger",
+            text: "弱勢加碼"
+        };
+    }
+
+
+    // =========================
+    // 股價沒有明顯方向
+    // =========================
+
+    if (margin20 <= -3) {
+        return {
+            type: "positive",
+            text: "融資減壓"
+        };
+    }
+
+    if (margin20 >= 3) {
+        return {
+            type: "warning",
+            text: "融資升溫"
+        };
+    }
+
+    return {
+        type: "neutral",
+        text: "信用籌碼穩定"
     };
 }

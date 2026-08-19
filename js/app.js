@@ -102,7 +102,11 @@ async function init(stockId = "2330") {
             todayMACD: macd.today,
             yesterdayMACD: macd.yesterday,
 
-            institutionalIndicators
+            institutionalIndicators,
+
+            priceChange5,
+            priceChange20,
+            marginIndicators
         });
 
         const technicalStatus = analyzeTechnicalStatus({

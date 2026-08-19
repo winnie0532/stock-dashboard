@@ -413,12 +413,40 @@ export function calculateMarginIndicators(data) {
 
         return currentBalance - previous[field];
     }
+    function getBalanceChangePercent(field, days) {
+        if (sorted.length <= days) {
+            return null;
+        }
+
+        const currentBalance = latest[field];
+        const previous = sorted[sorted.length - 1 - days];
+        const previousBalance = previous[field];
+
+        if (!previousBalance) {
+            return null;
+        }
+
+        return (
+            (currentBalance - previousBalance) /
+            previousBalance
+        ) * 100;
+    }
 
     return {
         margin: {
             today: getBalanceChange("MarginPurchaseTodayBalance", 1),
+
             day5: getBalanceChange("MarginPurchaseTodayBalance", 5),
-            day20: getBalanceChange("MarginPurchaseTodayBalance", 20)
+            day5Percent: getBalanceChangePercent(
+                "MarginPurchaseTodayBalance",
+                5
+            ),
+
+            day20: getBalanceChange("MarginPurchaseTodayBalance", 20),
+            day20Percent: getBalanceChangePercent(
+                "MarginPurchaseTodayBalance",
+                20
+            )
         },
 
         short: {
