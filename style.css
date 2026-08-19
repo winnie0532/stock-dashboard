@@ -776,11 +776,11 @@ body {
     }
 
     .detail-chart {
-        height: 360px;
+        height: 250px;
     }
 
     .volume-chart-container {
-        height: 360px;
+        height: 250px;
     }
 }
 
