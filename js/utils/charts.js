@@ -1,27 +1,62 @@
-// zoom 設定
-const chartZoomOptions = {
-    pan: {
-        enabled: true,
-        mode: "x"
-    },
+// =========================
+// 共用圖表設定
+// =========================
 
-    zoom: {
-        pinch: {
-            enabled: true
-        },
-        mode: "x"
-    },
-
-    limits: {
-        x: {
-            min: "original",
-            max: "original",
-            minRange: 10
-        }
+function formatChartDate(date) {
+    if (!date) {
+        return "";
     }
-};
 
-// 成交量趨勢圖：每日成交量 + 20 日均量
+    return date.slice(5);
+}
+
+
+function createZoomOptions() {
+    return {
+        pan: {
+            enabled: true,
+            mode: "x"
+        },
+
+        zoom: {
+            wheel: {
+                enabled: true
+            },
+
+            pinch: {
+                enabled: true
+            },
+
+            mode: "x"
+        },
+
+        limits: {
+            x: {
+                min: "original",
+                max: "original",
+                minRange: 10
+            }
+        }
+    };
+}
+
+
+// =========================
+// Chart instances
+// =========================
+
+let volumeChart = null;
+let shortTermChart = null;
+let trendChart = null;
+let creditChart = null;
+let shortPositionChart = null;
+
+
+// =========================
+// 成交量趨勢圖
+// 每日成交量 + 20 日平均量
+// =========================
+
 export function renderVolumeChart(data) {
     const canvas = document.getElementById("volumeChart");
 
@@ -35,7 +70,11 @@ export function renderVolumeChart(data) {
 
         if (index >= 19) {
             const window = data.slice(index - 19, index + 1);
-            const total = window.reduce((sum, item) => sum + item.volume, 0);
+
+            const total = window.reduce(
+                (sum, item) => sum + item.volume,
+                0
+            );
 
             avgVolume20 = total / 20;
         }
@@ -47,14 +86,30 @@ export function renderVolumeChart(data) {
         };
     });
 
-    // 最後才取最近 100 個交易日
+
+    // 最近 100 個交易日
     const recentData = volumeData.slice(-100);
 
-    const labels = recentData.map(item => formatChartDate(item.date))
-    const volumes = recentData.map(item => item.volume);
-    const average20 = recentData.map(item => item.avgVolume20);
+    const labels = recentData.map(
+        item => formatChartDate(item.date)
+    );
 
-    new Chart(canvas, {
+    const volumes = recentData.map(
+        item => item.volume
+    );
+
+    const average20 = recentData.map(
+        item => item.avgVolume20
+    );
+
+
+    // 避免重複建立 Chart instance
+    if (volumeChart) {
+        volumeChart.destroy();
+    }
+
+
+    volumeChart = new Chart(canvas, {
         data: {
             labels,
 
@@ -64,10 +119,12 @@ export function renderVolumeChart(data) {
                     label: "每日成交量",
                     data: volumes
                 },
+
                 {
                     type: "line",
                     label: "20 日平均量",
                     data: average20,
+
                     pointRadius: 0,
                     borderWidth: 2,
                     tension: 0.2
@@ -78,126 +135,53 @@ export function renderVolumeChart(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {zoom: chartZoomOptions}
+
+            plugins: {
+                zoom: createZoomOptions()
+            }
         }
     });
 }
 
-let shortTermChart = null;
 
-// 趨勢圖：股價 + MA20 / MA60 / MA120 / MA240
-export function renderTrendChart(
+// =========================
+// 短線趨勢圖
+// 股價 + MA5
+// =========================
+
+export function renderShortTermChart(
     data,
-    ma20History,
-    ma60History,
-    ma120History,
-    ma240History
+    ma5History
 ) {
-    const canvas = document.getElementById("trendChart");
+    const canvas =
+        document.getElementById("shortTermChart");
 
     if (!canvas) {
         return;
     }
 
-    const recentData = data.slice(-250);
-    const recentMA20 = ma20History.slice(-250);
-    const recentMA60 = ma60History.slice(-250);
-    const recentMA120 = ma120History.slice(-250);
-    const recentMA240 = ma240History.slice(-250);
-
-    const labels = recentData.map(item => formatChartDate(item.date))
-
-    const prices = recentData.map(item => item.close);
-    const ma20 = recentMA20.map(item => item.value);
-    const ma60 = recentMA60.map(item => item.value);
-    const ma120 = recentMA120.map(item => item.value);
-    const ma240 = recentMA240.map(item => item.value);
-
-    new Chart(canvas, {
-        type: "line",
-
-        data: {
-            labels,
-
-            datasets: [
-                {
-                    label: "股價",
-                    data: prices,
-
-                    borderColor: "#2196f3",
-                    backgroundColor: "rgba(33, 150, 243, 0.10)",
-
-                    fill: true,
-
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    tension: 0.2
-},
-                {
-                    label: "MA20",
-                    data: ma20,
-                    borderColor: "#ff6384",
-                    fill: false,
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    tension: 0.2
-                },
-                {
-                    label: "MA60",
-                    data: ma60,
-                    borderColor: "#ff9f40",
-                    fill: false,
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    tension: 0.2
-                },
-                {
-                    label: "MA120",
-                    data: ma120,
-                    borderColor: "#ffcd56",
-                    fill: false,
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    tension: 0.2
-                },
-                {
-                    label: "MA240",
-                    data: ma240,
-                    borderColor: "#4bc0c0",
-                    fill: false,
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    tension: 0.2
-                }
-            ]
-        },
-
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {zoom: chartZoomOptions}
-        }
-    });
-}
-
-// 短線趨勢圖：股價 + MA5
-export function renderShortTermChart(data, ma5History) {
-    const canvas = document.getElementById("shortTermChart");
-
-    if (!canvas) {
-        return;
-    }
 
     const recentData = data.slice(-100);
     const recentMA5 = ma5History.slice(-100);
 
-    const labels = recentData.map(item => formatChartDate(item.date))
-    const prices = recentData.map(item => item.close);
-    const ma5 = recentMA5.map(item => item.value);
+
+    const labels = recentData.map(
+        item => formatChartDate(item.date)
+    );
+
+    const prices = recentData.map(
+        item => item.close
+    );
+
+    const ma5 = recentMA5.map(
+        item => item.value
+    );
+
 
     if (shortTermChart) {
         shortTermChart.destroy();
     }
+
 
     shortTermChart = new Chart(canvas, {
         type: "line",
@@ -219,11 +203,15 @@ export function renderShortTermChart(data, ma5History) {
                     pointRadius: 0,
                     tension: 0.2
                 },
+
                 {
                     label: "MA5",
                     data: ma5,
+
                     borderColor: "#ff6384",
+
                     fill: false,
+
                     borderWidth: 2,
                     pointRadius: 0,
                     tension: 0.2
@@ -234,21 +222,187 @@ export function renderShortTermChart(data, ma5History) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {zoom: chartZoomOptions}
+
+            plugins: {
+                zoom: createZoomOptions()
+            }
         }
     });
 }
 
-// 趨勢圖：融資融券
-let creditChart = null;
 
-export function renderCreditChart(priceData, marginData) {
+// =========================
+// 中長期趨勢圖
+// 股價 + MA20 / MA60 / MA120 / MA240
+// =========================
+
+export function renderTrendChart(
+    data,
+    ma20History,
+    ma60History,
+    ma120History,
+    ma240History
+) {
+    const canvas =
+        document.getElementById("trendChart");
+
+    if (!canvas) {
+        return;
+    }
+
+
+    const recentData = data.slice(-250);
+
+    const recentMA20 =
+        ma20History.slice(-250);
+
+    const recentMA60 =
+        ma60History.slice(-250);
+
+    const recentMA120 =
+        ma120History.slice(-250);
+
+    const recentMA240 =
+        ma240History.slice(-250);
+
+
+    const labels = recentData.map(
+        item => formatChartDate(item.date)
+    );
+
+
+    const prices = recentData.map(
+        item => item.close
+    );
+
+    const ma20 = recentMA20.map(
+        item => item.value
+    );
+
+    const ma60 = recentMA60.map(
+        item => item.value
+    );
+
+    const ma120 = recentMA120.map(
+        item => item.value
+    );
+
+    const ma240 = recentMA240.map(
+        item => item.value
+    );
+
+
+    if (trendChart) {
+        trendChart.destroy();
+    }
+
+
+    trendChart = new Chart(canvas, {
+        type: "line",
+
+        data: {
+            labels,
+
+            datasets: [
+                {
+                    label: "股價",
+                    data: prices,
+
+                    borderColor: "#2196f3",
+                    backgroundColor: "rgba(33, 150, 243, 0.10)",
+
+                    fill: true,
+
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                },
+
+                {
+                    label: "MA20",
+                    data: ma20,
+
+                    borderColor: "#ff6384",
+
+                    fill: false,
+
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                },
+
+                {
+                    label: "MA60",
+                    data: ma60,
+
+                    borderColor: "#ff9f40",
+
+                    fill: false,
+
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                },
+
+                {
+                    label: "MA120",
+                    data: ma120,
+
+                    borderColor: "#ffcd56",
+
+                    fill: false,
+
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                },
+
+                {
+                    label: "MA240",
+                    data: ma240,
+
+                    borderColor: "#4bc0c0",
+
+                    fill: false,
+
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                zoom: createZoomOptions()
+            }
+        }
+    });
+}
+
+
+// =========================
+// 信用籌碼趨勢圖
+// 股價 + 融資餘額
+// =========================
+
+export function renderCreditChart(
+    priceData,
+    marginData
+) {
     if (!priceData || !marginData) {
         return;
     }
 
-    const recentPrices = priceData.slice(-100);
 
+    const recentPrices =
+        priceData.slice(-100);
+
+
+    // 日期 → 融資餘額
     const marginMap = new Map(
         marginData.map(item => [
             item.date,
@@ -256,39 +410,58 @@ export function renderCreditChart(priceData, marginData) {
         ])
     );
 
+
+    // 用日期對齊股價與融資資料
     const merged = recentPrices
         .map(item => ({
             date: item.date,
             price: item.close,
             margin: marginMap.get(item.date)
         }))
-        .filter(item => item.margin !== undefined);
+        .filter(
+            item => item.margin !== undefined
+        );
+
 
     if (merged.length === 0) {
         return;
     }
 
-    const canvas = document.getElementById("creditChart");
-    const ctx = canvas.getContext("2d");
+
+    const canvas =
+        document.getElementById("creditChart");
+
+    if (!canvas) {
+        return;
+    }
+
 
     if (creditChart) {
         creditChart.destroy();
     }
 
-    creditChart = new Chart(ctx, {
+
+    creditChart = new Chart(canvas, {
         type: "line",
 
         data: {
-            labels: merged.map(item => formatChartDate(item.date)),
+            labels: merged.map(
+                item => formatChartDate(item.date)
+            ),
 
             datasets: [
                 {
                     label: "股價",
-                    data: merged.map(item => item.price),
+
+                    data: merged.map(
+                        item => item.price
+                    ),
+
                     yAxisID: "priceAxis",
 
                     borderColor: "#36a2eb",
-                    backgroundColor: "rgba(54, 162, 235, 0.10)",
+                    backgroundColor:
+                        "rgba(54, 162, 235, 0.10)",
 
                     fill: true,
 
@@ -296,9 +469,14 @@ export function renderCreditChart(priceData, marginData) {
                     pointRadius: 0,
                     borderWidth: 2
                 },
+
                 {
                     label: "融資餘額",
-                    data: merged.map(item => item.margin),
+
+                    data: merged.map(
+                        item => item.margin
+                    ),
+
                     yAxisID: "marginAxis",
 
                     borderColor: "#ff6384",
@@ -352,31 +530,17 @@ export function renderCreditChart(priceData, marginData) {
                     display: true
                 },
 
-                zoom: {
-                    pan: {
-                        enabled: true,
-                        mode: "x"
-                    },
-
-                    zoom: {
-                        pinch: {
-                            enabled: true
-                        },
-
-                        wheel: {
-                            enabled: true
-                        },
-
-                        mode: "x"
-                    }
-                }
+                zoom: createZoomOptions()
             }
         }
     });
 }
 
-// 借券賣出餘額圖
-let shortPositionChart = null;
+
+// =========================
+// 空方籌碼趨勢圖
+// 股價 + 借券賣出餘額
+// =========================
 
 export function renderShortPositionChart(
     priceData,
@@ -386,8 +550,12 @@ export function renderShortPositionChart(
         return;
     }
 
-    const recentPrices = priceData.slice(-100);
 
+    const recentPrices =
+        priceData.slice(-100);
+
+
+    // 日期 → 借券賣出餘額
     const shortSaleMap = new Map(
         shortSaleBalanceData.map(item => [
             item.date,
@@ -395,43 +563,62 @@ export function renderShortPositionChart(
         ])
     );
 
+
+    // 用日期對齊
     const merged = recentPrices
         .map(item => ({
             date: item.date,
             price: item.close,
-            shortBalance: shortSaleMap.get(item.date)
+            shortBalance:
+                shortSaleMap.get(item.date)
         }))
-        .filter(item => item.shortBalance !== undefined);
+        .filter(
+            item => item.shortBalance !== undefined
+        );
+
 
     if (merged.length === 0) {
         return;
     }
 
-    const canvas =
-        document.getElementById("shortPositionChart");
 
-    const ctx = canvas.getContext("2d");
+    const canvas =
+        document.getElementById(
+            "shortPositionChart"
+        );
+
+    if (!canvas) {
+        return;
+    }
+
 
     if (shortPositionChart) {
         shortPositionChart.destroy();
     }
 
-    shortPositionChart = new Chart(ctx, {
+
+    shortPositionChart = new Chart(canvas, {
         type: "line",
 
         data: {
-            labels: merged.map(item =>
-                formatChartDate(item.date)
+            labels: merged.map(
+                item => formatChartDate(item.date)
             ),
 
             datasets: [
                 {
                     label: "股價",
-                    data: merged.map(item => item.price),
+
+                    data: merged.map(
+                        item => item.price
+                    ),
+
                     yAxisID: "priceAxis",
 
                     borderColor: "#36a2eb",
-                    backgroundColor: "rgba(54, 162, 235, 0.10)",
+                    backgroundColor:
+                        "rgba(54, 162, 235, 0.10)",
+
                     fill: true,
 
                     tension: 0.25,
@@ -441,12 +628,15 @@ export function renderShortPositionChart(
 
                 {
                     label: "借券賣出餘額",
+
                     data: merged.map(
                         item => item.shortBalance / 1000
                     ),
+
                     yAxisID: "shortAxis",
 
                     borderColor: "#ff6384",
+
                     fill: false,
 
                     tension: 0.25,
@@ -496,35 +686,8 @@ export function renderShortPositionChart(
                     display: true
                 },
 
-                zoom: {
-                    pan: {
-                        enabled: true,
-                        mode: "x"
-                    },
-
-                    zoom: {
-                        pinch: {
-                            enabled: true
-                        },
-
-                        wheel: {
-                            enabled: true
-                        },
-
-                        mode: "x"
-                    }
-                }
+                zoom: createZoomOptions()
             }
         }
     });
-}
-
-
-
-function formatChartDate(date) {
-    if (!date) {
-        return "";
-    }
-
-    return date.slice(5);
 }
