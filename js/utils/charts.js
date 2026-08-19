@@ -1,3 +1,26 @@
+// zoom 設定
+const chartZoomOptions = {
+    pan: {
+        enabled: true,
+        mode: "x"
+    },
+
+    zoom: {
+        pinch: {
+            enabled: true
+        },
+        mode: "x"
+    },
+
+    limits: {
+        x: {
+            min: "original",
+            max: "original",
+            minRange: 10
+        }
+    }
+};
+
 // 成交量趨勢圖：每日成交量 + 20 日均量
 export function renderVolumeChart(data) {
     const canvas = document.getElementById("volumeChart");
@@ -55,31 +78,7 @@ export function renderVolumeChart(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            
-            plugins: {
-                zoom: {
-                    pan: {
-                        enabled: true,
-                        mode: "x"
-                    },
-
-                    zoom: {
-                        pinch: {
-                            enabled: true
-                        },
-
-                        mode: "x"
-                    },
-
-                    limits: {
-                        x: {
-                            min: "original",
-                            max: "original",
-                            minRange: 10
-                        }
-                    }
-                }
-            },
+            plugins: {zoom: chartZoomOptions}
         }
     });
 }
@@ -175,7 +174,8 @@ export function renderTrendChart(
 
         options: {
             responsive: true,
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            plugins: {zoom: chartZoomOptions}
         }
     });
 }
@@ -233,7 +233,8 @@ export function renderShortTermChart(data, ma5History) {
 
         options: {
             responsive: true,
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            plugins: {zoom: chartZoomOptions}
         }
     });
 }
