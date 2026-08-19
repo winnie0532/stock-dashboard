@@ -310,3 +310,73 @@ export function calculateMAHistory(data, period) {
         };
     });
 }
+
+// 計算技術面指標
+export function calculateTechnicalIndicators(data) {
+    const latest = data[data.length - 1];
+
+    const ma5 = calculateMA(data, 5);
+    const ma20 = calculateMA(data, 20);
+    const ma60 = calculateMA(data, 60);
+    const ma120 = calculateMA(data, 120);
+    const ma240 = calculateMA(data, 240);
+
+    const ma5History = calculateMAHistory(data, 5);
+    const ma20History = calculateMAHistory(data, 20);
+    const ma60History = calculateMAHistory(data, 60);
+    const ma120History = calculateMAHistory(data, 120);
+    const ma240History = calculateMAHistory(data, 240);
+
+    const avgVolume20 = calculateAverageVolume(data, 20);
+    const volumeRatio = latest.volume / avgVolume20;
+
+    const rsi14 = calculateRSI(data, 14);
+
+    const kdHistory = calculateKD(data);
+    const todayKD = kdHistory[kdHistory.length - 1];
+    const yesterdayKD = kdHistory[kdHistory.length - 2];
+
+    const macdHistory = calculateMACD(data);
+    const todayMACD = macdHistory[macdHistory.length - 1];
+    const yesterdayMACD = macdHistory[macdHistory.length - 2];
+
+    return {
+        latest,
+
+        movingAverages: {
+            ma5,
+            ma20,
+            ma60,
+            ma120,
+            ma240
+        },
+
+        movingAverageHistory: {
+            ma5: ma5History,
+            ma20: ma20History,
+            ma60: ma60History,
+            ma120: ma120History,
+            ma240: ma240History
+        },
+
+        volume: {
+            current: latest.volume,
+            average20: avgVolume20,
+            ratio: volumeRatio
+        },
+
+        rsi14,
+
+        kd: {
+            history: kdHistory,
+            today: todayKD,
+            yesterday: yesterdayKD
+        },
+
+        macd: {
+            history: macdHistory,
+            today: todayMACD,
+            yesterday: yesterdayMACD
+        }
+    };
+}
