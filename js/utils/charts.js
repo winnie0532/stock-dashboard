@@ -54,7 +54,32 @@ export function renderVolumeChart(data) {
 
         options: {
             responsive: true,
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            
+            plugins: {
+                zoom: {
+                    pan: {
+                        enabled: true,
+                        mode: "x"
+                    },
+
+                    zoom: {
+                        pinch: {
+                            enabled: true
+                        },
+
+                        mode: "x"
+                    },
+
+                    limits: {
+                        x: {
+                            min: "original",
+                            max: "original",
+                            minRange: 10
+                        }
+                    }
+                }
+            },
         }
     });
 }
