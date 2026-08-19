@@ -207,8 +207,18 @@ async function init(stockId = "2330") {
                 margin20Percent: marginIndicators.margin.day20Percent
             },
 
-            marginData
-        });
+            marginData,
+
+            shortPosition: {
+                status: marketStatus.shortPosition,
+                marginShort5Percent:marginIndicators.short.day5Percent,
+                marginShort20Percent:marginIndicators.short.day20Percent,
+                sbl5Percent:shortSaleIndicators.day5Percent,
+                sbl20Percent:shortSaleIndicators.day20Percent
+            },
+
+        shortSaleBalanceData
+            });
         // =========================
         // Debug
         // =========================

@@ -375,6 +375,152 @@ export function renderCreditChart(priceData, marginData) {
     });
 }
 
+// 借券賣出餘額圖
+let shortPositionChart = null;
+
+export function renderShortPositionChart(
+    priceData,
+    shortSaleBalanceData
+) {
+    if (!priceData || !shortSaleBalanceData) {
+        return;
+    }
+
+    const recentPrices = priceData.slice(-100);
+
+    const shortSaleMap = new Map(
+        shortSaleBalanceData.map(item => [
+            item.date,
+            item.SBLShortSalesCurrentDayBalance
+        ])
+    );
+
+    const merged = recentPrices
+        .map(item => ({
+            date: item.date,
+            price: item.close,
+            shortBalance: shortSaleMap.get(item.date)
+        }))
+        .filter(item => item.shortBalance !== undefined);
+
+    if (merged.length === 0) {
+        return;
+    }
+
+    const canvas =
+        document.getElementById("shortPositionChart");
+
+    const ctx = canvas.getContext("2d");
+
+    if (shortPositionChart) {
+        shortPositionChart.destroy();
+    }
+
+    shortPositionChart = new Chart(ctx, {
+        type: "line",
+
+        data: {
+            labels: merged.map(item =>
+                formatChartDate(item.date)
+            ),
+
+            datasets: [
+                {
+                    label: "股價",
+                    data: merged.map(item => item.price),
+                    yAxisID: "priceAxis",
+
+                    borderColor: "#36a2eb",
+                    backgroundColor: "rgba(54, 162, 235, 0.10)",
+                    fill: true,
+
+                    tension: 0.25,
+                    pointRadius: 0,
+                    borderWidth: 2
+                },
+
+                {
+                    label: "借券賣出餘額",
+                    data: merged.map(
+                        item => item.shortBalance / 1000
+                    ),
+                    yAxisID: "shortAxis",
+
+                    borderColor: "#ff6384",
+                    fill: false,
+
+                    tension: 0.25,
+                    pointRadius: 0,
+                    borderWidth: 2
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            interaction: {
+                mode: "index",
+                intersect: false
+            },
+
+            scales: {
+                priceAxis: {
+                    type: "linear",
+                    position: "left",
+
+                    title: {
+                        display: true,
+                        text: "股價"
+                    }
+                },
+
+                shortAxis: {
+                    type: "linear",
+                    position: "right",
+
+                    title: {
+                        display: true,
+                        text: "借券賣出餘額（張）"
+                    },
+
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            },
+
+            plugins: {
+                legend: {
+                    display: true
+                },
+
+                zoom: {
+                    pan: {
+                        enabled: true,
+                        mode: "x"
+                    },
+
+                    zoom: {
+                        pinch: {
+                            enabled: true
+                        },
+
+                        wheel: {
+                            enabled: true
+                        },
+
+                        mode: "x"
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+
 function formatChartDate(date) {
     if (!date) {
         return "";

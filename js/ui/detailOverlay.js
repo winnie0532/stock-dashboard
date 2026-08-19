@@ -1,7 +1,8 @@
 import {
     renderShortTermChart,
     renderTrendChart,
-    renderCreditChart
+    renderCreditChart,
+    renderShortPositionChart
 } from "../utils/charts.js";
 
 let detailOverlayData = null;
@@ -15,6 +16,7 @@ export function setupDetailOverlay() {
     const shortTermToggle = document.getElementById("shortTermToggle");
     const trendToggle = document.getElementById("trendToggle");
     const creditToggle = document.getElementById("creditToggle");
+    const shortPositionToggle = document.getElementById("shortPositionToggle");
 
     const detailOverlay = document.getElementById("detailOverlay");
     const closeDetail = document.getElementById("closeDetail");
@@ -26,6 +28,7 @@ export function setupDetailOverlay() {
     const shortTermChartSection = document.getElementById("shortTermChartSection");
     const trendChartSection = document.getElementById("trendChartSection");
     const creditChartSection = document.getElementById("creditChartSection");
+    const shortPositionChartSection = document.getElementById("shortPositionChartSection");
 
 
     // =========================
@@ -44,6 +47,7 @@ export function setupDetailOverlay() {
         shortTermChartSection.style.display = "none";
         trendChartSection.style.display = "none";
         creditChartSection.style.display = "none";
+        shortPositionChartSection.style.display = "none";
 
         detailOverlay.classList.add("open");
     });
@@ -65,6 +69,7 @@ export function setupDetailOverlay() {
         shortTermChartSection.style.display = "block";
         trendChartSection.style.display = "none";
         creditChartSection.style.display = "none";
+        shortPositionChartSection.style.display = "none";
 
         detailOverlay.classList.add("open");
 
@@ -93,6 +98,7 @@ export function setupDetailOverlay() {
         shortTermChartSection.style.display = "none";
         trendChartSection.style.display = "block";
         creditChartSection.style.display = "none";
+        shortPositionChartSection.style.display = "none";
 
         detailOverlay.classList.add("open");
 
@@ -123,6 +129,7 @@ export function setupDetailOverlay() {
         shortTermChartSection.style.display = "none";
         trendChartSection.style.display = "none";
         creditChartSection.style.display = "block";
+        shortPositionChartSection.style.display = "none";
 
         // 信用籌碼狀態
         const statusElement = document.getElementById("creditDetailStatus");
@@ -143,6 +150,69 @@ export function setupDetailOverlay() {
         renderCreditChart(
             detailOverlayData.data,
             detailOverlayData.marginData
+        );
+
+        detailOverlay.classList.add("open");
+    });
+
+    // =========================
+    // 空方籌碼
+    // =========================
+
+    shortPositionToggle.addEventListener("click", () => {
+        if (!detailOverlayData?.shortPosition) {
+            return;
+        }
+
+        const shortPosition = detailOverlayData.shortPosition;
+
+        detailTitle.textContent = "空方籌碼";
+        detailSubtitle.textContent =
+            "近 100 個交易日｜股價與借券賣出餘額";
+
+        volumeChartSection.style.display = "none";
+        shortTermChartSection.style.display = "none";
+        trendChartSection.style.display = "none";
+        creditChartSection.style.display = "none";
+        shortPositionChartSection.style.display = "block";
+
+
+        // =========================
+        // 空方籌碼摘要
+        // =========================
+
+        const statusElement =
+            document.getElementById("shortPositionDetailStatus");
+
+        statusElement.textContent =
+            shortPosition.status.text;
+
+        statusElement.className =
+            `status-value ${shortPosition.status.type}`;
+
+        document.getElementById(
+            "shortPositionDetailDescription"
+        ).textContent =
+            shortPosition.status.description;
+
+
+        // =========================
+        // 20 日
+        // =========================
+
+        document.getElementById("shortMargin20").textContent = formatPercent(shortPosition.marginShort20Percent);
+        document.getElementById("shortSbl20").textContent = formatPercent(shortPosition.sbl20Percent);
+
+        // =========================
+        // 5 日
+        // =========================
+
+        document.getElementById("shortMargin5").textContent = formatPercent(shortPosition.marginShort5Percent);
+        document.getElementById("shortSbl5").textContent = formatPercent(shortPosition.sbl5Percent);
+
+        renderShortPositionChart(
+            detailOverlayData.data,
+            detailOverlayData.shortSaleBalanceData
         );
 
         detailOverlay.classList.add("open");
