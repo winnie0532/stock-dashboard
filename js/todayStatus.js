@@ -1,4 +1,4 @@
-export function analyzeTechnicalStatus({
+export function analyzeTodayStatus({
     latestPrice,
     ma5,
     ma20,
@@ -8,15 +8,26 @@ export function analyzeTechnicalStatus({
     todayKD,
     yesterdayKD,
     todayMACD,
-    yesterdayMACD
+    yesterdayMACD,
+    institutionalStatus,
+    creditStatus,
+    shortPositionStatus
 }) {
     return {
-        events: buildEvents({
-            todayKD,
-            yesterdayKD,
-            todayMACD,
-            yesterdayMACD
-        }),
+        events: [
+            ...buildTechnicalEvents({
+                todayKD,
+                yesterdayKD,
+                todayMACD,
+                yesterdayMACD
+            }),
+
+            ...buildChipEvents({
+                institutionalStatus,
+                creditStatus,
+                shortPositionStatus
+            })
+        ],
 
         movingAverages: buildMovingAverageStatus({
             latestPrice,
@@ -30,7 +41,7 @@ export function analyzeTechnicalStatus({
 }
 
 // 今日技術事件
-function buildEvents({
+function buildTechnicalEvents({
     todayKD,
     yesterdayKD,
     todayMACD,
@@ -70,6 +81,62 @@ function buildEvents({
             type: "danger",
             text: "MACD 死亡交叉"
         });
+    }
+
+    return events;
+}
+// 籌碼事件
+function buildChipEvents({
+    institutionalStatus,
+    creditStatus,
+    shortPositionStatus
+}) {
+    const events = [];
+
+    const statuses = [
+        institutionalStatus,
+        creditStatus,
+        shortPositionStatus
+    ];
+
+    const positiveCount = statuses.filter(
+        status => status?.type === "positive"
+    ).length;
+
+    const dangerCount = statuses.filter(
+        status => status?.type === "danger"
+    ).length;
+
+    if (positiveCount === 3) {
+        events.push({
+            type: "positive",
+            text: "籌碼明顯轉強"
+        });
+        return events;
+    }
+
+    if (dangerCount === 3) {
+        events.push({
+            type: "danger",
+            text: "籌碼明顯轉弱"
+        });
+        return events;
+    }
+
+    if (positiveCount === 2 && dangerCount === 1) {
+        events.push({
+            type: "warning",
+            text: "籌碼偏多但有分歧"
+        });
+        return events;
+    }
+
+    if (dangerCount === 2 && positiveCount === 1) {
+        events.push({
+            type: "warning",
+            text: "籌碼偏空但有分歧"
+        });
+        return events;
     }
 
     return events;

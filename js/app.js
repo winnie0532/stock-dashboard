@@ -1,7 +1,7 @@
 import { renderDashboard } from "./ui/dashboard.js";
 import { renderVolumeChart } from "./utils/charts.js";
 
-import { analyzeTechnicalStatus } from "./technicalStatus.js";
+import { analyzeTodayStatus } from "./todayStatus.js";
 
 import {
     analyzeMarketStatus,
@@ -141,7 +141,7 @@ async function init(stockId = "2330") {
         // 技術狀態
         // =========================
 
-        const technicalStatus = analyzeTechnicalStatus({
+        const todayStatus = analyzeTodayStatus({
             latestPrice: latest.close,
 
             ma5: movingAverages.ma5,
@@ -154,9 +154,14 @@ async function init(stockId = "2330") {
             yesterdayKD: kd.yesterday,
 
             todayMACD: macd.today,
-            yesterdayMACD: macd.yesterday
+            yesterdayMACD: macd.yesterday,
+
+            institutionalStatus: marketStatus.institutional,
+            creditStatus: marketStatus.credit,
+            shortPositionStatus: marketStatus.shortPosition
         });
 
+        console.log("今日狀態:", todayStatus);
 
         // =========================
         // Dashboard
@@ -202,7 +207,7 @@ async function init(stockId = "2330") {
             institutional: institutionalAnalysis,
 
             marketStatus,
-            technicalStatus
+            todayStatus
         };
 
         renderDashboard(stockData);
@@ -289,6 +294,10 @@ async function init(stockId = "2330") {
         console.log("市場狀態:", marketStatus);
         console.log("完整股票資料:", stockData);
         console.log("marketStatus.rsi:", marketStatus.rsi);
+
+        console.log("法人:", marketStatus.institutional);
+        console.log("信用籌碼:", marketStatus.credit);
+        console.log("空方籌碼:", marketStatus.shortPosition);
 
     } catch (error) {
         console.error("取得股票資料失敗：", error);

@@ -44,12 +44,12 @@ export function renderDashboard(stockData) {
     const signalList = document.getElementById("signalList");
     signalList.innerHTML = "";
 
-    const events = stockData.technicalStatus.events;
+    const events = stockData.todayStatus.events;
 
     if (events.length === 0) {
         const signalItem = document.createElement("p");
 
-        signalItem.textContent = "今日無特殊技術訊號";
+        signalItem.textContent = "無特殊技術訊號";
         signalItem.classList.add("signal-item");
 
         signalList.appendChild(signalItem);
@@ -74,27 +74,27 @@ export function renderDashboard(stockData) {
 
     renderMAStatus(
         "ma5Status",
-        stockData.technicalStatus.movingAverages.ma5
+        stockData.todayStatus.movingAverages.ma5
     );
 
     renderMAStatus(
         "ma20Status",
-        stockData.technicalStatus.movingAverages.ma20
+        stockData.todayStatus.movingAverages.ma20
     );
 
     renderMAStatus(
         "ma60Status",
-        stockData.technicalStatus.movingAverages.ma60
+        stockData.todayStatus.movingAverages.ma60
     );
 
     renderMAStatus(
         "ma120Status",
-        stockData.technicalStatus.movingAverages.ma120
+        stockData.todayStatus.movingAverages.ma120
     );
 
     renderMAStatus(
         "ma240Status",
-        stockData.technicalStatus.movingAverages.ma240
+        stockData.todayStatus.movingAverages.ma240
     );
 
     // MA
