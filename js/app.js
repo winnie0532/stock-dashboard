@@ -249,6 +249,11 @@ async function init(stockId = "2330") {
                 history: rsi.history
             },
 
+            macd: {
+                status: marketStatus.macd,
+                history: macd.history
+            },
+
             credit: {
                 status: marketStatus.credit,
                 priceChange5: priceChanges.change5,

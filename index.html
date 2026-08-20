@@ -61,6 +61,32 @@
                     </span>
                 </div>
 
+                <div class="status-row" id="rsiToggle">
+                    <span>RSI</span>
+                    <span id="rsiStatus">--</span>
+                </div>
+
+                <div class="status-row" id="macdToggle">
+                    <span>MACD</span>
+                    <span id="macdStatus">--</span>
+                </div>
+
+                <div class="status-row">
+                    <span>法人</span>
+                    <span id="institutionalStatus">--</span>
+                </div>
+
+                <div class="status-row" id="creditToggle">
+                    <span>信用籌碼</span>
+                    <span id="creditStatus">--</span>
+                </div>
+
+                <div class="status-row" id="shortPositionToggle">
+                    <span>空方籌碼</span>
+                    <span id="shortPositionStatus">--</span>
+                </div>
+
+                <!-- 詳細頁區塊 -->
                 <div class="detail-overlay" id="detailOverlay">
                     <div class="detail-panel">
 
@@ -227,6 +253,44 @@
 
                         </div>
 
+                        <!-- MACD 詳細頁 -->
+                        <div class="detail-chart" id="macdChartSection">
+
+                            <div class="credit-summary">
+                                <div class="credit-summary-header">
+                                    <div id="macdDetailStatus">--</div>
+                                    <div id="macdDetailDescription">--</div>
+                                </div>
+
+                                <div class="credit-summary-grid">
+                                    <div class="credit-summary-item">
+                                        <span>DIF</span>
+                                        <strong id="macdDetailDif">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>Signal</span>
+                                        <strong id="macdDetailSignal">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>Histogram</span>
+                                        <strong id="macdDetailHistogram">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>Histogram 變化</span>
+                                        <strong id="macdHistogramChange">--</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="credit-chart-container">
+                                <canvas id="macdChart"></canvas>
+                            </div>
+
+                        </div>
+
                         <!-- 信用籌碼圖表 -->
                         <div class="detail-chart" id="creditChartSection">
 
@@ -303,33 +367,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="status-row" id="rsiToggle">
-                    <span>RSI</span>
-                    <span id="rsiStatus">--</span>
-                </div>
-
-                <div class="status-row">
-                    <span>MACD</span>
-                    <span id="macdStatus">--</span>
-                </div>
-
-                <div class="status-row">
-                    <span>法人</span>
-                    <span id="institutionalStatus">--</span>
-                </div>
-
-                <div class="status-row" id="creditToggle">
-                    <span>信用籌碼</span>
-                    <span id="creditStatus">--</span>
-                </div>
-
-                <div class="status-row" id="shortPositionToggle">
-                    <span>空方籌碼</span>
-                    <span id="shortPositionStatus">--</span>
-                </div>
-
-
             </div>
 
             <div class="performance-summary">

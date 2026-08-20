@@ -3,7 +3,8 @@ import {
     renderTrendChart,
     renderCreditChart,
     renderShortPositionChart,
-    renderRSIChart
+    renderRSIChart,
+    renderMACDChart
 } from "../utils/charts.js";
 
 let detailOverlayData = null;
@@ -19,6 +20,7 @@ export function setupDetailOverlay() {
     const creditToggle = document.getElementById("creditToggle");
     const shortPositionToggle = document.getElementById("shortPositionToggle");
     const rsiToggle = document.getElementById("rsiToggle");
+    const macdToggle = document.getElementById("macdToggle");
 
     const detailOverlay = document.getElementById("detailOverlay");
     const closeDetail = document.getElementById("closeDetail");
@@ -32,6 +34,7 @@ export function setupDetailOverlay() {
     const creditChartSection = document.getElementById("creditChartSection");
     const shortPositionChartSection = document.getElementById("shortPositionChartSection");
     const rsiChartSection = document.getElementById("rsiChartSection");
+    const macdChartSection = document.getElementById("macdChartSection");
 
     // =========================
     // 趨勢
@@ -51,6 +54,7 @@ export function setupDetailOverlay() {
         shortTermChartSection.style.display = "none";
         trendChartSection.style.display = "block";
         rsiChartSection.style.display = "none";
+        macdChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
         
@@ -95,6 +99,7 @@ export function setupDetailOverlay() {
         shortTermChartSection.style.display = "block";
         trendChartSection.style.display = "none";
         rsiChartSection.style.display = "none";
+        macdChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
 
@@ -143,6 +148,7 @@ export function setupDetailOverlay() {
         shortTermChartSection.style.display = "none";
         trendChartSection.style.display = "none";
         rsiChartSection.style.display = "none";
+        macdChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
 
@@ -177,6 +183,7 @@ export function setupDetailOverlay() {
         shortTermChartSection.style.display = "none";
         trendChartSection.style.display = "none";
         rsiChartSection.style.display = "block";
+        macdChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
 
@@ -197,9 +204,54 @@ export function setupDetailOverlay() {
         document.getElementById("rsiDetailDescription").textContent =rsi.status.description;
         
         renderRSIChart(rsi.history);
-        
+
         detailOverlay.classList.add("open");
     
+    });
+
+    // =========================
+    // MACD
+    // =========================
+
+    macdToggle.addEventListener("click", () => {
+        if (!detailOverlayData?.macd) return;
+
+        const macd = detailOverlayData.macd;
+        const status = macd.status;
+
+        detailTitle.textContent = "MACD";
+        detailSubtitle.textContent = "MACD｜趨勢動能變化";
+
+        volumeChartSection.style.display = "none";
+        shortTermChartSection.style.display = "none";
+        trendChartSection.style.display = "none";
+        rsiChartSection.style.display = "none";
+        macdChartSection.style.display = "block";
+        creditChartSection.style.display = "none";
+        shortPositionChartSection.style.display = "none";
+
+        const statusElement = document.getElementById("macdDetailStatus");
+        statusElement.textContent = status.text;
+        statusElement.className = `status-value ${status.type}`;
+
+        document.getElementById("macdDetailDescription").textContent =
+            status.description;
+
+        document.getElementById("macdDetailDif").textContent =
+            status.dif.toFixed(2);
+
+        document.getElementById("macdDetailSignal").textContent =
+            status.signal.toFixed(2);
+
+        document.getElementById("macdDetailHistogram").textContent =
+            status.histogram.toFixed(2);
+
+        document.getElementById("macdHistogramChange").textContent =
+            `${status.histogramChange >= 0 ? "+" : ""}${status.histogramChange.toFixed(2)}`;
+
+        renderMACDChart(macd.history);
+        
+        detailOverlay.classList.add("open");
     });
 
     // =========================
@@ -220,6 +272,7 @@ export function setupDetailOverlay() {
         shortTermChartSection.style.display = "none";
         trendChartSection.style.display = "none";
         rsiChartSection.style.display = "none";
+        macdChartSection.style.display = "none";
         creditChartSection.style.display = "block";
         shortPositionChartSection.style.display = "none";
 
@@ -266,6 +319,7 @@ export function setupDetailOverlay() {
         shortTermChartSection.style.display = "none";
         trendChartSection.style.display = "none";
         rsiChartSection.style.display = "none";
+        macdChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "block";
 

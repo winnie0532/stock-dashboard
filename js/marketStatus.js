@@ -339,37 +339,60 @@ export function analyzeRSI(value, fiveDaysAgo) {
 // =========================
 
 function analyzeMACD(today, yesterday) {
-    if (today.histogram > 0 && today.histogram > yesterday.histogram) {
-        return {
-            type: "positive",
-            text: "多方動能增強"
-        };
-    }
+    const histogramChange =
+        today.histogram - yesterday.histogram;
 
-    if (today.histogram > 0 && today.histogram < yesterday.histogram) {
-        return {
-            type: "warning",
-            text: "多方動能減弱"
-        };
-    }
+    let type;
+    let text;
+    let description;
 
-    if (today.histogram < 0 && today.histogram < yesterday.histogram) {
-        return {
-            type: "danger",
-            text: "空方動能增強"
-        };
-    }
-
-    if (today.histogram < 0 && today.histogram > yesterday.histogram) {
-        return {
-            type: "warning",
-            text: "空方動能減弱"
-        };
+    if (
+        today.histogram > 0 &&
+        histogramChange > 0
+    ) {
+        type = "positive";
+        text = "多方動能增強";
+        description =
+            "MACD Histogram 位於零軸上方且持續增加，多方動能正在增強";
+    } else if (
+        today.histogram > 0 &&
+        histogramChange < 0
+    ) {
+        type = "warning";
+        text = "多方動能減弱";
+        description =
+            "MACD Histogram 仍位於零軸上方，但柱體縮短，多方動能正在減弱";
+    } else if (
+        today.histogram < 0 &&
+        histogramChange < 0
+    ) {
+        type = "danger";
+        text = "空方動能增強";
+        description =
+            "MACD Histogram 位於零軸下方且持續下降，空方動能正在增強";
+    } else if (
+        today.histogram < 0 &&
+        histogramChange > 0
+    ) {
+        type = "warning";
+        text = "空方動能減弱";
+        description =
+            "MACD Histogram 仍位於零軸下方，但柱體縮短，空方動能正在減弱";
+    } else {
+        type = "neutral";
+        text = "動能持平";
+        description =
+            "MACD Histogram 與前一交易日變化有限，動能暫時持平";
     }
 
     return {
-        type: "neutral",
-        text: "動能持平"
+        type,
+        text,
+        dif: today.dif,
+        signal: today.signal,
+        histogram: today.histogram,
+        histogramChange,
+        description
     };
 }
 

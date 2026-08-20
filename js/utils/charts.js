@@ -51,6 +51,7 @@ let trendChart = null;
 let creditChart = null;
 let shortPositionChart = null;
 let rsiChart = null;
+let macdChart = null;
 
 // =========================
 // 成交量趨勢圖
@@ -474,6 +475,91 @@ export function renderRSIChart(rsiHistory) {
                     title: {
                         display: true,
                         text: "RSI"
+                    }
+                }
+            },
+
+            plugins: {
+                legend: {
+                    display: true
+                },
+
+                zoom: createZoomOptions()
+            }
+        }
+    });
+}
+
+// =========================
+// MACD 圖
+// DIF + Signal + Histogram
+// =========================
+
+export function renderMACDChart(macdHistory) {
+    if (!macdHistory || macdHistory.length === 0) {
+        return;
+    }
+
+    const recentData = macdHistory.slice(-100);
+    const canvas = document.getElementById("macdChart");
+
+    if (!canvas) {
+        return;
+    }
+
+    if (macdChart) {
+        macdChart.destroy();
+    }
+
+    macdChart = new Chart(canvas, {
+        data: {
+            labels: recentData.map(item => formatChartDate(item.date)),
+
+            datasets: [
+                {
+                    type: "bar",
+                    label: "Histogram",
+                    data: recentData.map(item => item.histogram),
+                    yAxisID: "macdAxis"
+                },
+                {
+                    type: "line",
+                    label: "DIF",
+                    data: recentData.map(item => item.dif),
+                    yAxisID: "macdAxis",
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                },
+                {
+                    type: "line",
+                    label: "Signal",
+                    data: recentData.map(item => item.signal),
+                    yAxisID: "macdAxis",
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            interaction: {
+                mode: "index",
+                intersect: false
+            },
+
+            scales: {
+                macdAxis: {
+                    type: "linear",
+                    position: "left",
+
+                    title: {
+                        display: true,
+                        text: "MACD"
                     }
                 }
             },
