@@ -78,7 +78,40 @@
 
                         <!-- 成交量圖 -->
                         <div class="detail-chart" id="volumeChartSection">
-                            <canvas id="volumeChart"></canvas>
+
+                            <div class="credit-summary">
+                                <div class="credit-summary-header">
+                                    <div id="volumeDetailStatus">--</div>
+                                    <div id="volumeDetailDescription">--</div>
+                                </div>
+
+                                <div class="credit-summary-grid">
+                                    <div class="credit-summary-item">
+                                        <span>今日漲跌</span>
+                                        <strong id="volumePriceChange">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>今日成交量</span>
+                                        <strong id="volumeCurrent">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>20 日平均量</span>
+                                        <strong id="volumeAverage20">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>量比</span>
+                                        <strong id="volumeDetailRatio">--</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="credit-chart-container">
+                                <canvas id="volumeChart"></canvas>
+                            </div>
+
                         </div>
 
                         <!-- 短線趨勢圖 -->

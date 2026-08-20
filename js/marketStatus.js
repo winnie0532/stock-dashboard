@@ -12,6 +12,7 @@ export function analyzeMarketStatus({
     todayMACD,
     yesterdayMACD,
     institutionalIndicators,
+    priceChange1,
     priceChange5,
     priceChange20,
     marginIndicators,
@@ -233,6 +234,50 @@ function analyzeVolume(ratio) {
     return {
         type: "neutral",
         text: `正常 ${ratio.toFixed(2)}x`
+    };
+}
+
+export function analyzePriceVolume(priceChange, volumeRatio) {
+    const isVolumeUp = volumeRatio >= 1;
+
+    if (priceChange > 0 && isVolumeUp) {
+        return {
+            type: "positive",
+            text: "價漲量增",
+            description: "股價上漲且成交量高於近期平均，多方交易動能增強"
+        };
+    }
+
+    if (priceChange > 0 && !isVolumeUp) {
+        return {
+            type: "warning",
+            text: "價漲量縮",
+            description: "股價上漲但成交量低於近期平均，上漲動能仍需觀察"
+        };
+    }
+
+    if (priceChange < 0 && isVolumeUp) {
+        return {
+            type: "danger",
+            text: "價跌量增",
+            description: "股價下跌且成交量高於近期平均，市場賣壓增加"
+        };
+    }
+
+    if (priceChange < 0 && !isVolumeUp) {
+        return {
+            type: "neutral",
+            text: "價跌量縮",
+            description: "股價下跌但成交量低於近期平均，賣壓相對有限"
+        };
+    }
+
+    return {
+        type: "neutral",
+        text: "價平",
+        description: isVolumeUp
+            ? "股價變化不大，但成交量高於近期平均"
+            : "股價變化不大，成交量亦低於近期平均"
     };
 }
 

@@ -1,16 +1,24 @@
 import { renderDashboard } from "./ui/dashboard.js";
 import { renderVolumeChart } from "./utils/charts.js";
-import { analyzeMarketStatus } from "./marketStatus.js";
+
 import { analyzeTechnicalStatus } from "./technicalStatus.js";
+
+import {
+    analyzeMarketStatus,
+    analyzePriceVolume
+} from "./marketStatus.js";
+
 import {
     analyzeInstitutional,
     analyzeMargin,
     renderMarginStatus
 } from "./chipStatus.js";
+
 import {
     setupDetailOverlay,
     updateDetailOverlayData
 } from "./ui/detailOverlay.js";
+
 import {
     fetchStockHistory,
     fetchInstitutionalHistory,
@@ -18,6 +26,7 @@ import {
     fetchMarginData,
     fetchShortSaleBalanceData
 } from "./api.js";
+
 import {
     calculatePriceChange,
     calculateTechnicalIndicators,
@@ -31,58 +40,30 @@ import {
 
 async function init(stockId = "2330") {
     try {
+        // =========================
+        // 取得資料
+        // =========================
+
         const stockInfo = await fetchStockInfo(stockId);
-
-        // =========================
-        // 取得股票資料
-        // =========================
-
         const data = await fetchStockHistory(stockId, "2023-05-01");
-
-        // 取得法人資料
         const institutional = await fetchInstitutionalHistory(stockId, "2023-05-31");
-
-        const institutionalDaily = organizeInstitutionalData(institutional);
-        console.log("法人每日資料:", institutionalDaily);
-
-        const institutionalIndicators = calculateInstitutionalIndicators(institutionalDaily);
-        const institutionalAnalysis = analyzeInstitutional(
-                institutionalDaily,
-                institutionalIndicators
-            );
-        console.log("籌碼分析:", institutionalAnalysis);
-
-        // 取得融資融券資料
         const marginData = await fetchMarginData(stockId, "2025-07-01");
-        const marginIndicators = calculateMarginIndicators(marginData);
-        console.log("融資融券指標:", marginIndicators);
-        console.log("融資融券筆數:", marginData.length);
-        console.log("融資融券完整資料:", marginData);
-
-        const marginStatus = analyzeMargin(marginIndicators);
-        renderMarginStatus(marginStatus);
-
-        // 借券餘額資料
         const shortSaleBalanceData = await fetchShortSaleBalanceData(stockId, "2025-07-01");
-        const shortSaleIndicators = calculateShortSaleIndicators(shortSaleBalanceData);
-
-        console.log("借券賣出指標:", shortSaleIndicators);
-        console.log("借券賣出資料筆數:", shortSaleBalanceData.length);
-        console.log(
-            "借券賣出最後一筆:",
-            shortSaleBalanceData[shortSaleBalanceData.length - 1]
-        );
 
 
         // =========================
-        // 近期漲跌幅
+        // 技術指標
         // =========================
 
-        const priceChange5 = calculatePriceChange(data, 5);
-        const priceChange20 = calculatePriceChange(data, 20);
-        const priceChange60 = calculatePriceChange(data, 60);
+        const priceChanges = {
+            change1: calculatePriceChange(data, 1),
+            change5: calculatePriceChange(data, 5),
+            change20: calculatePriceChange(data, 20),
+            change60: calculatePriceChange(data, 60)
+        };
 
         const technicalIndicators = calculateTechnicalIndicators(data);
+
         const {
             latest,
             movingAverages,
@@ -93,9 +74,32 @@ async function init(stockId = "2330") {
             macd
         } = technicalIndicators;
 
+        const maDeviations = calculateMADeviations(
+            latest.close,
+            movingAverages
+        );
+
 
         // =========================
-        // 綜合技術分析
+        // 籌碼指標
+        // =========================
+
+        const institutionalDaily = organizeInstitutionalData(institutional);
+
+        const institutionalIndicators = calculateInstitutionalIndicators(institutionalDaily);
+
+        const institutionalAnalysis = analyzeInstitutional(
+            institutionalDaily,
+            institutionalIndicators
+        );
+
+        const marginIndicators =calculateMarginIndicators(marginData);
+        const marginStatus =analyzeMargin(marginIndicators);
+        const shortSaleIndicators = calculateShortSaleIndicators(shortSaleBalanceData);
+
+
+        // =========================
+        // 市場狀態
         // =========================
 
         const marketStatus = analyzeMarketStatus({
@@ -118,11 +122,23 @@ async function init(stockId = "2330") {
 
             institutionalIndicators,
 
-            priceChange5,
-            priceChange20,
+            priceChange1: priceChanges.change1,
+            priceChange5: priceChanges.change5,
+            priceChange20: priceChanges.change20,
+
             marginIndicators,
             shortSaleIndicators
         });
+
+        const priceVolumeStatus = analyzePriceVolume(
+            priceChanges.change1,
+            volume.ratio
+        );
+
+
+        // =========================
+        // 技術狀態
+        // =========================
 
         const technicalStatus = analyzeTechnicalStatus({
             latestPrice: latest.close,
@@ -140,9 +156,11 @@ async function init(stockId = "2330") {
             yesterdayMACD: macd.yesterday
         });
 
-        const maDeviations = calculateMADeviations(latest.close, movingAverages);
 
-        // 整理 Dashboard 需要的所有資料
+        // =========================
+        // Dashboard
+        // =========================
+
         const stockData = {
             stockId: stockInfo.stockId,
             stockName: stockInfo.stockName,
@@ -150,9 +168,9 @@ async function init(stockId = "2330") {
             price: latest.close,
 
             performance: {
-                change5: priceChange5,
-                change20: priceChange20,
-                change60: priceChange60
+                change5: priceChanges.change5,
+                change20: priceChanges.change20,
+                change60: priceChanges.change60
             },
 
             technical: {
@@ -183,16 +201,18 @@ async function init(stockId = "2330") {
             institutional: institutionalAnalysis,
 
             marketStatus,
-            technicalStatus,
+            technicalStatus
         };
 
-        // 顯示到網頁
         renderDashboard(stockData);
-
-        // 成交量圖
+        renderMarginStatus(marginStatus);
         renderVolumeChart(data);
 
-        // 詳細分析視窗圖
+
+        // =========================
+        // 詳細分析
+        // =========================
+
         updateDetailOverlayData({
             data,
 
@@ -214,10 +234,18 @@ async function init(stockId = "2330") {
                 d: kd.today.d
             },
 
+            volumeDetail: {
+                status: priceVolumeStatus,
+                priceChange: priceChanges.change1,
+                volume: volume.current,
+                avgVolume20: volume.average20,
+                volumeRatio: volume.ratio
+            },  
+            
             credit: {
                 status: marketStatus.credit,
-                priceChange5,
-                priceChange20,
+                priceChange5: priceChanges.change5,
+                priceChange20: priceChanges.change20,
                 margin5Percent: marginIndicators.margin.day5Percent,
                 margin20Percent: marginIndicators.margin.day20Percent
             },
@@ -226,35 +254,28 @@ async function init(stockId = "2330") {
 
             shortPosition: {
                 status: marketStatus.shortPosition,
-                marginShort5Percent:marginIndicators.short.day5Percent,
-                marginShort20Percent:marginIndicators.short.day20Percent,
-                sbl5Percent:shortSaleIndicators.day5Percent,
-                sbl20Percent:shortSaleIndicators.day20Percent
+                marginShort5Percent: marginIndicators.short.day5Percent,
+                marginShort20Percent: marginIndicators.short.day20Percent,
+                sbl5Percent: shortSaleIndicators.day5Percent,
+                sbl20Percent: shortSaleIndicators.day20Percent
             },
 
             shortSaleBalanceData,
+        });
 
-            });
+
         // =========================
         // Debug
         // =========================
 
-        console.log("5日漲跌幅:", priceChange5);
-        console.log("20日漲跌幅:", priceChange20);
-        console.log("60日漲跌幅:", priceChange60);
-
-        console.log("最新股價:", latest.close);
+        console.log("價量關係:", priceVolumeStatus);
         console.log("市場狀態:", marketStatus);
-
         console.log("完整股票資料:", stockData);
 
     } catch (error) {
         console.error("取得股票資料失敗：", error);
     }
 }
-
-
-
 
 
 const stockInput = document.getElementById("stockInput");

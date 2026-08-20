@@ -40,14 +40,28 @@ export function setupDetailOverlay() {
             return;
         }
 
+        const volumeDetail = detailOverlayData.volumeDetail;
+
         detailTitle.textContent = "成交量分析";
-        detailSubtitle.textContent = "近期成交量與 20 日平均量";
+        detailSubtitle.textContent = "近 100 個交易日｜每日成交量與 20 日平均量";
 
         volumeChartSection.style.display = "block";
         shortTermChartSection.style.display = "none";
         trendChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
+
+        const statusElement = document.getElementById("volumeDetailStatus");
+
+        statusElement.textContent = volumeDetail.status.text;
+        statusElement.className = `status-value ${volumeDetail.status.type}`;
+
+        document.getElementById("volumeDetailDescription").textContent = volumeDetail.status.description;
+        renderPercentValue("volumePriceChange", volumeDetail.priceChange);
+
+        document.getElementById("volumeCurrent").textContent = `${Math.round(volumeDetail.volume / 1000).toLocaleString()} 張`;
+        document.getElementById("volumeAverage20").textContent = `${Math.round(volumeDetail.avgVolume20 / 1000).toLocaleString()} 張`;
+        document.getElementById("volumeDetailRatio").textContent = `${volumeDetail.volumeRatio.toFixed(2)}x`;
 
         detailOverlay.classList.add("open");
     });
