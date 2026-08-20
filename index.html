@@ -88,7 +88,40 @@
 
                         <!-- 中長期趨勢圖 -->
                         <div class="detail-chart" id="trendChartSection">
-                            <canvas id="trendChart"></canvas>
+
+                            <div class="credit-summary">
+                                <div class="credit-summary-header">
+                                    <div id="trendDetailStatus">--</div>
+                                    <div id="trendDetailDescription">--</div>
+                                </div>
+
+                                <div class="credit-summary-grid">
+                                    <div class="credit-summary-item">
+                                        <span>股價 vs 月線</span>
+                                        <strong id="ma20Deviation">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>股價 vs 季線</span>
+                                        <strong id="ma60Deviation">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>股價 vs 半年線</span>
+                                        <strong id="ma120Deviation">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>股價 vs 年線</span>
+                                        <strong id="ma240Deviation">--</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="credit-chart-container">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+
                         </div>
 
                         <!-- 信用籌碼圖表 -->

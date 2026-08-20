@@ -1,4 +1,7 @@
-import { sumRecent } from "./utils/calculations.js";
+import {
+    sumRecent,
+    calculateDeviation
+} from "./utils/calculations.js";
 
 // =========================
 // 價格
@@ -543,5 +546,14 @@ export function calculateShortSaleIndicators(data) {
 
         latestBalance:
             latest.SBLShortSalesCurrentDayBalance
+    };
+}
+
+export function calculateMADeviations(price, movingAverages) {
+    return {
+        ma20: calculateDeviation(price, movingAverages.ma20),
+        ma60: calculateDeviation(price, movingAverages.ma60),
+        ma120: calculateDeviation(price, movingAverages.ma120),
+        ma240: calculateDeviation(price, movingAverages.ma240)
     };
 }

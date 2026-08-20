@@ -645,6 +645,17 @@ body {
     height: 380px;
 }
 
+.value-up {
+    color: #dc2626;
+}
+
+.value-down {
+    color: #059669;
+}
+
+.value-neutral {
+    color: var(--text);
+}
 /* =========================
    手機版
 ========================= */

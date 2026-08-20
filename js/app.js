@@ -24,7 +24,8 @@ import {
     organizeInstitutionalData,
     calculateInstitutionalIndicators,
     calculateMarginIndicators,
-    calculateShortSaleIndicators
+    calculateShortSaleIndicators,
+    calculateMADeviations
 } from "./indicators.js";
 
 
@@ -139,6 +140,8 @@ async function init(stockId = "2330") {
             yesterdayMACD: macd.yesterday
         });
 
+        const maDeviations = calculateMADeviations(latest.close, movingAverages);
+
         // 整理 Dashboard 需要的所有資料
         const stockData = {
             stockId: stockInfo.stockId,
@@ -199,6 +202,11 @@ async function init(stockId = "2330") {
             ma120History: movingAverageHistory.ma120,
             ma240History: movingAverageHistory.ma240,
 
+            trend: {
+                status: marketStatus.trend,
+                deviations: maDeviations
+            },
+
             credit: {
                 status: marketStatus.credit,
                 priceChange5,
@@ -217,7 +225,8 @@ async function init(stockId = "2330") {
                 sbl20Percent:shortSaleIndicators.day20Percent
             },
 
-        shortSaleBalanceData
+            shortSaleBalanceData,
+
             });
         // =========================
         // Debug

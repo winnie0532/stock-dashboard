@@ -48,7 +48,11 @@ export function analyzeMarketStatus({
 
 function analyzeTrend(price, ma20, ma60, ma120, ma240) {
 
-    // 股價與均線完整多頭排列
+    // =========================
+    // 多頭排列
+    // 股價 > MA20 > MA60 > MA120 > MA240
+    // =========================
+
     if (
         price > ma20 &&
         ma20 > ma60 &&
@@ -57,11 +61,19 @@ function analyzeTrend(price, ma20, ma60, ma120, ma240) {
     ) {
         return {
             type: "positive",
-            text: "多頭排列"
+            text: "多頭排列",
+            description:
+                "股價與主要均線呈完整多頭排列，中長期趨勢強勢"
         };
     }
 
+
+    // =========================
+    // 中期偏多
     // 股價站上所有主要均線
+    // 但均線尚未形成完整多頭排列
+    // =========================
+
     if (
         price > ma20 &&
         price > ma60 &&
@@ -70,11 +82,18 @@ function analyzeTrend(price, ma20, ma60, ma120, ma240) {
     ) {
         return {
             type: "positive",
-            text: "中期偏多"
+            text: "中期偏多",
+            description:
+                "股價站上月線、季線、半年線與年線，但均線尚未形成完整多頭排列"
         };
     }
 
-    // 股價與均線完整空頭排列
+
+    // =========================
+    // 空頭排列
+    // 股價 < MA20 < MA60 < MA120 < MA240
+    // =========================
+
     if (
         price < ma20 &&
         ma20 < ma60 &&
@@ -83,11 +102,19 @@ function analyzeTrend(price, ma20, ma60, ma120, ma240) {
     ) {
         return {
             type: "danger",
-            text: "空頭排列"
+            text: "空頭排列",
+            description:
+                "股價與主要均線呈完整空頭排列，中長期趨勢弱勢"
         };
     }
 
+
+    // =========================
+    // 中期偏空
     // 股價跌破所有主要均線
+    // 但均線尚未形成完整空頭排列
+    // =========================
+
     if (
         price < ma20 &&
         price < ma60 &&
@@ -96,14 +123,23 @@ function analyzeTrend(price, ma20, ma60, ma120, ma240) {
     ) {
         return {
             type: "danger",
-            text: "中期偏空"
+            text: "中期偏空",
+            description:
+                "股價跌破月線、季線、半年線與年線，但均線尚未形成完整空頭排列"
         };
     }
 
-    // 股價與均線方向混合
+
+    // =========================
+    // 趨勢整理
+    // 股價與主要均線位置交錯
+    // =========================
+
     return {
         type: "warning",
-        text: "趨勢整理"
+        text: "趨勢整理",
+        description:
+            "股價與主要均線位置交錯，中長期方向尚未形成一致趨勢"
     };
 }
 

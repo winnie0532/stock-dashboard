@@ -89,16 +89,27 @@ export function setupDetailOverlay() {
             return;
         }
 
-        detailTitle.textContent = "中長期趨勢";
+        const trend = detailOverlayData.trend;
 
-        detailSubtitle.textContent =
-            "近 250 個交易日｜股價與 MA20 / MA60 / MA120 / MA240";
+        detailTitle.textContent = "中長期趨勢";
+        detailSubtitle.textContent = "近 250 個交易日｜股價與 MA20 / MA60 / MA120 / MA240";
 
         volumeChartSection.style.display = "none";
         shortTermChartSection.style.display = "none";
         trendChartSection.style.display = "block";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
+        
+        const statusElement = document.getElementById("trendDetailStatus");
+        statusElement.textContent = trend.status.text;
+        statusElement.className = `status-value ${trend.status.type}`;
+
+        document.getElementById("trendDetailDescription").textContent = trend.status.description;
+        renderPercentValue("ma20Deviation", trend.deviations.ma20);
+        renderPercentValue("ma60Deviation", trend.deviations.ma60);
+        renderPercentValue("ma120Deviation", trend.deviations.ma120);
+        renderPercentValue("ma240Deviation", trend.deviations.ma240);
+
 
         detailOverlay.classList.add("open");
 
@@ -140,12 +151,12 @@ export function setupDetailOverlay() {
         // 狀態說明
         document.getElementById("creditDetailDescription").textContent = credit.status.description;
         // 20 日
-        document.getElementById("creditPrice20").textContent = formatPercent(credit.priceChange20);
-        document.getElementById("creditMargin20").textContent = formatPercent(credit.margin20Percent);
+        renderPercentValue("creditPrice20", credit.priceChange20);
+        renderPercentValue("creditMargin20", credit.margin20Percent);
 
         // 5 日
-        document.getElementById("creditPrice5").textContent = formatPercent(credit.priceChange5);
-        document.getElementById("creditMargin5").textContent = formatPercent(credit.margin5Percent);
+        renderPercentValue("creditPrice5", credit.priceChange5);
+        renderPercentValue("creditMargin5", credit.margin5Percent);
 
         renderCreditChart(
             detailOverlayData.data,
@@ -195,21 +206,18 @@ export function setupDetailOverlay() {
         ).textContent =
             shortPosition.status.description;
 
-
         // =========================
         // 20 日
         // =========================
-
-        document.getElementById("shortMargin20").textContent = formatPercent(shortPosition.marginShort20Percent);
-        document.getElementById("shortSbl20").textContent = formatPercent(shortPosition.sbl20Percent);
+        renderPercentValue("shortMargin20", shortPosition.marginShort20Percent);
+        renderPercentValue("shortSbl20", shortPosition.sbl20Percent);
 
         // =========================
         // 5 日
         // =========================
-
-        document.getElementById("shortMargin5").textContent = formatPercent(shortPosition.marginShort5Percent);
-        document.getElementById("shortSbl5").textContent = formatPercent(shortPosition.sbl5Percent);
-
+        renderPercentValue("shortMargin5", shortPosition.marginShort5Percent);
+        renderPercentValue("shortSbl5", shortPosition.sbl5Percent);
+        
         renderShortPositionChart(
             detailOverlayData.data,
             detailOverlayData.shortSaleBalanceData
@@ -231,4 +239,19 @@ function formatPercent(value) {
     }
 
     return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
+}
+
+function renderPercentValue(elementId, value) {
+    const element = document.getElementById(elementId);
+
+    element.textContent = formatPercent(value);
+    element.classList.remove("value-up", "value-down", "value-neutral");
+
+    if (value > 0) {
+        element.classList.add("value-up");
+    } else if (value < 0) {
+        element.classList.add("value-down");
+    } else {
+        element.classList.add("value-neutral");
+    }
 }
