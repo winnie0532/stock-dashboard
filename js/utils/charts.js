@@ -45,13 +45,14 @@ function createZoomOptions() {
 // Chart instances
 // =========================
 
-let volumeChart = null;
-let shortTermChart = null;
 let trendChart = null;
-let creditChart = null;
-let shortPositionChart = null;
+let shortTermChart = null;
+let volumeChart = null;
 let rsiChart = null;
 let macdChart = null;
+let institutionalChart = null;
+let creditChart = null;
+let shortPositionChart = null;
 
 // =========================
 // 成交量趨勢圖
@@ -567,6 +568,97 @@ export function renderMACDChart(macdHistory) {
             plugins: {
                 legend: {
                     display: true
+                },
+
+                zoom: createZoomOptions()
+            }
+        }
+    });
+}
+
+// =========================
+// 法人買賣超趨勢圖
+// 外資 + 投信 + 自營商
+// =========================
+
+export function renderInstitutionalChart(history) {
+    if (!history || history.length === 0) {
+        return;
+    }
+
+    const recentData = history.slice(-100);
+    const canvas = document.getElementById("institutionalChart");
+
+    if (!canvas) {
+        return;
+    }
+
+    if (institutionalChart) {
+        institutionalChart.destroy();
+    }
+
+    institutionalChart = new Chart(canvas, {
+        type: "bar",
+
+        data: {
+            labels: recentData.map(item => formatChartDate(item.date)),
+
+            datasets: [
+                {
+                    label: "外資",
+                    data: recentData.map(item => item.foreign / 1000),
+                    backgroundColor: recentData.map(item =>
+                        item.foreign >= 0
+                            ? "rgba(220, 38, 38, 0.65)"
+                            : "rgba(5, 150, 105, 0.65)"
+                    )
+                },
+                {
+                    label: "投信",
+                    data: recentData.map(item => item.trust / 1000),
+                    backgroundColor: recentData.map(item =>
+                        item.trust >= 0
+                            ? "rgba(220, 38, 38, 0.65)"
+                            : "rgba(5, 150, 105, 0.65)"
+                    )
+                },
+                {
+                    label: "自營商",
+                    data: recentData.map(item => item.dealer / 1000),
+                    backgroundColor: recentData.map(item =>
+                        item.dealer >= 0
+                            ? "rgba(220, 38, 38, 0.65)"
+                            : "rgba(5, 150, 105, 0.65)"
+                    )
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            interaction: {
+                mode: "index",
+                intersect: false
+            },
+
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: "買賣超（張）"
+                    }
+                }
+            },
+
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: "line"
+                    }
                 },
 
                 zoom: createZoomOptions()

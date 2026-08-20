@@ -254,6 +254,11 @@ async function init(stockId = "2330") {
                 history: macd.history
             },
 
+            institutional: {
+                status: marketStatus.institutional,
+                history: institutionalDaily
+            },
+
             credit: {
                 status: marketStatus.credit,
                 priceChange5: priceChanges.change5,

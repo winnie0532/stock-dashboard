@@ -4,7 +4,8 @@ import {
     renderCreditChart,
     renderShortPositionChart,
     renderRSIChart,
-    renderMACDChart
+    renderMACDChart,
+    renderInstitutionalChart
 } from "../utils/charts.js";
 
 let detailOverlayData = null;
@@ -21,6 +22,7 @@ export function setupDetailOverlay() {
     const shortPositionToggle = document.getElementById("shortPositionToggle");
     const rsiToggle = document.getElementById("rsiToggle");
     const macdToggle = document.getElementById("macdToggle");
+    const institutionalToggle = document.getElementById("institutionalToggle");
 
     const detailOverlay = document.getElementById("detailOverlay");
     const closeDetail = document.getElementById("closeDetail");
@@ -35,6 +37,7 @@ export function setupDetailOverlay() {
     const shortPositionChartSection = document.getElementById("shortPositionChartSection");
     const rsiChartSection = document.getElementById("rsiChartSection");
     const macdChartSection = document.getElementById("macdChartSection");
+    const institutionalChartSection = document.getElementById("institutionalChartSection");
 
     // =========================
     // 趨勢
@@ -55,6 +58,7 @@ export function setupDetailOverlay() {
         trendChartSection.style.display = "block";
         rsiChartSection.style.display = "none";
         macdChartSection.style.display = "none";
+        institutionalChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
         
@@ -100,6 +104,7 @@ export function setupDetailOverlay() {
         trendChartSection.style.display = "none";
         rsiChartSection.style.display = "none";
         macdChartSection.style.display = "none";
+        institutionalChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
 
@@ -149,6 +154,7 @@ export function setupDetailOverlay() {
         trendChartSection.style.display = "none";
         rsiChartSection.style.display = "none";
         macdChartSection.style.display = "none";
+        institutionalChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
 
@@ -184,6 +190,7 @@ export function setupDetailOverlay() {
         trendChartSection.style.display = "none";
         rsiChartSection.style.display = "block";
         macdChartSection.style.display = "none";
+        institutionalChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
 
@@ -227,6 +234,7 @@ export function setupDetailOverlay() {
         trendChartSection.style.display = "none";
         rsiChartSection.style.display = "none";
         macdChartSection.style.display = "block";
+        institutionalChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
 
@@ -255,6 +263,41 @@ export function setupDetailOverlay() {
     });
 
     // =========================
+    // 法人
+    // =========================
+
+    institutionalToggle.addEventListener("click", () => {
+        if (!detailOverlayData?.institutional) return;
+
+        const institutional = detailOverlayData.institutional;
+        const status = institutional.status;
+
+        detailTitle.textContent = "法人";
+        detailSubtitle.textContent = "三大法人近期籌碼趨勢";
+
+        volumeChartSection.style.display = "none";
+        shortTermChartSection.style.display = "none";
+        trendChartSection.style.display = "none";
+        rsiChartSection.style.display = "none";
+        macdChartSection.style.display = "none";
+        institutionalChartSection.style.display = "block";
+        creditChartSection.style.display = "none";
+        shortPositionChartSection.style.display = "none";
+
+        const statusElement = document.getElementById("institutionalDetailStatus");
+
+        statusElement.textContent = status.text;
+        statusElement.className = `status-value ${status.type}`;
+
+        document.getElementById("institutionalDetailDescription").textContent =
+            status.description;
+
+        renderInstitutionalChart(institutional.history);
+        
+        detailOverlay.classList.add("open");
+    });
+
+    // =========================
     // 信用籌碼
     // =========================
 
@@ -273,6 +316,7 @@ export function setupDetailOverlay() {
         trendChartSection.style.display = "none";
         rsiChartSection.style.display = "none";
         macdChartSection.style.display = "none";
+        institutionalChartSection.style.display = "none";
         creditChartSection.style.display = "block";
         shortPositionChartSection.style.display = "none";
 
@@ -320,6 +364,7 @@ export function setupDetailOverlay() {
         trendChartSection.style.display = "none";
         rsiChartSection.style.display = "none";
         macdChartSection.style.display = "none";
+        institutionalChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "block";
 

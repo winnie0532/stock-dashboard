@@ -406,61 +406,65 @@ function analyzeInstitutionalEvent(indicators) {
     if (!indicators) {
         return {
             type: "neutral",
-            text: "資料不足"
+            text: "資料不足",
+            description: "目前法人資料不足，無法判斷近期籌碼方向"
         };
     }
 
     const { foreign, trust, dealer } = indicators.recent;
 
-    // 外資：20 日賣超，但最近 5 日轉買
     if (foreign.day20 < 0 && foreign.day5 > 0) {
         return {
             type: "positive",
-            text: "外資短線轉買"
+            text: "外資短線轉買",
+            description: "外資 20 日仍為賣超，但近 5 日已轉為買超，短線買盤開始回流"
         };
     }
 
-    // 外資：20 日買超，但最近 5 日轉賣
     if (foreign.day20 > 0 && foreign.day5 < 0) {
         return {
             type: "danger",
-            text: "外資短線轉賣"
+            text: "外資短線轉賣",
+            description: "外資 20 日仍為買超，但近 5 日已轉為賣超，短線籌碼開始轉弱"
         };
     }
 
-    // 投信
     if (trust.day20 < 0 && trust.day5 > 0) {
         return {
             type: "positive",
-            text: "投信短線轉買"
+            text: "投信短線轉買",
+            description: "投信 20 日仍為賣超，但近 5 日已轉為買超，短線買盤開始回流"
         };
     }
 
     if (trust.day20 > 0 && trust.day5 < 0) {
         return {
             type: "danger",
-            text: "投信短線轉賣"
+            text: "投信短線轉賣",
+            description: "投信 20 日仍為買超，但近 5 日已轉為賣超，短線籌碼開始轉弱"
         };
     }
 
-    // 自營商
     if (dealer.day20 < 0 && dealer.day5 > 0) {
         return {
             type: "positive",
-            text: "自營商短線轉買"
+            text: "自營商短線轉買",
+            description: "自營商 20 日仍為賣超，但近 5 日已轉為買超，短線買盤開始回流"
         };
     }
 
     if (dealer.day20 > 0 && dealer.day5 < 0) {
         return {
             type: "danger",
-            text: "自營商短線轉賣"
+            text: "自營商短線轉賣",
+            description: "自營商 20 日仍為買超，但近 5 日已轉為賣超，短線籌碼開始轉弱"
         };
     }
 
     return {
         type: "neutral",
-        text: "籌碼動向中性"
+        text: "籌碼動向中性",
+        description: "三大法人近期買賣方向未出現明顯反轉訊號"
     };
 }
 
