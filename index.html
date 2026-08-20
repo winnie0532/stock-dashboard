@@ -75,41 +75,40 @@
                             </button>
                         </div>
 
-
-                        <!-- 成交量圖 -->
-                        <div class="detail-chart" id="volumeChartSection">
+                        <!-- 中長期趨勢圖 -->
+                        <div class="detail-chart" id="trendChartSection">
 
                             <div class="credit-summary">
                                 <div class="credit-summary-header">
-                                    <div id="volumeDetailStatus">--</div>
-                                    <div id="volumeDetailDescription">--</div>
+                                    <div id="trendDetailStatus">--</div>
+                                    <div id="trendDetailDescription">--</div>
                                 </div>
 
                                 <div class="credit-summary-grid">
                                     <div class="credit-summary-item">
-                                        <span>今日漲跌</span>
-                                        <strong id="volumePriceChange">--</strong>
+                                        <span>股價 vs 月線</span>
+                                        <strong id="ma20Deviation">--</strong>
                                     </div>
 
                                     <div class="credit-summary-item">
-                                        <span>今日成交量</span>
-                                        <strong id="volumeCurrent">--</strong>
+                                        <span>股價 vs 季線</span>
+                                        <strong id="ma60Deviation">--</strong>
                                     </div>
 
                                     <div class="credit-summary-item">
-                                        <span>20 日平均量</span>
-                                        <strong id="volumeAverage20">--</strong>
+                                        <span>股價 vs 半年線</span>
+                                        <strong id="ma120Deviation">--</strong>
                                     </div>
 
                                     <div class="credit-summary-item">
-                                        <span>量比</span>
-                                        <strong id="volumeDetailRatio">--</strong>
+                                        <span>股價 vs 年線</span>
+                                        <strong id="ma240Deviation">--</strong>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="credit-chart-container">
-                                <canvas id="volumeChart"></canvas>
+                                <canvas id="trendChart"></canvas>
                             </div>
 
                         </div>
@@ -152,40 +151,78 @@
 
                         </div>
 
-                        <!-- 中長期趨勢圖 -->
-                        <div class="detail-chart" id="trendChartSection">
+                        <!-- 成交量圖 -->
+                        <div class="detail-chart" id="volumeChartSection">
 
                             <div class="credit-summary">
                                 <div class="credit-summary-header">
-                                    <div id="trendDetailStatus">--</div>
-                                    <div id="trendDetailDescription">--</div>
+                                    <div id="volumeDetailStatus">--</div>
+                                    <div id="volumeDetailDescription">--</div>
                                 </div>
 
                                 <div class="credit-summary-grid">
                                     <div class="credit-summary-item">
-                                        <span>股價 vs 月線</span>
-                                        <strong id="ma20Deviation">--</strong>
+                                        <span>今日漲跌</span>
+                                        <strong id="volumePriceChange">--</strong>
                                     </div>
 
                                     <div class="credit-summary-item">
-                                        <span>股價 vs 季線</span>
-                                        <strong id="ma60Deviation">--</strong>
+                                        <span>今日成交量</span>
+                                        <strong id="volumeCurrent">--</strong>
                                     </div>
 
                                     <div class="credit-summary-item">
-                                        <span>股價 vs 半年線</span>
-                                        <strong id="ma120Deviation">--</strong>
+                                        <span>20 日平均量</span>
+                                        <strong id="volumeAverage20">--</strong>
                                     </div>
 
                                     <div class="credit-summary-item">
-                                        <span>股價 vs 年線</span>
-                                        <strong id="ma240Deviation">--</strong>
+                                        <span>量比</span>
+                                        <strong id="volumeDetailRatio">--</strong>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="credit-chart-container">
-                                <canvas id="trendChart"></canvas>
+                                <canvas id="volumeChart"></canvas>
+                            </div>
+
+                        </div>
+
+                        <!-- RSI 詳細頁 -->
+                        <div class="detail-chart" id="rsiChartSection">
+
+                            <div class="credit-summary">
+                                <div class="credit-summary-header">
+                                    <div id="rsiDetailStatus">--</div>
+                                    <div id="rsiDetailDescription">--</div>
+                                </div>
+
+                                <div class="credit-summary-grid">
+                                    <div class="credit-summary-item">
+                                        <span>RSI (14)</span>
+                                        <strong id="rsiDetailValue">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>前一日 RSI</span>
+                                        <strong id="rsiYesterday">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>5 日變化</span>
+                                        <strong id="rsiChange5">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>區間位置</span>
+                                        <strong id="rsiRange">--</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="credit-chart-container">
+                                <canvas id="rsiChart"></canvas>
                             </div>
 
                         </div>
@@ -267,7 +304,7 @@
                     </div>
                 </div>
 
-                <div class="status-row">
+                <div class="status-row" id="rsiToggle">
                     <span>RSI</span>
                     <span id="rsiStatus">--</span>
                 </div>

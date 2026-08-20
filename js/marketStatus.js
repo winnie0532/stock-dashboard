@@ -7,6 +7,7 @@ export function analyzeMarketStatus({
     ma240,
     volumeRatio,
     rsi,
+    rsiFiveDaysAgo,
     todayKD,
     yesterdayKD,
     todayMACD,
@@ -27,7 +28,7 @@ export function analyzeMarketStatus({
             yesterdayKD
         ),
         volume: analyzeVolume(volumeRatio),
-        rsi: analyzeRSI(rsi),
+        rsi: analyzeRSI(rsi, rsiFiveDaysAgo),
         macd: analyzeMACD(todayMACD, yesterdayMACD),
         institutional: analyzeInstitutionalEvent(institutionalIndicators),
         credit: analyzeCreditStatus(
@@ -286,38 +287,49 @@ export function analyzePriceVolume(priceChange, volumeRatio) {
 // 判斷依據：14 日 RSI 數值區間
 // =========================
 
-function analyzeRSI(rsi) {
-    if (rsi >= 70) {
-        return {
-            type: "danger",
-            text: `過熱 ${rsi.toFixed(2)}`
-        };
+export function analyzeRSI(value, fiveDaysAgo) {
+    const change5 =
+        fiveDaysAgo != null
+            ? value - fiveDaysAgo
+            : null;
+
+    let type;
+    let range;
+
+    if (value >= 70) {
+        type = "danger";
+        range = "過熱";
+    } else if (value >= 60) {
+        type = "positive";
+        range = "偏強";
+    } else if (value >= 40) {
+        type = "neutral";
+        range = "中性";
+    } else if (value >= 30) {
+        type = "warning";
+        range = "偏弱";
+    } else {
+        type = "warning";
+        range = "超賣";
     }
 
-    if (rsi >= 60) {
-        return {
-            type: "positive",
-            text: `偏強 ${rsi.toFixed(2)}`
-        };
-    }
+    let description = `RSI 目前位於${range}區間`;
 
-    if (rsi >= 40) {
-        return {
-            type: "neutral",
-            text: `中性 ${rsi.toFixed(2)}`
-        };
-    }
-
-    if (rsi >= 30) {
-        return {
-            type: "warning",
-            text: `偏弱 ${rsi.toFixed(2)}`
-        };
+    if (change5 > 0) {
+        description += "，近 5 日動能上升";
+    } else if (change5 < 0) {
+        description += "，近 5 日動能下降";
+    } else if (change5 === 0) {
+        description += "，近 5 日動能持平";
     }
 
     return {
-        type: "warning",
-        text: `超賣 ${rsi.toFixed(2)}`
+        type,
+        text: `${range} ${value.toFixed(2)}`,
+        value,
+        range,
+        change5,
+        description
     };
 }
 

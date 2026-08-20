@@ -52,7 +52,8 @@ export async function fetchInstitutionalHistory(stockId, startDate) {
 }
 export async function fetchStockInfo(stockId) {
     const params = new URLSearchParams({
-        dataset: "TaiwanStockInfo"
+        dataset: "TaiwanStockInfo",
+        data_id: stockId
     });
 
     const response = await fetch(`${FINMIND_URL}?${params}`);
@@ -67,9 +68,7 @@ export async function fetchStockInfo(stockId) {
         throw new Error(result.msg || "FinMind API error");
     }
 
-    const stock = result.data.find(
-        item => item.stock_id === stockId
-    );
+    const stock = result.data?.[0];
 
     if (!stock) {
         throw new Error(`找不到股票代號：${stockId}`);
@@ -82,7 +81,6 @@ export async function fetchStockInfo(stockId) {
         market: stock.type
     };
 }
-
 //融資融券資料
 export async function fetchMarginData(stockId, startDate) {
     const url =

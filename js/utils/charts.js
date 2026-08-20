@@ -50,7 +50,7 @@ let shortTermChart = null;
 let trendChart = null;
 let creditChart = null;
 let shortPositionChart = null;
-
+let rsiChart = null;
 
 // =========================
 // 成交量趨勢圖
@@ -383,6 +383,111 @@ export function renderTrendChart(
     });
 }
 
+// =========================
+// RSI 圖
+// 近 100 日 RSI + 70 / 30 參考線
+// =========================
+
+export function renderRSIChart(rsiHistory) {
+    if (!rsiHistory || rsiHistory.length === 0) {
+        return;
+    }
+
+    const recentData = rsiHistory.slice(-100);
+
+    const canvas = document.getElementById("rsiChart");
+
+    if (!canvas) {
+        return;
+    }
+
+    if (rsiChart) {
+        rsiChart.destroy();
+    }
+
+    rsiChart = new Chart(canvas, {
+        type: "line",
+
+        data: {
+            labels: recentData.map(
+                item => formatChartDate(item.date)
+            ),
+
+            datasets: [
+                {
+                    label: "RSI(14)",
+                    data: recentData.map(item => item.value),
+
+                    borderColor: "#2196f3",
+                    backgroundColor: "rgba(33, 150, 243, 0.08)",
+
+                    fill: true,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                },
+
+                {
+                    label: "70 過熱線",
+                    data: recentData.map(() => 70),
+
+                    borderColor: "#ef4444",
+                    borderDash: [6, 6],
+
+                    fill: false,
+                    borderWidth: 1,
+                    pointRadius: 0
+                },
+
+                {
+                    label: "30 超賣線",
+                    data: recentData.map(() => 30),
+
+                    borderColor: "#10b981",
+                    borderDash: [6, 6],
+
+                    fill: false,
+                    borderWidth: 1,
+                    pointRadius: 0
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            interaction: {
+                mode: "index",
+                intersect: false
+            },
+
+            scales: {
+                y: {
+                    min: 0,
+                    max: 100,
+
+                    ticks: {
+                        stepSize: 10
+                    },
+
+                    title: {
+                        display: true,
+                        text: "RSI"
+                    }
+                }
+            },
+
+            plugins: {
+                legend: {
+                    display: true
+                },
+
+                zoom: createZoomOptions()
+            }
+        }
+    });
+}
 
 // =========================
 // 信用籌碼趨勢圖

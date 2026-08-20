@@ -2,7 +2,8 @@ import {
     renderShortTermChart,
     renderTrendChart,
     renderCreditChart,
-    renderShortPositionChart
+    renderShortPositionChart,
+    renderRSIChart
 } from "../utils/charts.js";
 
 let detailOverlayData = null;
@@ -17,6 +18,7 @@ export function setupDetailOverlay() {
     const trendToggle = document.getElementById("trendToggle");
     const creditToggle = document.getElementById("creditToggle");
     const shortPositionToggle = document.getElementById("shortPositionToggle");
+    const rsiToggle = document.getElementById("rsiToggle");
 
     const detailOverlay = document.getElementById("detailOverlay");
     const closeDetail = document.getElementById("closeDetail");
@@ -29,43 +31,50 @@ export function setupDetailOverlay() {
     const trendChartSection = document.getElementById("trendChartSection");
     const creditChartSection = document.getElementById("creditChartSection");
     const shortPositionChartSection = document.getElementById("shortPositionChartSection");
-
+    const rsiChartSection = document.getElementById("rsiChartSection");
 
     // =========================
-    // 成交量
+    // 趨勢
     // =========================
 
-    volumeToggle.addEventListener("click", () => {
+    trendToggle.addEventListener("click", () => {
         if (!detailOverlayData) {
             return;
         }
 
-        const volumeDetail = detailOverlayData.volumeDetail;
+        const trend = detailOverlayData.trend;
 
-        detailTitle.textContent = "成交量分析";
-        detailSubtitle.textContent = "近 100 個交易日｜每日成交量與 20 日平均量";
+        detailTitle.textContent = "中長期趨勢";
+        detailSubtitle.textContent = "近 250 個交易日｜股價與 MA20 / MA60 / MA120 / MA240";
 
-        volumeChartSection.style.display = "block";
+        volumeChartSection.style.display = "none";
         shortTermChartSection.style.display = "none";
-        trendChartSection.style.display = "none";
+        trendChartSection.style.display = "block";
+        rsiChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
+        
+        const statusElement = document.getElementById("trendDetailStatus");
+        statusElement.textContent = trend.status.text;
+        statusElement.className = `status-value ${trend.status.type}`;
 
-        const statusElement = document.getElementById("volumeDetailStatus");
+        document.getElementById("trendDetailDescription").textContent = trend.status.description;
+        renderPercentValue("ma20Deviation", trend.deviations.ma20);
+        renderPercentValue("ma60Deviation", trend.deviations.ma60);
+        renderPercentValue("ma120Deviation", trend.deviations.ma120);
+        renderPercentValue("ma240Deviation", trend.deviations.ma240);
 
-        statusElement.textContent = volumeDetail.status.text;
-        statusElement.className = `status-value ${volumeDetail.status.type}`;
-
-        document.getElementById("volumeDetailDescription").textContent = volumeDetail.status.description;
-        renderPercentValue("volumePriceChange", volumeDetail.priceChange);
-
-        document.getElementById("volumeCurrent").textContent = `${Math.round(volumeDetail.volume / 1000).toLocaleString()} 張`;
-        document.getElementById("volumeAverage20").textContent = `${Math.round(volumeDetail.avgVolume20 / 1000).toLocaleString()} 張`;
-        document.getElementById("volumeDetailRatio").textContent = `${volumeDetail.volumeRatio.toFixed(2)}x`;
 
         detailOverlay.classList.add("open");
-    });
 
+        renderTrendChart(
+            detailOverlayData.data,
+            detailOverlayData.ma20History,
+            detailOverlayData.ma60History,
+            detailOverlayData.ma120History,
+            detailOverlayData.ma240History
+        );
+    });
 
     // =========================
     // 短線
@@ -85,6 +94,7 @@ export function setupDetailOverlay() {
         volumeChartSection.style.display = "none";
         shortTermChartSection.style.display = "block";
         trendChartSection.style.display = "none";
+        rsiChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
 
@@ -115,47 +125,81 @@ export function setupDetailOverlay() {
         );
     });
 
-
     // =========================
-    // 趨勢
+    // 成交量
     // =========================
 
-    trendToggle.addEventListener("click", () => {
+    volumeToggle.addEventListener("click", () => {
         if (!detailOverlayData) {
             return;
         }
 
-        const trend = detailOverlayData.trend;
+        const volumeDetail = detailOverlayData.volumeDetail;
 
-        detailTitle.textContent = "中長期趨勢";
-        detailSubtitle.textContent = "近 250 個交易日｜股價與 MA20 / MA60 / MA120 / MA240";
+        detailTitle.textContent = "成交量分析";
+        detailSubtitle.textContent = "近 100 個交易日｜每日成交量與 20 日平均量";
+
+        volumeChartSection.style.display = "block";
+        shortTermChartSection.style.display = "none";
+        trendChartSection.style.display = "none";
+        rsiChartSection.style.display = "none";
+        creditChartSection.style.display = "none";
+        shortPositionChartSection.style.display = "none";
+
+        const statusElement = document.getElementById("volumeDetailStatus");
+
+        statusElement.textContent = volumeDetail.status.text;
+        statusElement.className = `status-value ${volumeDetail.status.type}`;
+
+        document.getElementById("volumeDetailDescription").textContent = volumeDetail.status.description;
+        renderPercentValue("volumePriceChange", volumeDetail.priceChange);
+
+        document.getElementById("volumeCurrent").textContent = `${Math.round(volumeDetail.volume / 1000).toLocaleString()} 張`;
+        document.getElementById("volumeAverage20").textContent = `${Math.round(volumeDetail.avgVolume20 / 1000).toLocaleString()} 張`;
+        document.getElementById("volumeDetailRatio").textContent = `${volumeDetail.volumeRatio.toFixed(2)}x`;
+
+        detailOverlay.classList.add("open");
+    });
+
+    // =========================
+    // RSI
+    // =========================
+
+    rsiToggle.addEventListener("click", () => {
+        if (!detailOverlayData?.rsi) return;
+
+        const rsi = detailOverlayData.rsi;
+
+        detailTitle.textContent = "RSI";
+        detailSubtitle.textContent = "14 日 RSI｜短線動能強弱";
 
         volumeChartSection.style.display = "none";
         shortTermChartSection.style.display = "none";
-        trendChartSection.style.display = "block";
+        trendChartSection.style.display = "none";
+        rsiChartSection.style.display = "block";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
+
+        const statusElement = document.getElementById("rsiDetailStatus");
+        statusElement.textContent = rsi.status.text;
+        statusElement.className = `status-value ${rsi.status.type}`;
+
+        document.getElementById("rsiDetailValue").textContent = rsi.status.value.toFixed(2);
+        document.getElementById("rsiYesterday").textContent =
+            rsi.yesterday != null
+                ? rsi.yesterday.toFixed(2)
+                : "--";
+        document.getElementById("rsiChange5").textContent =
+            rsi.status.change5 != null
+                ? `${rsi.status.change5 >= 0 ? "+" : ""}${rsi.status.change5.toFixed(2)}`
+                : "--";
+        document.getElementById("rsiRange").textContent =rsi.status.range;
+        document.getElementById("rsiDetailDescription").textContent =rsi.status.description;
         
-        const statusElement = document.getElementById("trendDetailStatus");
-        statusElement.textContent = trend.status.text;
-        statusElement.className = `status-value ${trend.status.type}`;
-
-        document.getElementById("trendDetailDescription").textContent = trend.status.description;
-        renderPercentValue("ma20Deviation", trend.deviations.ma20);
-        renderPercentValue("ma60Deviation", trend.deviations.ma60);
-        renderPercentValue("ma120Deviation", trend.deviations.ma120);
-        renderPercentValue("ma240Deviation", trend.deviations.ma240);
-
-
+        renderRSIChart(rsi.history);
+        
         detailOverlay.classList.add("open");
-
-        renderTrendChart(
-            detailOverlayData.data,
-            detailOverlayData.ma20History,
-            detailOverlayData.ma60History,
-            detailOverlayData.ma120History,
-            detailOverlayData.ma240History
-        );
+    
     });
 
     // =========================
@@ -175,6 +219,7 @@ export function setupDetailOverlay() {
         volumeChartSection.style.display = "none";
         shortTermChartSection.style.display = "none";
         trendChartSection.style.display = "none";
+        rsiChartSection.style.display = "none";
         creditChartSection.style.display = "block";
         shortPositionChartSection.style.display = "none";
 
@@ -220,6 +265,7 @@ export function setupDetailOverlay() {
         volumeChartSection.style.display = "none";
         shortTermChartSection.style.display = "none";
         trendChartSection.style.display = "none";
+        rsiChartSection.style.display = "none";
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "block";
 
@@ -291,3 +337,4 @@ function renderPercentValue(elementId, value) {
         element.classList.add("value-neutral");
     }
 }
+

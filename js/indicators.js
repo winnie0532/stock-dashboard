@@ -333,7 +333,7 @@ export function calculateTechnicalIndicators(data) {
     const avgVolume20 = calculateAverageVolume(data, 20);
     const volumeRatio = latest.volume / avgVolume20;
 
-    const rsi14 = calculateRSI(data, 14);
+    const rsiHistory = calculateRSIHistory(data, 14);
 
     const kdHistory = calculateKD(data);
     const todayKD = kdHistory[kdHistory.length - 1];
@@ -368,7 +368,13 @@ export function calculateTechnicalIndicators(data) {
             ratio: volumeRatio
         },
 
-        rsi14,
+        rsi: {
+            value: rsiHistory[rsiHistory.length - 1]?.value ?? null,
+            history: rsiHistory,
+            today: rsiHistory[rsiHistory.length - 1] ?? null,
+            yesterday: rsiHistory[rsiHistory.length - 2] ?? null,
+            fiveDaysAgo: rsiHistory[rsiHistory.length - 6] ?? null
+        },
 
         kd: {
             history: kdHistory,
@@ -382,6 +388,70 @@ export function calculateTechnicalIndicators(data) {
             yesterday: yesterdayMACD
         }
     };
+}
+
+export function calculateRSIHistory(data, period = 14) {
+    if (!data || data.length <= period) {
+        return [];
+    }
+
+    const changes = [];
+
+    for (let i = 1; i < data.length; i++) {
+        changes.push(data[i].close - data[i - 1].close);
+    }
+
+    let gains = 0;
+    let losses = 0;
+
+    for (let i = 0; i < period; i++) {
+        const change = changes[i];
+
+        if (change > 0) {
+            gains += change;
+        } else {
+            losses += Math.abs(change);
+        }
+    }
+
+    let averageGain = gains / period;
+    let averageLoss = losses / period;
+
+    const history = [];
+
+    function getRSI() {
+        if (averageLoss === 0) {
+            return 100;
+        }
+
+        const rs = averageGain / averageLoss;
+        return 100 - (100 / (1 + rs));
+    }
+
+    history.push({
+        date: data[period].date,
+        value: getRSI()
+    });
+
+    for (let i = period; i < changes.length; i++) {
+        const change = changes[i];
+
+        const gain = change > 0 ? change : 0;
+        const loss = change < 0 ? Math.abs(change) : 0;
+
+        averageGain =
+            (averageGain * (period - 1) + gain) / period;
+
+        averageLoss =
+            (averageLoss * (period - 1) + loss) / period;
+
+        history.push({
+            date: data[i + 1].date,
+            value: getRSI()
+        });
+    }
+
+    return history;
 }
 
 // 融資／融券的「今日、5 日、20 日」餘額差

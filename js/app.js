@@ -5,7 +5,7 @@ import { analyzeTechnicalStatus } from "./technicalStatus.js";
 
 import {
     analyzeMarketStatus,
-    analyzePriceVolume
+    analyzePriceVolume,
 } from "./marketStatus.js";
 
 import {
@@ -69,7 +69,7 @@ async function init(stockId = "2330") {
             movingAverages,
             movingAverageHistory,
             volume,
-            rsi14,
+            rsi,
             kd,
             macd
         } = technicalIndicators;
@@ -112,7 +112,9 @@ async function init(stockId = "2330") {
             ma240: movingAverages.ma240,
 
             volumeRatio: volume.ratio,
-            rsi: rsi14,
+
+            rsi: rsi.value,
+            rsiFiveDaysAgo: rsi.fiveDaysAgo?.value ?? null,
 
             todayKD: kd.today,
             yesterdayKD: kd.yesterday,
@@ -134,7 +136,6 @@ async function init(stockId = "2330") {
             priceChanges.change1,
             volume.ratio
         );
-
 
         // =========================
         // 技術狀態
@@ -184,7 +185,7 @@ async function init(stockId = "2330") {
                 avgVolume20: volume.average20,
                 volumeRatio: volume.ratio,
 
-                rsi14,
+                rsi14: rsi.value,
 
                 kd: {
                     k: kd.today.k,
@@ -241,7 +242,13 @@ async function init(stockId = "2330") {
                 avgVolume20: volume.average20,
                 volumeRatio: volume.ratio
             },  
-            
+
+            rsi: {
+                status: marketStatus.rsi,
+                yesterday: rsi.yesterday?.value ?? null,
+                history: rsi.history
+            },
+
             credit: {
                 status: marketStatus.credit,
                 priceChange5: priceChanges.change5,
@@ -271,6 +278,7 @@ async function init(stockId = "2330") {
         console.log("價量關係:", priceVolumeStatus);
         console.log("市場狀態:", marketStatus);
         console.log("完整股票資料:", stockData);
+        console.log("marketStatus.rsi:", marketStatus.rsi);
 
     } catch (error) {
         console.error("取得股票資料失敗：", error);
