@@ -58,9 +58,12 @@ export function setupDetailOverlay() {
     // =========================
 
     shortTermToggle.addEventListener("click", () => {
+        
         if (!detailOverlayData) {
             return;
         }
+
+        const shortTerm = detailOverlayData.shortTerm;
 
         detailTitle.textContent = "短線趨勢";
         detailSubtitle.textContent = "近 100 個交易日｜股價與 MA5";
@@ -71,6 +74,25 @@ export function setupDetailOverlay() {
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
 
+        const statusElement = document.getElementById("shortTermDetailStatus");
+
+        statusElement.textContent = shortTerm.status.text;
+        statusElement.className = `status-value ${shortTerm.status.type}`;
+
+        document.getElementById("shortTermDetailDescription").textContent = shortTerm.status.description;
+
+        renderPercentValue("ma5Deviation", shortTerm.ma5Deviation);
+
+        document.getElementById("shortTermK").textContent = shortTerm.k.toFixed(2);
+        document.getElementById("shortTermD").textContent = shortTerm.d.toFixed(2);
+
+        document.getElementById("shortTermKDStatus").textContent =
+            shortTerm.k > shortTerm.d
+                ? "KD 偏多"
+                : shortTerm.k < shortTerm.d
+                    ? "KD 偏空"
+                    : "KD 中性";
+                    
         detailOverlay.classList.add("open");
 
         renderShortTermChart(
@@ -217,7 +239,7 @@ export function setupDetailOverlay() {
         // =========================
         renderPercentValue("shortMargin5", shortPosition.marginShort5Percent);
         renderPercentValue("shortSbl5", shortPosition.sbl5Percent);
-        
+
         renderShortPositionChart(
             detailOverlayData.data,
             detailOverlayData.shortSaleBalanceData

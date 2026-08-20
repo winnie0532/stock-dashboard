@@ -83,7 +83,40 @@
 
                         <!-- 短線趨勢圖 -->
                         <div class="detail-chart" id="shortTermChartSection">
-                            <canvas id="shortTermChart"></canvas>
+
+                            <div class="credit-summary">
+                                <div class="credit-summary-header">
+                                    <div id="shortTermDetailStatus">--</div>
+                                    <div id="shortTermDetailDescription">--</div>
+                                </div>
+
+                                <div class="credit-summary-grid">
+                                    <div class="credit-summary-item">
+                                        <span>股價 vs MA5</span>
+                                        <strong id="ma5Deviation">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>K 值</span>
+                                        <strong id="shortTermK">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>D 值</span>
+                                        <strong id="shortTermD">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>KD 結構</span>
+                                        <strong id="shortTermKDStatus">--</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="credit-chart-container">
+                                <canvas id="shortTermChart"></canvas>
+                            </div>
+
                         </div>
 
                         <!-- 中長期趨勢圖 -->
@@ -128,14 +161,12 @@
                         <div class="detail-chart" id="creditChartSection">
 
                             <div class="credit-summary" id="creditSummary">
-
                                 <div class="credit-summary-header">
                                     <div id="creditDetailStatus">--</div>
                                     <div id="creditDetailDescription">--</div>
                                 </div>
 
                                 <div class="credit-summary-grid">
-
                                     <div class="credit-summary-item">
                                         <span>20 日股價</span>
                                         <strong id="creditPrice20">--</strong>
@@ -155,28 +186,25 @@
                                         <span>5 日融資</span>
                                         <strong id="creditMargin5">--</strong>
                                     </div>
-
                                 </div>
-
                             </div>
 
                             <div class="credit-chart-container">
                                 <canvas id="creditChart"></canvas>
                             </div>
+
                         </div>
 
                         <!-- 空方籌碼圖表 -->
                         <div class="detail-chart" id="shortPositionChartSection">
 
                             <div class="credit-summary">
-
                                 <div class="credit-summary-header">
                                     <div id="shortPositionDetailStatus">--</div>
                                     <div id="shortPositionDetailDescription">--</div>
                                 </div>
 
                                 <div class="credit-summary-grid">
-
                                     <div class="credit-summary-item">
                                         <span>20 日融券</span>
                                         <strong id="shortMargin20">--</strong>
@@ -196,15 +224,12 @@
                                         <span>5 日借券賣出</span>
                                         <strong id="shortSbl5">--</strong>
                                     </div>
-
                                 </div>
-
                             </div>
 
                             <div class="credit-chart-container">
                                 <canvas id="shortPositionChart"></canvas>
                             </div>
-
                         </div>
                     </div>
                 </div>

@@ -551,6 +551,7 @@ export function calculateShortSaleIndicators(data) {
 
 export function calculateMADeviations(price, movingAverages) {
     return {
+        ma5: calculateDeviation(price, movingAverages.ma5),
         ma20: calculateDeviation(price, movingAverages.ma20),
         ma60: calculateDeviation(price, movingAverages.ma60),
         ma120: calculateDeviation(price, movingAverages.ma120),

@@ -207,6 +207,13 @@ async function init(stockId = "2330") {
                 deviations: maDeviations
             },
 
+            shortTerm: {
+                status: marketStatus.shortTerm,
+                ma5Deviation: maDeviations.ma5,
+                k: kd.today.k,
+                d: kd.today.d
+            },
+
             credit: {
                 status: marketStatus.credit,
                 priceChange5,

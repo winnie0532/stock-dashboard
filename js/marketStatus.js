@@ -157,42 +157,42 @@ function analyzeShortTerm(price, ma5, todayKD, yesterdayKD) {
         yesterdayKD.k <= yesterdayKD.d &&
         todayKD.k > todayKD.d;
 
-    // 今天剛轉強
     if (price > ma5 && kdGoldenCross) {
         return {
             type: "positive",
-            text: "動能轉強"
+            text: "動能轉強",
+            description: "股價站上 5 日線，且 KD 今日出現黃金交叉"
         };
     }
 
-    // 今天剛轉弱
     if (price < ma5 && kdDeathCross) {
         return {
             type: "danger",
-            text: "動能轉弱"
+            text: "動能轉弱",
+            description: "股價跌破 5 日線，且 KD 今日出現死亡交叉"
         };
     }
 
-    // 維持短線強勢
     if (price > ma5 && todayKD.k > todayKD.d) {
         return {
             type: "positive",
-            text: "短線偏強"
+            text: "短線偏強",
+            description: "股價站上 5 日線，且 K 值高於 D 值，短線動能偏多"
         };
     }
 
-    // 維持短線弱勢
     if (price < ma5 && todayKD.k < todayKD.d) {
         return {
             type: "danger",
-            text: "短線偏弱"
+            text: "短線偏弱",
+            description: "股價跌破 5 日線，且 K 值低於 D 值，短線動能偏空"
         };
     }
 
-    // 股價與 KD 訊號不同方向
     return {
         type: "neutral",
-        text: "短線中性"
+        text: "短線中性",
+        description: "股價與 MA5、KD 訊號方向不一致，短線尚未形成明確方向"
     };
 }
 
