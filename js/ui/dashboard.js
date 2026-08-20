@@ -28,11 +28,11 @@ export function renderDashboard(stockData) {
         element.textContent = `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
 
         if (value > 0) {
-            element.className = "status-value positive";
+            element.className = "value-up";
         } else if (value < 0) {
-            element.className = "status-value danger";
+            element.className = "value-down";
         } else {
-            element.className = "status-value neutral";
+            element.className = "value-neutral";
         }
     }
 
@@ -134,11 +134,11 @@ export function renderDashboard(stockData) {
             `${lots >= 0 ? "+" : ""}${Math.round(lots).toLocaleString()} 張`;
 
         if (lots > 0) {
-            element.className = "status-value positive";
+            element.className = "value-up";
         } else if (lots < 0) {
-            element.className = "status-value danger";
+            element.className = "value-down";
         } else {
-            element.className = "status-value neutral";
+            element.className = "value-neutral";
         }
     }
 

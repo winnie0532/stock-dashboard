@@ -141,25 +141,7 @@ body {
 .status-row span:last-child {
     font-weight: 600;
 }
-.status-value {
-    font-weight: 600;
-}
-
-.status-value.positive {
-    color: #047857;
-}
-
-.status-value.warning {
-    color: #b45309;
-}
-
-.status-value.danger {
-    color: #b91c1c;
-}
-
-.status-value.neutral {
-    color: #6b7280;
-}
+.status-value { font-weight: 600; }
 
 .detail-overlay {
     position: fixed;
@@ -354,76 +336,6 @@ body {
     text-align: right;
 }
 
-
-/* =========================
-   Responsive
-========================= */
-
-@media (max-width: 800px) {
-    .technical-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .status-grid,
-    .performance-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .stock-header {
-        align-items: flex-start;
-    }
-}
-
-@media (max-width: 520px) {
-    .dashboard {
-        width: min(100% - 20px, 1100px);
-        margin: 20px auto;
-    }
-
-    .stock-header {
-        flex-direction: column;
-        gap: 20px;
-
-        padding: 22px;
-    }
-
-    .stock-header h1 {
-        font-size: 24px;
-    }
-
-    .stock-price {
-        font-size: 32px;
-    }
-
-    .dashboard-section {
-        padding: 22px;
-    }
-
-    .performance-summary {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-    .performance-title {
-        margin-bottom: 8px;
-    }
-
-    .performance-item {
-        justify-content: space-between;
-        padding: 12px 0;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .performance-item:last-child {
-        border-bottom: none;
-    }
-
-    .ma-status-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
 /* =========================
    籌碼面
 ========================= */
@@ -489,20 +401,6 @@ body {
 
 .institutional-table > div:nth-last-child(-n + 4) {
     border-bottom: none;
-}
-
-.institutional-table .positive {
-    color: #047857;
-    font-weight: 600;
-}
-
-.institutional-table .danger {
-    color: #b91c1c;
-    font-weight: 600;
-}
-
-.institutional-table .neutral {
-    color: var(--text);
 }
 
 .institutional-header {
@@ -645,20 +543,85 @@ body {
     height: 380px;
 }
 
-.value-up {
-    color: #dc2626;
-}
+/* 分析狀態 */
+.status-value.positive { color: #047857; }
+.status-value.warning { color: #b45309; }
+.status-value.danger { color: #b91c1c; }
+.status-value.neutral { color: #6b7280; }
 
-.value-down {
-    color: #059669;
-}
+/* 數值方向 */
+.value-up { color: #dc2626; }
+.value-down { color: #059669; }
+.value-neutral { color: var(--text); }
 
-.value-neutral {
-    color: var(--text);
-}
 /* =========================
    手機版
 ========================= */
+
+@media (max-width: 800px) {
+    .technical-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .status-grid,
+    .performance-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stock-header {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 520px) {
+    .dashboard {
+        width: min(100% - 20px, 1100px);
+        margin: 20px auto;
+    }
+
+    .stock-header {
+        flex-direction: column;
+        gap: 20px;
+
+        padding: 22px;
+    }
+
+    .stock-header h1 {
+        font-size: 24px;
+    }
+
+    .stock-price {
+        font-size: 32px;
+    }
+
+    .dashboard-section {
+        padding: 22px;
+    }
+
+    .performance-summary {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .performance-title {
+        margin-bottom: 8px;
+    }
+
+    .performance-item {
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .performance-item:last-child {
+        border-bottom: none;
+    }
+
+    .ma-status-grid {
+        grid-template-columns: 1fr;
+    }
+}
 
 @media (max-width: 520px) {
 

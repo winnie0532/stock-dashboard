@@ -178,14 +178,14 @@ function setMarginValue(elementId, value) {
     }
 
     element.classList.remove(
-        "positive",
-        "danger",
-        "neutral"
+        "value-up",
+        "value-down",
+        "value-neutral"
     );
 
     if (value === null || value === undefined) {
         element.textContent = "--";
-        element.classList.add("neutral");
+        element.classList.add("value-neutral");
         return;
     }
 
@@ -193,12 +193,12 @@ function setMarginValue(elementId, value) {
 
     if (value > 0) {
         element.textContent = `+${formattedValue} 張`;
-        element.classList.add("positive");
+        element.classList.add("value-up");
     } else if (value < 0) {
         element.textContent = `-${formattedValue} 張`;
-        element.classList.add("danger");
+        element.classList.add("value-down");
     } else {
         element.textContent = "0 張";
-        element.classList.add("neutral");
+        element.classList.add("value-neutral");
     }
 }
