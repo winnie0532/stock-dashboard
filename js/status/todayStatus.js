@@ -93,74 +93,108 @@ function buildChipEvents({
 }) {
     const events = [];
 
-    const statuses = [
-        {
-            name: "法人",
-            status: institutionalStatus
-        },
-        {
-            name: "信用籌碼",
-            status: creditStatus
-        },
-        {
-            name: "空方籌碼",
-            status: shortPositionStatus
-        }
-    ];
+    const institutional =
+        institutionalStatus?.type;
 
-    const positive = statuses.filter(
-        item => item.status?.type === "positive"
-    );
+    const credit =
+        creditStatus?.type;
 
-    const danger = statuses.filter(
-        item => item.status?.type === "danger"
-    );
+    const short =
+        shortPositionStatus?.type;
 
-    // 三項一致偏多
-    if (positive.length === 3) {
-        events.push({
-            type: "positive",
-            text: "籌碼一致偏多｜法人、信用籌碼、空方籌碼皆偏多"
-        });
 
-        return events;
-    }
+    // =========================
+    // 三方壓力明顯
+    // =========================
 
-    // 三項一致偏空
-    if (danger.length === 3) {
+    if (
+        institutional === "danger" &&
+        credit === "danger" &&
+        short === "danger"
+    ) {
         events.push({
             type: "danger",
-            text: "籌碼一致偏空｜法人、信用籌碼、空方籌碼皆偏空"
+            text: "籌碼壓力明顯"
         });
 
         return events;
     }
 
-    // 兩多一空
-    if (positive.length === 2 && danger.length === 1) {
+
+    // =========================
+    // 結構偏弱
+    // 信用結構本身惡化 + 另一項負面
+    // =========================
+
+    if (
+        credit === "danger" &&
+        (
+            institutional === "danger" ||
+            short === "danger"
+        )
+    ) {
+        events.push({
+            type: "danger",
+            text: "籌碼結構轉弱"
+        });
+
+        return events;
+    }
+
+
+    // =========================
+    // 結構健康
+    // 信用籌碼健康，且沒有兩項明顯壓力
+    // =========================
+
+    if (
+        credit === "positive" &&
+        !(
+            institutional === "danger" &&
+            short === "danger"
+        )
+    ) {
+        events.push({
+            type: "positive",
+            text: "籌碼結構健康"
+        });
+
+        return events;
+    }
+
+
+    // =========================
+    // 多空拉鋸
+    // 法人與空方方向相反
+    // =========================
+
+    if (
+        (
+            institutional === "positive" &&
+            short === "danger"
+        ) ||
+        (
+            institutional === "danger" &&
+            short === "positive"
+        )
+    ) {
         events.push({
             type: "warning",
-            text:
-                `籌碼偏多｜` +
-                `${positive.map(item => item.name).join("、")}偏多；` +
-                `${danger[0].name}偏空`
+            text: "多空籌碼拉鋸"
         });
 
         return events;
     }
 
-    // 兩空一多
-    if (danger.length === 2 && positive.length === 1) {
-        events.push({
-            type: "warning",
-            text:
-                `籌碼偏空｜` +
-                `${danger.map(item => item.name).join("、")}偏空；` +
-                `${positive[0].name}偏多`
-        });
 
-        return events;
-    }
+    // =========================
+    // 其他
+    // =========================
+
+    events.push({
+        type: "warning",
+        text: "籌碼整理中"
+    });
 
     return events;
 }
