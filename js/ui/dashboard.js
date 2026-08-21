@@ -238,4 +238,37 @@ export function renderDashboard(stockData) {
         "dealer60",
         stockData.institutional.recent.dealer.day60
     );
+
+    // 基本面與估值
+    const fundamentals = stockData.fundamentals;
+
+    document.getElementById("fundamentalEps").textContent =
+        fundamentals.profitability.eps != null
+            ? `${fundamentals.profitability.eps.toFixed(2)} 元`
+            : "--";
+
+    document.getElementById("fundamentalPe").textContent =
+        fundamentals.valuation.pe != null
+            ? `${fundamentals.valuation.pe.toFixed(2)} 倍`
+            : "--";
+
+    document.getElementById("fundamentalDividendYield").textContent =
+        fundamentals.valuation.dividendYield != null
+            ? `${fundamentals.valuation.dividendYield.toFixed(2)}%`
+            : "--";
+
+    document.getElementById("fundamentalPb").textContent =
+        fundamentals.valuation.pb != null
+            ? `${fundamentals.valuation.pb.toFixed(2)} 倍`
+            : "--";
+
+    document.getElementById("fundamentalRoe").textContent =
+        fundamentals.profitability.roe != null
+            ? `${fundamentals.profitability.roe.toFixed(2)}%`
+            : "--";
+
+    document.getElementById("fundamentalRevenueYoY").textContent =
+        fundamentals.growth.revenueYoY != null
+            ? `${fundamentals.growth.revenueYoY.toFixed(2)}%`
+            : "--";
 }
