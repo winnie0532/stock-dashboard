@@ -1,11 +1,19 @@
 const FINMIND_URL = "https://api.finmindtrade.com/api/v4/data";
 
-export async function fetchStockHistory(stockId, startDate) {
+
+// =========================
+// FinMind 共用 API
+// =========================
+
+async function fetchFinMindData(dataset, stockId, startDate = null) {
     const params = new URLSearchParams({
-        dataset: "TaiwanStockPrice",
-        data_id: stockId,
-        start_date: startDate
+        dataset,
+        data_id: stockId
     });
+
+    if (startDate) {
+        params.set("start_date", startDate);
+    }
 
     const response = await fetch(`${FINMIND_URL}?${params}`);
 
@@ -19,7 +27,22 @@ export async function fetchStockHistory(stockId, startDate) {
         throw new Error(result.msg || "FinMind API error");
     }
 
-    return result.data.map(item => ({
+    return result.data || [];
+}
+
+
+// =========================
+// 股價資料
+// =========================
+
+export async function fetchStockHistory(stockId, startDate) {
+    const data = await fetchFinMindData(
+        "TaiwanStockPrice",
+        stockId,
+        startDate
+    );
+
+    return data.map(item => ({
         date: item.date,
         open: item.open,
         high: item.max,
@@ -29,46 +52,18 @@ export async function fetchStockHistory(stockId, startDate) {
     }));
 }
 
-export async function fetchInstitutionalHistory(stockId, startDate) {
-    const params = new URLSearchParams({
-        dataset: "TaiwanStockInstitutionalInvestorsBuySell",
-        data_id: stockId,
-        start_date: startDate
-    });
 
-    const response = await fetch(`${FINMIND_URL}?${params}`);
+// =========================
+// 股票基本資訊
+// =========================
 
-    if (!response.ok) {
-        throw new Error(`FinMind API error: ${response.status}`);
-    }
-
-    const result = await response.json();
-
-    if (result.status !== 200) {
-        throw new Error(result.msg || "FinMind API error");
-    }
-
-    return result.data;
-}
 export async function fetchStockInfo(stockId) {
-    const params = new URLSearchParams({
-        dataset: "TaiwanStockInfo",
-        data_id: stockId
-    });
+    const data = await fetchFinMindData(
+        "TaiwanStockInfo",
+        stockId
+    );
 
-    const response = await fetch(`${FINMIND_URL}?${params}`);
-
-    if (!response.ok) {
-        throw new Error(`FinMind API error: ${response.status}`);
-    }
-
-    const result = await response.json();
-
-    if (result.status !== 200) {
-        throw new Error(result.msg || "FinMind API error");
-    }
-
-    const stock = result.data?.[0];
+    const stock = data[0];
 
     if (!stock) {
         throw new Error(`找不到股票代號：${stockId}`);
@@ -81,48 +76,81 @@ export async function fetchStockInfo(stockId) {
         market: stock.type
     };
 }
-//融資融券資料
-export async function fetchMarginData(stockId, startDate) {
-    const url =
-        `https://api.finmindtrade.com/api/v4/data` +
-        `?dataset=TaiwanStockMarginPurchaseShortSale` +
-        `&data_id=${stockId}` +
-        `&start_date=${startDate}`;
 
-    const response = await fetch(url);
 
-    if (!response.ok) {
-        throw new Error(`取得融資融券資料失敗：${response.status}`);
-    }
+// =========================
+// 籌碼面資料
+// =========================
 
-    const result = await response.json();
-
-    if (!result.data) {
-        throw new Error("融資融券資料格式錯誤");
-    }
-
-    return result.data;
+// 三大法人
+export async function fetchInstitutionalHistory(stockId, startDate) {
+    return fetchFinMindData(
+        "TaiwanStockInstitutionalInvestorsBuySell",
+        stockId,
+        startDate
+    );
 }
 
-// 借券賣出餘額資料
+
+// 融資融券
+export async function fetchMarginData(stockId, startDate) {
+    return fetchFinMindData(
+        "TaiwanStockMarginPurchaseShortSale",
+        stockId,
+        startDate
+    );
+}
+
+
+// 借券賣出餘額
 export async function fetchShortSaleBalanceData(stockId, startDate) {
-    const url =
-        `https://api.finmindtrade.com/api/v4/data` +
-        `?dataset=TaiwanDailyShortSaleBalances` +
-        `&data_id=${stockId}` +
-        `&start_date=${startDate}`;
+    return fetchFinMindData(
+        "TaiwanDailyShortSaleBalances",
+        stockId,
+        startDate
+    );
+}
 
-    const response = await fetch(url);
 
-    if (!response.ok) {
-        throw new Error(`取得借券賣出資料失敗：${response.status}`);
-    }
+// =========================
+// 基本面資料
+// =========================
 
-    const result = await response.json();
+// 本益比 / 股價淨值比 / 殖利率
+export async function fetchPERData(stockId, startDate) {
+    return fetchFinMindData(
+        "TaiwanStockPER",
+        stockId,
+        startDate
+    );
+}
 
-    if (!result.data) {
-        throw new Error("借券賣出資料格式錯誤");
-    }
 
-    return result.data;
+// 月營收
+export async function fetchMonthlyRevenue(stockId, startDate) {
+    return fetchFinMindData(
+        "TaiwanStockMonthRevenue",
+        stockId,
+        startDate
+    );
+}
+
+
+// 綜合損益表
+export async function fetchFinancialStatements(stockId, startDate) {
+    return fetchFinMindData(
+        "TaiwanStockFinancialStatements",
+        stockId,
+        startDate
+    );
+}
+
+
+// 資產負債表
+export async function fetchBalanceSheet(stockId, startDate) {
+    return fetchFinMindData(
+        "TaiwanStockBalanceSheet",
+        stockId,
+        startDate
+    );
 }
