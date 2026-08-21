@@ -65,8 +65,7 @@ function analyzeTrend(price, ma20, ma60, ma120, ma240) {
         return {
             type: "positive",
             text: "多頭排列",
-            description:
-                "股價與主要均線呈完整多頭排列，中長期趨勢強勢"
+            description: "股價與主要均線呈完整多頭排列，中長期趨勢強勢"
         };
     }
 
@@ -86,8 +85,7 @@ function analyzeTrend(price, ma20, ma60, ma120, ma240) {
         return {
             type: "positive",
             text: "中期偏多",
-            description:
-                "股價站上月線、季線、半年線與年線，但均線尚未形成完整多頭排列"
+            description: "股價站上月線、季線、半年線與年線，但均線尚未形成完整多頭排列"
         };
     }
 
@@ -106,8 +104,7 @@ function analyzeTrend(price, ma20, ma60, ma120, ma240) {
         return {
             type: "danger",
             text: "空頭排列",
-            description:
-                "股價與主要均線呈完整空頭排列，中長期趨勢弱勢"
+            description: "股價與主要均線呈完整空頭排列，中長期趨勢弱勢"
         };
     }
 
@@ -127,8 +124,7 @@ function analyzeTrend(price, ma20, ma60, ma120, ma240) {
         return {
             type: "danger",
             text: "中期偏空",
-            description:
-                "股價跌破月線、季線、半年線與年線，但均線尚未形成完整空頭排列"
+            description: "股價跌破月線、季線、半年線與年線，但均線尚未形成完整空頭排列"
         };
     }
 
@@ -141,8 +137,7 @@ function analyzeTrend(price, ma20, ma60, ma120, ma240) {
     return {
         type: "warning",
         text: "趨勢整理",
-        description:
-            "股價與主要均線位置交錯，中長期方向尚未形成一致趨勢"
+        description: "股價與主要均線位置交錯，中長期方向尚未形成一致趨勢"
     };
 }
 
@@ -823,7 +818,7 @@ function analyzeShortPositionStatus(
 // =========================
 // 首頁欄位：獲利
 // 判斷依據：TTM EPS 年增率 + ROE(TTM) 年變化
-// 目的：判斷公司獲利能力是否改善、穩健、分歧或轉弱
+// 目的：判斷公司獲利能力是否成長、穩健、分歧或轉弱
 // =========================
 
 function analyzeProfitabilityStatus(profitability) {
@@ -854,12 +849,12 @@ function analyzeProfitabilityStatus(profitability) {
     const roeChange =  latestROE - previousYearROE;
 
     // =========================
-    // 明顯改善
+    // 明顯成長
     // =========================
 
     if (epsGrowth >= 20 && roeChange >= 5) {
         return {
-            text: "獲利明顯改善",
+            text: "獲利明顯成長",
             type: "positive",
             epsGrowth,
             roeChange
@@ -896,7 +891,7 @@ function analyzeProfitabilityStatus(profitability) {
     }
 
     // =========================
-    // 改善
+    // 成長
     // =========================
 
     if (
@@ -904,7 +899,7 @@ function analyzeProfitabilityStatus(profitability) {
         (roeChange > 3 && epsGrowth >= -10)
     ) {
         return {
-            text: "獲利改善",
+            text: "獲利成長",
             type: "positive",
             epsGrowth,
             roeChange

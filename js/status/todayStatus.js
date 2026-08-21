@@ -94,48 +94,71 @@ function buildChipEvents({
     const events = [];
 
     const statuses = [
-        institutionalStatus,
-        creditStatus,
-        shortPositionStatus
+        {
+            name: "法人",
+            status: institutionalStatus
+        },
+        {
+            name: "信用籌碼",
+            status: creditStatus
+        },
+        {
+            name: "空方籌碼",
+            status: shortPositionStatus
+        }
     ];
 
-    const positiveCount = statuses.filter(
-        status => status?.type === "positive"
-    ).length;
+    const positive = statuses.filter(
+        item => item.status?.type === "positive"
+    );
 
-    const dangerCount = statuses.filter(
-        status => status?.type === "danger"
-    ).length;
+    const danger = statuses.filter(
+        item => item.status?.type === "danger"
+    );
 
-    if (positiveCount === 3) {
+    // 三項一致偏多
+    if (positive.length === 3) {
         events.push({
             type: "positive",
-            text: "籌碼明顯轉強"
+            text: "籌碼一致偏多｜法人、信用籌碼、空方籌碼皆偏多"
         });
+
         return events;
     }
 
-    if (dangerCount === 3) {
+    // 三項一致偏空
+    if (danger.length === 3) {
         events.push({
             type: "danger",
-            text: "籌碼明顯轉弱"
+            text: "籌碼一致偏空｜法人、信用籌碼、空方籌碼皆偏空"
         });
+
         return events;
     }
 
-    if (positiveCount === 2 && dangerCount === 1) {
+    // 兩多一空
+    if (positive.length === 2 && danger.length === 1) {
         events.push({
             type: "warning",
-            text: "籌碼偏多但有分歧"
+            text:
+                `籌碼偏多｜` +
+                `${positive.map(item => item.name).join("、")}偏多；` +
+                `${danger[0].name}偏空`
         });
+
         return events;
     }
 
-    if (dangerCount === 2 && positiveCount === 1) {
+    // 兩空一多
+    if (danger.length === 2 && positive.length === 1) {
         events.push({
             type: "warning",
-            text: "籌碼偏空但有分歧"
+            text:
+                `籌碼偏空｜` +
+                `${danger.map(item => item.name).join("、")}偏空；` +
+                `${positive[0].name}偏多`
         });
+
         return events;
     }
 
