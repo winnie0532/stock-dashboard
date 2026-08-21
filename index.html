@@ -86,6 +86,11 @@
                     <span id="shortPositionStatus">--</span>
                 </div>
 
+                <div class="status-row" id="profitabilityToggle">
+                    <span>獲利</span>
+                    <span id="profitabilityStatus">--</span>
+                </div>
+
                 <!-- 詳細頁區塊 -->
                 <div class="detail-overlay" id="detailOverlay">
                     <div class="detail-panel">
@@ -380,6 +385,43 @@
                                 <canvas id="shortPositionChart"></canvas>
                             </div>
                         </div>
+
+                        <!-- 獲利能力 -->
+                        <div class="detail-chart" id="profitabilityChartSection">
+
+                            <div class="credit-summary">
+                                <div class="credit-summary-header">
+                                    <div id="profitabilityDetailStatus">--</div>
+                                </div>
+
+                                <div class="credit-summary-grid">
+                                    <div class="credit-summary-item">
+                                        <span>EPS（TTM）</span>
+                                        <strong id="profitabilityEPS">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>EPS 年增</span>
+                                        <strong id="profitabilityEPSYoY">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>ROE（TTM）</span>
+                                        <strong id="profitabilityROE">--</strong>
+                                    </div>
+
+                                    <div class="credit-summary-item">
+                                        <span>ROE 年變化</span>
+                                        <strong id="profitabilityROEChange">--</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="credit-chart-container">
+                                <h3>EPS 與 ROE 趨勢</h3>
+                                <canvas id="profitabilityChart"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -642,23 +684,23 @@
                 </div>
 
                 <div class="fundamental-item">
+                    <span>P/B</span>
+                    <strong id="fundamentalPb">--</strong>
+                </div>
+                
+                <div class="fundamental-item">
                     <span>殖利率</span>
                     <strong id="fundamentalDividendYield">--</strong>
                 </div>
 
                 <div class="fundamental-item">
-                    <span>P/B</span>
-                    <strong id="fundamentalPb">--</strong>
+                    <span>營收年增率</span>
+                    <strong id="fundamentalRevenueYoY">--</strong>
                 </div>
 
                 <div class="fundamental-item">
                     <span>ROE</span>
                     <strong id="fundamentalRoe">--</strong>
-                </div>
-
-                <div class="fundamental-item">
-                    <span>營收年增率</span>
-                    <strong id="fundamentalRevenueYoY">--</strong>
                 </div>
             </div>
         </section>

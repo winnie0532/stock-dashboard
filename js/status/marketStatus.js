@@ -16,7 +16,8 @@ export function analyzeMarketStatus({
     priceChange5,
     priceChange20,
     marginIndicators,
-    shortSaleIndicators
+    shortSaleIndicators,
+    profitability
 }) {
     return {
         trend: analyzeTrend(latestPrice, ma20, ma60, ma120, ma240),
@@ -38,7 +39,8 @@ export function analyzeMarketStatus({
         shortPosition: analyzeShortPositionStatus(
             marginIndicators,
             shortSaleIndicators
-        )
+        ),
+        profitability: analyzeProfitabilityStatus(profitability)
     };
 }
 
@@ -815,5 +817,119 @@ function analyzeShortPositionStatus(
         text: "空方中性",
         description:
             "融券與借券賣出餘額皆無明顯變化"
+    };
+}
+
+// =========================
+// 首頁欄位：獲利
+// 判斷依據：TTM EPS 年增率 + ROE(TTM) 年變化
+// 目的：判斷公司獲利能力是否改善、穩健、分歧或轉弱
+// =========================
+
+function analyzeProfitabilityStatus(profitability) {
+    const { ttmEPSHistory, roeHistory } = profitability;
+    
+
+    if (
+        !ttmEPSHistory ||
+        ttmEPSHistory.length < 5 ||
+        !roeHistory ||
+        roeHistory.length < 5
+    ) {
+        return {
+            text: "資料不足",
+            type: "neutral",
+            epsGrowth: null,
+            roeChange: null
+        };
+    }
+
+    const latestEPS = ttmEPSHistory.at(-1).eps;
+    const previousYearEPS = ttmEPSHistory.at(-5).eps;
+
+    const latestROE = roeHistory.at(-1).roe;
+    const previousYearROE = roeHistory.at(-5).roe;
+
+    const epsGrowth = ((latestEPS - previousYearEPS) / Math.abs(previousYearEPS)) * 100;
+    const roeChange =  latestROE - previousYearROE;
+
+    // =========================
+    // 明顯改善
+    // =========================
+
+    if (epsGrowth >= 20 && roeChange >= 5) {
+        return {
+            text: "獲利明顯改善",
+            type: "positive",
+            epsGrowth,
+            roeChange
+        };
+    }
+
+    // =========================
+    // 明顯惡化
+    // =========================
+
+    if (epsGrowth <= -20 && roeChange <= -5) {
+        return {
+            text: "獲利明顯惡化",
+            type: "danger",
+            epsGrowth,
+            roeChange
+        };
+    }
+
+    // =========================
+    // 分歧
+    // =========================
+
+    if (
+        (epsGrowth > 10 && roeChange < -3) ||
+        (epsGrowth < -10 && roeChange > 3)
+    ) {
+        return {
+            text: "獲利分歧",
+            type: "warning",
+            epsGrowth,
+            roeChange
+        };
+    }
+
+    // =========================
+    // 改善
+    // =========================
+
+    if (
+        (epsGrowth > 10 && roeChange >= -3) ||
+        (roeChange > 3 && epsGrowth >= -10)
+    ) {
+        return {
+            text: "獲利改善",
+            type: "positive",
+            epsGrowth,
+            roeChange
+        };
+    }
+
+    // =========================
+    // 轉弱
+    // =========================
+
+    if (
+        (epsGrowth < -10 && roeChange <= 3) ||
+        (roeChange < -3 && epsGrowth <= 10)
+    ) {
+        return {
+            text: "獲利轉弱",
+            type: "warning",
+            epsGrowth,
+            roeChange
+        };
+    }
+    return {
+        text: "獲利穩健",
+        type: "neutral",
+        epsGrowth,
+        roeChange
     };
 }

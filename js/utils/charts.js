@@ -39,7 +39,17 @@ function createZoomOptions() {
         }
     };
 }
+function formatQuarter(date) {
+    const d = new Date(date);
 
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+
+    const quarter =
+        Math.ceil(month / 3);
+
+    return `${year} Q${quarter}`;
+}
 
 // =========================
 // Chart instances
@@ -53,6 +63,7 @@ let macdChart = null;
 let institutionalChart = null;
 let creditChart = null;
 let shortPositionChart = null;
+let profitabilityChartInstance = null;
 
 // =========================
 // 成交量趨勢圖
@@ -254,44 +265,17 @@ export function renderTrendChart(
 
 
     const recentData = data.slice(-250);
+    const recentMA20 = ma20History.slice(-250);
+    const recentMA60 = ma60History.slice(-250);
+    const recentMA120 = ma120History.slice(-250);
+    const recentMA240 = ma240History.slice(-250);
 
-    const recentMA20 =
-        ma20History.slice(-250);
-
-    const recentMA60 =
-        ma60History.slice(-250);
-
-    const recentMA120 =
-        ma120History.slice(-250);
-
-    const recentMA240 =
-        ma240History.slice(-250);
-
-
-    const labels = recentData.map(
-        item => formatChartDate(item.date)
-    );
-
-
-    const prices = recentData.map(
-        item => item.close
-    );
-
-    const ma20 = recentMA20.map(
-        item => item.value
-    );
-
-    const ma60 = recentMA60.map(
-        item => item.value
-    );
-
-    const ma120 = recentMA120.map(
-        item => item.value
-    );
-
-    const ma240 = recentMA240.map(
-        item => item.value
-    );
+    const labels = recentData.map(item => formatChartDate(item.date));
+    const prices = recentData.map(item => item.close);
+    const ma20 = recentMA20.map(item => item.value);
+    const ma60 = recentMA60.map(item => item.value);
+    const ma120 = recentMA120.map(item => item.value);
+    const ma240 = recentMA240.map(item => item.value);
 
 
     if (trendChart) {
@@ -306,20 +290,6 @@ export function renderTrendChart(
             labels,
 
             datasets: [
-                {
-                    label: "股價",
-                    data: prices,
-
-                    borderColor: "#2196f3",
-                    backgroundColor: "rgba(33, 150, 243, 0.10)",
-
-                    fill: true,
-
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    tension: 0.2
-                },
-
                 {
                     label: "MA20",
                     data: ma20,
@@ -366,6 +336,19 @@ export function renderTrendChart(
                     borderColor: "#4bc0c0",
 
                     fill: false,
+
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                },
+                {
+                    label: "股價",
+                    data: prices,
+
+                    borderColor: "#2196f3",
+                    backgroundColor: "rgba(33, 150, 243, 0.10)",
+
+                    fill: true,
 
                     borderWidth: 2,
                     pointRadius: 0,
@@ -973,4 +956,126 @@ export function renderShortPositionChart(
             }
         }
     });
+}
+
+// =========================
+// TTM EPS ROE 趨勢圖
+// =========================
+export function renderProfitabilityChart(
+    ttmEPSHistory,
+    roeHistory
+) {
+    if (
+        !ttmEPSHistory ||
+        !roeHistory ||
+        ttmEPSHistory.length === 0 ||
+        roeHistory.length === 0
+    ) {
+        return;
+    }
+
+    const canvas =
+        document.getElementById("profitabilityChart");
+
+    if (!canvas) {
+        return;
+    }
+
+    // ROE 日期 → ROE
+    const roeMap = new Map(
+        roeHistory.map(item => [
+            item.date,
+            item.roe
+        ])
+    );
+
+    // 用日期對齊 EPS / ROE
+    const merged = ttmEPSHistory
+        .map(item => ({
+            date: item.date,
+            eps: item.eps,
+            roe: roeMap.get(item.date)
+        }))
+        .filter(item => item.roe != null);
+
+    if (merged.length === 0) {
+        return;
+    }
+
+    if (profitabilityChartInstance) {
+        profitabilityChartInstance.destroy();
+    }
+
+    profitabilityChartInstance =
+        new Chart(canvas, {
+            type: "bar",
+
+            data: {
+                labels: merged.map(
+                    item => formatQuarter(item.date)
+                ),
+
+                datasets: [
+                    {
+                        label: "EPS (TTM)",
+                        data: merged.map(
+                            item => item.eps
+                        ),
+
+                        yAxisID: "epsAxis"
+                    },
+
+                    {
+                        label: "ROE (TTM)",
+                        data: merged.map(
+                            item => item.roe
+                        ),
+
+                        yAxisID: "roeAxis"
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                interaction: {
+                    mode: "index",
+                    intersect: false
+                },
+
+                scales: {
+                    epsAxis: {
+                        type: "linear",
+                        position: "left",
+
+                        title: {
+                            display: true,
+                            text: "TTM EPS（元）"
+                        }
+                    },
+
+                    roeAxis: {
+                        type: "linear",
+                        position: "right",
+
+                        title: {
+                            display: true,
+                            text: "ROE（%）"
+                        },
+
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    }
+                },
+
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
 }

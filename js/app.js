@@ -5,7 +5,7 @@ import { analyzeTodayStatus } from "./status/todayStatus.js";
 
 import {
     analyzeMarketStatus,
-    analyzePriceVolume,
+    analyzePriceVolume
 } from "./status/marketStatus.js";
 
 import {
@@ -46,10 +46,13 @@ import {
 } from "./indicators/chip.js";
 
 import {
-    calculateTTMEPS,
+    calculateQuarterlyEPSHistory,
+    calculateTTMEPSHistory,
+    calculateEPSYoYHistory,
     calculateValuationIndicators,
     calculateRevenueYoY,
-    calculateROE
+    calculateROE,
+    calculateROEHistory
 } from "./indicators/fundamental.js";
 
 async function init(stockId = "2330") {
@@ -70,8 +73,8 @@ async function init(stockId = "2330") {
 
         const perData = await fetchPERData(stockId, "2025-01-01");
         const monthlyRevenueData = await fetchMonthlyRevenue(stockId, "2025-01-01");
-        const financialStatements = await fetchFinancialStatements(stockId, "2024-01-01");
-        const balanceSheet = await fetchBalanceSheet(stockId, "2024-01-01");
+        const financialStatements = await fetchFinancialStatements(stockId, "2022-01-01");
+        const balanceSheet = await fetchBalanceSheet(stockId, "2022-01-01");
 
 
         // =========================
@@ -120,6 +123,45 @@ async function init(stockId = "2330") {
         const marginStatus =analyzeMargin(marginIndicators);
         const shortSaleIndicators = calculateShortSaleIndicators(shortSaleBalanceData);
 
+        // =========================
+        // 基本面指標
+        // =========================
+        const valuationIndicators = calculateValuationIndicators(perData);
+
+        // EPS
+        const quarterlyEPS = calculateQuarterlyEPSHistory(financialStatements);
+        const ttmEPSHistory = calculateTTMEPSHistory(financialStatements);
+        const epsYoYHistory = calculateEPSYoYHistory(financialStatements);
+        const eps = ttmEPSHistory.at(-1)?.eps ?? null;
+        
+        // YoY
+        const revenueYoY = calculateRevenueYoY(monthlyRevenueData);
+        
+        //ROE
+        const roeHistory = calculateROEHistory(financialStatements, balanceSheet);
+        const roe = roeHistory.at(-1)?.roe ?? null;
+
+        const fundamentalIndicators = {
+            profitability: {
+                eps,
+                roe,
+                quarterlyEPS,
+                ttmEPSHistory,
+                epsYoYHistory,
+                roeHistory
+            },
+
+            valuation: {
+                pe: valuationIndicators.pe,
+                pb: valuationIndicators.pb,
+                dividendYield: valuationIndicators.dividendYield
+            },
+
+            growth: {
+                revenueYoY
+            }
+        };
+
 
         // =========================
         // 市場狀態
@@ -152,16 +194,19 @@ async function init(stockId = "2330") {
             priceChange20: priceChanges.change20,
 
             marginIndicators,
-            shortSaleIndicators
+            shortSaleIndicators,
+
+            profitability: fundamentalIndicators.profitability
         });
 
         const priceVolumeStatus = analyzePriceVolume(
             priceChanges.change1,
             volume.ratio
         );
+        
 
         // =========================
-        // 技術狀態
+        // 今日狀態
         // =========================
 
         const todayStatus = analyzeTodayStatus({
@@ -186,28 +231,7 @@ async function init(stockId = "2330") {
 
         console.log("今日狀態:", todayStatus);
 
-        // 基本面資料
-        const valuationIndicators = calculateValuationIndicators(perData);
-        const eps = calculateTTMEPS(latest.close, valuationIndicators.pe);
-        const revenueYoY = calculateRevenueYoY(monthlyRevenueData);
-        const roe = calculateROE(financialStatements, balanceSheet);
 
-        const fundamentalIndicators = {
-            profitability: {
-                eps,
-                roe
-            },
-
-            valuation: {
-                pe: valuationIndicators.pe,
-                pb: valuationIndicators.pb,
-                dividendYield: valuationIndicators.dividendYield
-            },
-
-            growth: {
-                revenueYoY
-            }
-        };
 
         // =========================
         // Dashboard
@@ -330,6 +354,13 @@ async function init(stockId = "2330") {
             },
 
             shortSaleBalanceData,
+
+            profitability: {
+                ...fundamentalIndicators.profitability,
+                status: marketStatus.profitability,
+                epsGrowth: marketStatus.profitability.epsGrowth,
+                roeChange: marketStatus.profitability.roeChange
+            }
             
         });
 
@@ -337,24 +368,7 @@ async function init(stockId = "2330") {
         // =========================
         // Debug
         // =========================
-        console.log(
-            "母公司淨利:",
-            financialStatements
-                .filter(item => item.type === "EquityAttributableToOwnersOfParent")
-                .map(item => ({
-                    date: item.date,
-                    value: item.value
-                }))
-        );
-        console.log(
-            "母公司權益:",
-            balanceSheet
-                .filter(item => item.type === "EquityAttributableToOwnersOfParent")
-                .map(item => ({
-                    date: item.date,
-                    value: item.value
-                }))
-        );
+        console.log(roeHistory)
 
     } catch (error) {
         console.error("取得股票資料失敗：", error);

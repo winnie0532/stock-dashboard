@@ -203,6 +203,10 @@ body {
 .detail-chart {
     height: calc(100% - 80px);
 }
+
+#profitabilityChartSection .credit-chart-container {
+    height: 340px;
+}
 /* =========================
    今日訊號
 ========================= */
