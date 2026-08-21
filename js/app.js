@@ -1,18 +1,18 @@
 import { renderDashboard } from "./ui/dashboard.js";
 import { renderVolumeChart } from "./utils/charts.js";
 
-import { analyzeTodayStatus } from "./todayStatus.js";
+import { analyzeTodayStatus } from "./status/todayStatus.js";
 
 import {
     analyzeMarketStatus,
     analyzePriceVolume,
-} from "./marketStatus.js";
+} from "./status/marketStatus.js";
 
 import {
     analyzeInstitutional,
     analyzeMargin,
     renderMarginStatus
-} from "./chipStatus.js";
+} from "./status/chipStatus.js";
 
 import {
     setupDetailOverlay,
@@ -30,12 +30,15 @@ import {
 import {
     calculatePriceChange,
     calculateTechnicalIndicators,
+    calculateMADeviations
+} from "./indicators/technical.js";
+
+import {
     organizeInstitutionalData,
     calculateInstitutionalIndicators,
     calculateMarginIndicators,
-    calculateShortSaleIndicators,
-    calculateMADeviations
-} from "./indicators.js";
+    calculateShortSaleIndicators
+} from "./indicators/chip.js";
 
 
 async function init(stockId = "2330") {

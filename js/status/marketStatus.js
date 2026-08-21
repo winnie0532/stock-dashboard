@@ -13,7 +13,6 @@ export function analyzeMarketStatus({
     todayMACD,
     yesterdayMACD,
     institutionalIndicators,
-    priceChange1,
     priceChange5,
     priceChange20,
     marginIndicators,
