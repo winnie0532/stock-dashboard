@@ -50,6 +50,7 @@ import {
     calculateTTMEPSHistory,
     calculateEPSYoYHistory,
     calculateValuationIndicators,
+    calculateValuationPercentiles,
     calculateRevenueYoY,
     calculateROE,
     calculateROEHistory
@@ -71,7 +72,7 @@ async function init(stockId = "2330") {
         // 基本面原始資料
         // =========================
 
-        const perData = await fetchPERData(stockId, "2025-01-01");
+        const perData = await fetchPERData(stockId, "2021-01-01");
         const monthlyRevenueData = await fetchMonthlyRevenue(stockId, "2025-01-01");
         const financialStatements = await fetchFinancialStatements(stockId, "2022-01-01");
         const balanceSheet = await fetchBalanceSheet(stockId, "2022-01-01");
@@ -127,6 +128,7 @@ async function init(stockId = "2330") {
         // 基本面指標
         // =========================
         const valuationIndicators = calculateValuationIndicators(perData);
+        const valuationPercentiles = calculateValuationPercentiles(perData);
 
         // EPS
         const quarterlyEPS = calculateQuarterlyEPSHistory(financialStatements);
@@ -140,6 +142,7 @@ async function init(stockId = "2330") {
         //ROE
         const roeHistory = calculateROEHistory(financialStatements, balanceSheet);
         const roe = roeHistory.at(-1)?.roe ?? null;
+        
 
         const fundamentalIndicators = {
             profitability: {
@@ -154,7 +157,12 @@ async function init(stockId = "2330") {
             valuation: {
                 pe: valuationIndicators.pe,
                 pb: valuationIndicators.pb,
-                dividendYield: valuationIndicators.dividendYield
+                dividendYield: valuationIndicators.dividendYield,
+
+                pePercentile: valuationPercentiles.pePercentile,
+                pbPercentile: valuationPercentiles.pbPercentile,
+                dividendYieldPercentile: valuationPercentiles.dividendYieldPercentile,
+                history: perData
             },
 
             growth: {
@@ -196,7 +204,8 @@ async function init(stockId = "2330") {
             marginIndicators,
             shortSaleIndicators,
 
-            profitability: fundamentalIndicators.profitability
+            profitability: fundamentalIndicators.profitability,
+            valuation: fundamentalIndicators.valuation
         });
 
         const priceVolumeStatus = analyzePriceVolume(
@@ -231,7 +240,9 @@ async function init(stockId = "2330") {
 
         console.log("今日狀態:", todayStatus);
 
-
+        console.log("估值資料:", fundamentalIndicators.valuation);
+        console.log("估值狀態:", marketStatus.valuation);
+        
 
         // =========================
         // Dashboard
@@ -360,6 +371,12 @@ async function init(stockId = "2330") {
                 status: marketStatus.profitability,
                 epsGrowth: marketStatus.profitability.epsGrowth,
                 roeChange: marketStatus.profitability.roeChange
+            },
+
+            valuation: {
+                ...fundamentalIndicators.valuation,
+                status: marketStatus.valuation,
+                score: marketStatus.valuation.score
             }
             
         });
@@ -369,6 +386,7 @@ async function init(stockId = "2330") {
         // Debug
         // =========================
         console.log(roeHistory)
+
 
     } catch (error) {
         console.error("取得股票資料失敗：", error);

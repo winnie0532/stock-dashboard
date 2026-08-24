@@ -64,6 +64,7 @@ let institutionalChart = null;
 let creditChart = null;
 let shortPositionChart = null;
 let profitabilityChartInstance = null;
+let valuationChart = null;
 
 // =========================
 // 成交量趨勢圖
@@ -1078,4 +1079,163 @@ export function renderProfitabilityChart(
                 }
             }
         });
+}
+
+// =========================
+// 估值歷史趨勢圖
+// P/E + P/B + 殖利率
+// =========================
+
+export function renderValuationChart(history) {
+    if (!history || history.length === 0) {
+        return;
+    }
+
+    const canvas =
+        document.getElementById("valuationChart");
+
+    if (!canvas) {
+        return;
+    }
+
+    const validData = history
+        .filter(item =>
+            item.date &&
+            (
+                item.PER != null ||
+                item.PBR != null ||
+                item.dividend_yield != null
+            )
+        )
+        .sort(
+            (a, b) =>
+                new Date(a.date) - new Date(b.date)
+        );
+
+    if (validData.length === 0) {
+        return;
+    }
+
+    if (valuationChart) {
+        valuationChart.destroy();
+    }
+
+    valuationChart = new Chart(canvas, {
+
+        data: {
+            labels: validData.map(
+                item => formatChartDate(item.date)
+            ),
+
+            datasets: [
+                {
+                    type: "line",
+                    label: "P/E",
+
+                    data: validData.map(
+                        item =>
+                            item.PER > 0
+                                ? item.PER
+                                : null
+                    ),
+
+                    yAxisID: "valuationAxis",
+
+                    borderColor: "#2196f3",
+
+                    fill: false,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                },
+
+                {
+                    type: "line",
+                    label: "P/B",
+
+                    data: validData.map(
+                        item =>
+                            item.PBR > 0
+                                ? item.PBR
+                                : null
+                    ),
+
+                    yAxisID: "valuationAxis",
+
+                    borderColor: "#ff6384",
+
+                    fill: false,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2
+                },
+
+                {
+                    type: "bar",
+
+                    label: "殖利率",
+
+                    data: validData.map(
+                        item =>
+                            item.dividend_yield >= 0
+                                ? item.dividend_yield
+                                : null
+                    ),
+
+                    yAxisID: "yieldAxis",
+
+                    backgroundColor: "rgba(75, 192, 192, 0.18)",
+                    borderColor: "rgba(75, 192, 192, 0.35)",
+                    borderWidth: 0,
+
+                    barPercentage: 1.0,
+                    categoryPercentage: 1.0
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            interaction: {
+                mode: "index",
+                intersect: false
+            },
+
+            scales: {
+                valuationAxis: {
+                    type: "linear",
+                    position: "left",
+
+                    title: {
+                        display: true,
+                        text: "估值倍數"
+                    }
+                },
+
+                yieldAxis: {
+                    type: "linear",
+                    position: "right",
+
+                    title: {
+                        display: true,
+                        text: "殖利率（%）"
+                    },
+
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            },
+
+            plugins: {
+                legend: {
+                    display: true
+                },
+
+                zoom: createZoomOptions()
+            }
+        }
+    });
 }

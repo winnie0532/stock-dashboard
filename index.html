@@ -91,6 +91,11 @@
                     <span id="profitabilityStatus">--</span>
                 </div>
 
+                <div class="status-row" id="valuationToggle">
+                    <span>估值</span>
+                    <span id="valuationStatus">--</span>
+                </div>
+
                 <!-- 詳細頁區塊 -->
                 <div class="detail-overlay" id="detailOverlay">
                     <div class="detail-panel">
@@ -421,6 +426,123 @@
                                 <h3>EPS 與 ROE 趨勢</h3>
                                 <canvas id="profitabilityChart"></canvas>
                             </div>
+                        </div>
+
+                        <!-- 估值 -->
+                        <div class="detail-chart" id="valuationChartSection">
+
+                            <div class="valuation-header">
+                                <div>
+                                    <span
+                                        id="valuationDetailStatus"
+                                        class="status-value"
+                                    >
+                                        --
+                                    </span>
+
+                                    <p
+                                        id="valuationDetailDescription"
+                                        class="valuation-description"
+                                    >
+                                        --
+                                    </p>
+                                </div>
+                            </div>
+
+
+                            <div class="valuation-summary">
+
+                                <!-- P/E -->
+                                <div class="valuation-card">
+                                    <span class="valuation-label">P/E</span>
+
+                                    <div class="valuation-value-row">
+                                        <strong
+                                            id="valuationPE"
+                                            class="valuation-value"
+                                        >
+                                            --
+                                        </strong>
+                                    </div>
+
+                                    <span
+                                        id="valuationPEPercentile"
+                                        class="valuation-percentile"
+                                    >
+                                        --
+                                    </span>
+                                </div>
+
+
+                                <!-- P/B -->
+                                <div class="valuation-card">
+                                    <span class="valuation-label">P/B</span>
+
+                                    <div class="valuation-value-row">
+                                        <strong
+                                            id="valuationPB"
+                                            class="valuation-value"
+                                        >
+                                            --
+                                        </strong>
+                                    </div>
+
+                                    <span
+                                        id="valuationPBPercentile"
+                                        class="valuation-percentile"
+                                    >
+                                        --
+                                    </span>
+                                </div>
+
+
+                                <!-- 殖利率 -->
+                                <div class="valuation-card">
+                                    <span class="valuation-label">殖利率</span>
+
+                                    <div class="valuation-value-row">
+                                        <strong
+                                            id="valuationDividendYield"
+                                            class="valuation-value"
+                                        >
+                                            --
+                                        </strong>
+                                    </div>
+
+                                    <span
+                                        id="valuationDividendYieldPercentile"
+                                        class="valuation-percentile"
+                                    >
+                                        --
+                                    </span>
+                                </div>
+
+
+                                <!-- 估值分數 -->
+                                <div class="valuation-card valuation-score-card">
+                                    <span class="valuation-label">估值分數</span>
+
+                                    <div class="valuation-value-row">
+                                        <strong
+                                            id="valuationScore"
+                                            class="valuation-value"
+                                        >
+                                            --
+                                        </strong>
+                                    </div>
+
+                                    <span class="valuation-percentile">
+                                        P/E 70% · P/B 30%
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+                            <div class="valuation-chart-container">
+                                <canvas id="valuationChart"></canvas>
+                            </div>
+
                         </div>
                     </div>
                 </div>

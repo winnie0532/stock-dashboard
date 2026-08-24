@@ -80,6 +80,72 @@ export function calculateValuationIndicators(perData) {
     };
 }
 
+// 估值歷史百分位
+
+export function calculateValuationPercentiles(perData) {
+    if (!perData || perData.length === 0) {
+        return {
+            pePercentile: null,
+            pbPercentile: null,
+            dividendYieldPercentile: null
+        };
+    }
+
+    const sortedData = [...perData]
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const latest = sortedData.at(-1);
+
+    const calculatePercentile = (values, currentValue) => {
+        if (
+            currentValue == null ||
+            !Number.isFinite(currentValue)
+        ) {
+            return null;
+        }
+
+        const validValues = values.filter(
+            value =>
+                value != null &&
+                Number.isFinite(value) &&
+                value > 0
+        );
+
+        if (validValues.length === 0) {
+            return null;
+        }
+
+        const belowCount = validValues.filter(
+            value => value < currentValue
+        ).length;
+
+        return (
+            belowCount /
+            validValues.length
+        ) * 100;
+    };
+
+    const pePercentile = calculatePercentile(
+        sortedData.map(item => item.PER),
+        latest.PER
+    );
+
+    const pbPercentile = calculatePercentile(
+        sortedData.map(item => item.PBR),
+        latest.PBR
+    );
+
+    const dividendYieldPercentile = calculatePercentile(
+        sortedData.map(item => item.dividend_yield),
+        latest.dividend_yield
+    );
+
+    return {
+        pePercentile,
+        pbPercentile,
+        dividendYieldPercentile
+    };
+}
 
 // 最新月營收 YoY
 export function calculateRevenueYoY(monthlyRevenueData) {

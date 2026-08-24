@@ -17,7 +17,8 @@ export function analyzeMarketStatus({
     priceChange20,
     marginIndicators,
     shortSaleIndicators,
-    profitability
+    profitability,
+    valuation
 }) {
     return {
         trend: analyzeTrend(latestPrice, ma20, ma60, ma120, ma240),
@@ -40,7 +41,8 @@ export function analyzeMarketStatus({
             marginIndicators,
             shortSaleIndicators
         ),
-        profitability: analyzeProfitabilityStatus(profitability)
+        profitability: analyzeProfitabilityStatus(profitability),
+        valuation: analyzeValuationStatus(valuation)            
     };
 }
 
@@ -926,5 +928,130 @@ function analyzeProfitabilityStatus(profitability) {
         type: "neutral",
         epsGrowth,
         roeChange
+    };
+}
+
+// =========================
+// 首頁欄位：估值
+//
+// 主要判斷：
+// 近 5 年 P/E percentile + P/B percentile
+//
+// P/E：主要估值依據
+// P/B：輔助估值依據
+// 殖利率：補充資訊，不進主分數
+// =========================
+
+function analyzeValuationStatus(valuation) {
+    if (
+        !valuation ||
+        valuation.pePercentile == null ||
+        valuation.pbPercentile == null
+    ) {
+        return {
+            text: "資料不足",
+            type: "neutral",
+            score: null,
+            pePercentile: null,
+            pbPercentile: null,
+            dividendYieldPercentile: null,
+            description: "目前估值歷史資料不足"
+        };
+    }
+
+    const {
+        pe,
+        pb,
+        dividendYield,
+        pePercentile,
+        pbPercentile,
+        dividendYieldPercentile
+    } = valuation;
+
+    // P/E 主導、P/B 輔助
+    const score =
+        pePercentile * 0.7 +
+        pbPercentile * 0.3;
+
+
+    // =========================
+    // 極高估值
+    // =========================
+
+    if (score >= 90) {
+        return {
+            text: "估值極高",
+            type: "danger",
+            score,
+            pe,
+            pb,
+            dividendYield,
+            pePercentile,
+            pbPercentile,
+            dividendYieldPercentile,
+            description:
+                "目前 P/E 與 P/B 位於近 5 年歷史非常高的區間"
+        };
+    }
+
+
+    // =========================
+    // 偏高
+    // =========================
+
+    if (score >= 75) {
+        return {
+            text: "估值偏高",
+            type: "warning",
+            score,
+            pe,
+            pb,
+            dividendYield,
+            pePercentile,
+            pbPercentile,
+            dividendYieldPercentile,
+            description:
+                "目前 P/E 與 P/B 位於近 5 年歷史偏高區間"
+        };
+    }
+
+
+    // =========================
+    // 偏低
+    // =========================
+
+    if (score <= 25) {
+        return {
+            text: "估值偏低",
+            type: "positive",
+            score,
+            pe,
+            pb,
+            dividendYield,
+            pePercentile,
+            pbPercentile,
+            dividendYieldPercentile,
+            description:
+                "目前 P/E 與 P/B 位於近 5 年歷史偏低區間"
+        };
+    }
+
+
+    // =========================
+    // 合理
+    // =========================
+
+    return {
+        text: "估值合理",
+        type: "neutral",
+        score,
+        pe,
+        pb,
+        dividendYield,
+        pePercentile,
+        pbPercentile,
+        dividendYieldPercentile,
+        description:
+            "目前 P/E 與 P/B 位於近 5 年歷史中間區間"
     };
 }

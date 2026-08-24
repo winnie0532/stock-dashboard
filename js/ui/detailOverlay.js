@@ -6,7 +6,8 @@ import {
     renderRSIChart,
     renderMACDChart,
     renderInstitutionalChart,
-    renderProfitabilityChart
+    renderProfitabilityChart,
+    renderValuationChart
 } from "../utils/charts.js";
 
 let detailOverlayData = null;
@@ -25,6 +26,7 @@ export function setupDetailOverlay() {
     const macdToggle = document.getElementById("macdToggle");
     const institutionalToggle = document.getElementById("institutionalToggle");
     const profitabilityToggle = document.getElementById("profitabilityToggle");
+    const valuationToggle = document.getElementById("valuationToggle");
 
     const detailOverlay = document.getElementById("detailOverlay");
     const closeDetail = document.getElementById("closeDetail");
@@ -41,6 +43,8 @@ export function setupDetailOverlay() {
     const macdChartSection = document.getElementById("macdChartSection");
     const institutionalChartSection = document.getElementById("institutionalChartSection");
     const profitabilityChartSection = document.getElementById("profitabilityChartSection");
+    const valuationChartSection = document.getElementById("valuationChartSection");
+    
     // =========================
     // 趨勢
     // =========================
@@ -64,6 +68,7 @@ export function setupDetailOverlay() {
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
         profitabilityChartSection.style.display = "none";
+        valuationChartSection.style.display = "none";
         
         const statusElement = document.getElementById("trendDetailStatus");
         statusElement.textContent = trend.status.text;
@@ -111,6 +116,7 @@ export function setupDetailOverlay() {
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
         profitabilityChartSection.style.display = "none";
+        valuationChartSection.style.display = "none";
 
         const statusElement = document.getElementById("shortTermDetailStatus");
 
@@ -162,6 +168,7 @@ export function setupDetailOverlay() {
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
         profitabilityChartSection.style.display = "none";
+        valuationChartSection.style.display = "none";
 
         const statusElement = document.getElementById("volumeDetailStatus");
 
@@ -199,6 +206,7 @@ export function setupDetailOverlay() {
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
         profitabilityChartSection.style.display = "none";
+        valuationChartSection.style.display = "none";
 
         const statusElement = document.getElementById("rsiDetailStatus");
         statusElement.textContent = rsi.status.text;
@@ -244,6 +252,7 @@ export function setupDetailOverlay() {
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
         profitabilityChartSection.style.display = "none";
+        valuationChartSection.style.display = "none";
 
         const statusElement = document.getElementById("macdDetailStatus");
         statusElement.textContent = status.text;
@@ -291,6 +300,7 @@ export function setupDetailOverlay() {
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
         profitabilityChartSection.style.display = "none";
+        valuationChartSection.style.display = "none";
 
         const statusElement = document.getElementById("institutionalDetailStatus");
 
@@ -328,6 +338,7 @@ export function setupDetailOverlay() {
         creditChartSection.style.display = "block";
         shortPositionChartSection.style.display = "none";
         profitabilityChartSection.style.display = "none";
+        valuationChartSection.style.display = "none";
 
         // 信用籌碼狀態
         const statusElement = document.getElementById("creditDetailStatus");
@@ -377,6 +388,7 @@ export function setupDetailOverlay() {
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "block";
         profitabilityChartSection.style.display = "none";
+        valuationChartSection.style.display = "none";
 
         // =========================
         // 空方籌碼摘要
@@ -440,6 +452,7 @@ export function setupDetailOverlay() {
         creditChartSection.style.display = "none";
         shortPositionChartSection.style.display = "none";
         profitabilityChartSection.style.display = "block";
+        valuationChartSection.style.display = "none";
 
         // =========================
         // 獲利狀態
@@ -486,6 +499,114 @@ export function setupDetailOverlay() {
         detailOverlay.classList.add("open");
     });
 
+    
+    // =========================
+    // 估值
+    // =========================
+
+    valuationToggle.addEventListener("click", () => {
+        if (!detailOverlayData?.valuation) {
+            return;
+        }
+
+        const valuation = detailOverlayData.valuation;
+        const status = valuation.status;
+
+        detailTitle.textContent = "估值";
+        detailSubtitle.textContent =
+            "近 5 年歷史估值百分位";
+
+        volumeChartSection.style.display = "none";
+        shortTermChartSection.style.display = "none";
+        trendChartSection.style.display = "none";
+        rsiChartSection.style.display = "none";
+        macdChartSection.style.display = "none";
+        institutionalChartSection.style.display = "none";
+        creditChartSection.style.display = "none";
+        shortPositionChartSection.style.display = "none";
+        profitabilityChartSection.style.display = "none";
+        valuationChartSection.style.display = "block";
+
+        // =========================
+        // 狀態
+        // =========================
+
+        const statusElement =
+            document.getElementById("valuationDetailStatus");
+
+        statusElement.textContent = status.text;
+        statusElement.className =
+            `status-value ${status.type}`;
+
+        document.getElementById(
+            "valuationDetailDescription"
+        ).textContent =
+            status.description;
+
+        // =========================
+        // P/E
+        // =========================
+
+        document.getElementById("valuationPE").textContent =
+            valuation.pe != null
+                ? `${valuation.pe.toFixed(2)} 倍`
+                : "--";
+
+        document.getElementById(
+            "valuationPEPercentile"
+        ).textContent =
+            formatValuationPercentile(
+                valuation.pePercentile
+            );
+
+        // =========================
+        // P/B
+        // =========================
+
+        document.getElementById("valuationPB").textContent =
+            valuation.pb != null
+                ? `${valuation.pb.toFixed(2)} 倍`
+                : "--";
+
+        document.getElementById(
+            "valuationPBPercentile"
+        ).textContent =
+            formatValuationPercentile(
+                valuation.pbPercentile
+            );
+
+        // =========================
+        // 殖利率
+        // =========================
+
+        document.getElementById("valuationDividendYield").textContent =
+            valuation.dividendYield != null
+                ? `${valuation.dividendYield.toFixed(2)}%`
+                : "--";
+
+        document.getElementById(
+            "valuationDividendYieldPercentile"
+        ).textContent =
+            formatValuationPercentile(
+                valuation.dividendYieldPercentile,
+                true
+            );
+
+        // =========================
+        // 綜合估值分數
+        // =========================
+
+        document.getElementById("valuationScore").textContent =
+            valuation.score != null
+                ? `${valuation.score.toFixed(1)}%`
+                : "--";
+
+        detailOverlay.classList.add("open");
+
+        // 圖表
+        renderValuationChart(valuation.history);
+    });
+
     // =========================
     // 關閉
     // =========================
@@ -493,7 +614,45 @@ export function setupDetailOverlay() {
     closeDetail.addEventListener("click", () => {detailOverlay.classList.remove("open");});
 }
 
+function formatValuationPercentile(
+    percentile,
+    reverse = false
+) {
+    if (percentile == null) {
+        return "--";
+    }
 
+    let level;
+
+    if (!reverse) {
+        if (percentile >= 90) {
+            level = "歷史極高";
+        } else if (percentile >= 70) {
+            level = "歷史偏高";
+        } else if (percentile >= 30) {
+            level = "歷史中間";
+        } else if (percentile >= 10) {
+            level = "歷史偏低";
+        } else {
+            level = "歷史極低";
+        }
+    } else {
+        // 殖利率方向相反
+        if (percentile >= 90) {
+            level = "殖利率極高";
+        } else if (percentile >= 70) {
+            level = "殖利率偏高";
+        } else if (percentile >= 30) {
+            level = "殖利率中間";
+        } else if (percentile >= 10) {
+            level = "殖利率偏低";
+        } else {
+            level = "殖利率極低";
+        }
+    }
+
+    return `${level}｜${percentile.toFixed(1)}%`;
+}
 
 function formatPercent(value) {
     if (value === null || value === undefined) {
@@ -517,4 +676,3 @@ function renderPercentValue(elementId, value) {
         element.classList.add("value-neutral");
     }
 }
-
