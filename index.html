@@ -427,27 +427,30 @@
                                 </div>
                             </div>
 
-                            <div class="credit-chart-container">
+                            <div class="profitability-chart-block">
                                 <h3>EPS 與 ROE 趨勢</h3>
-                                <canvas id="profitabilityChart"></canvas>
+
+                                <div class="credit-chart-container">
+                                    <canvas id="profitabilityChart"></canvas>
+                                </div>
                             </div>
                         </div>
 
                         <!-- 估值 -->
                         <div class="detail-chart" id="valuationChartSection">
 
-                            <div class="valuation-header">
+                            <div class="detail-analysis-header">
                                 <div>
                                     <span
                                         id="valuationDetailStatus"
-                                        class="status-value"
+                                        class="status-value detail-analysis-status"
                                     >
                                         --
                                     </span>
 
                                     <p
                                         id="valuationDetailDescription"
-                                        class="valuation-description"
+                                        class="detail-analysis-description"
                                     >
                                         --
                                     </p>
@@ -455,16 +458,16 @@
                             </div>
 
 
-                            <div class="valuation-summary">
+                            <div class="detail-summary">
 
                                 <!-- P/E -->
-                                <div class="valuation-card">
-                                    <span class="valuation-label">P/E</span>
+                                <div class="detail-summary-card">
+                                    <span class="detail-summary-label">P/E</span>
 
                                     <div class="valuation-value-row">
                                         <strong
                                             id="valuationPE"
-                                            class="valuation-value"
+                                            class="detail-summary-value"
                                         >
                                             --
                                         </strong>
@@ -480,13 +483,13 @@
 
 
                                 <!-- P/B -->
-                                <div class="valuation-card">
-                                    <span class="valuation-label">P/B</span>
+                                <div class="detail-summary-card">
+                                    <span class="detail-summary-label">P/B</span>
 
                                     <div class="valuation-value-row">
                                         <strong
                                             id="valuationPB"
-                                            class="valuation-value"
+                                            class="detail-summary-value"
                                         >
                                             --
                                         </strong>
@@ -502,13 +505,13 @@
 
 
                                 <!-- 殖利率 -->
-                                <div class="valuation-card">
-                                    <span class="valuation-label">殖利率</span>
+                                <div class="detail-summary-card">
+                                    <span class="detail-summary-label">殖利率</span>
 
                                     <div class="valuation-value-row">
                                         <strong
                                             id="valuationDividendYield"
-                                            class="valuation-value"
+                                            class="detail-summary-value"
                                         >
                                             --
                                         </strong>
@@ -524,13 +527,13 @@
 
 
                                 <!-- 估值分數 -->
-                                <div class="valuation-card valuation-score-card">
-                                    <span class="valuation-label">估值分數</span>
+                                <div class="detail-summary-card">
+                                    <span class="detail-summary-label">估值分數</span>
 
                                     <div class="valuation-value-row">
                                         <strong
                                             id="valuationScore"
-                                            class="valuation-value"
+                                            class="detail-summary-value"
                                         >
                                             --
                                         </strong>
@@ -553,37 +556,35 @@
                         <!-- 成長 -->
                         <div class="detail-chart" id="growthChartSection">
 
-                            <div class="growth-header">
-                                <div>
-                                    <span id="growthDetailStatus" class="status-value">--</span>
-                                    <p id="growthDetailDescription" class="growth-description">--</p>
-                                </div>
+                            <div class="detail-analysis-header">
+                                <span id="growthDetailStatus" class="status-value detail-analysis-status">--</span>
+                                <p id="growthDetailDescription" class="detail-analysis-description">--</p>
                             </div>
 
-                            <div class="growth-summary">
+                            <div class="detail-summary">
 
-                                <div class="growth-card">
-                                    <span class="growth-label">最新營收 YoY</span>
-                                    <strong id="growthLatestYoY" class="growth-value">--</strong>
-                                    <span class="growth-sub">最新月份</span>
+                                <div class="detail-summary-card">
+                                    <span class="detail-summary-label">最新營收 YoY</span>
+                                    <strong id="growthLatestYoY" class="detail-summary-value">--</strong>
+                                    <span class="detail-summary-sub">最新月份</span>
                                 </div>
 
-                                <div class="growth-card">
-                                    <span class="growth-label">近 3 月平均</span>
-                                    <strong id="growthAvg3M" class="growth-value">--</strong>
-                                    <span class="growth-sub">短期成長</span>
+                                <div class="detail-summary-card">
+                                    <span class="detail-summary-label">近 3 月平均</span>
+                                    <strong id="growthAvg3M" class="detail-summary-value">--</strong>
+                                    <span class="detail-summary-sub">短期成長</span>
                                 </div>
 
-                                <div class="growth-card">
-                                    <span class="growth-label">近 6 月平均</span>
-                                    <strong id="growthAvg6M" class="growth-value">--</strong>
-                                    <span class="growth-sub">中期成長</span>
+                                <div class="detail-summary-card">
+                                    <span class="detail-summary-label">近 6 月平均</span>
+                                    <strong id="growthAvg6M" class="detail-summary-value">--</strong>
+                                    <span class="detail-summary-sub">中期成長</span>
                                 </div>
 
-                                <div class="growth-card">
-                                    <span class="growth-label">成長動能</span>
-                                    <strong id="growthMomentum" class="growth-value">--</strong>
-                                    <span class="growth-sub">近 3 月 vs 前 3 月</span>
+                                <div class="detail-summary-card">
+                                    <span class="detail-summary-label">成長動能</span>
+                                    <strong id="growthMomentum" class="detail-summary-value">--</strong>
+                                    <span class="detail-summary-sub">近 3 月 vs 前 3 月</span>
                                 </div>
 
                             </div>

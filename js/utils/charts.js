@@ -1129,9 +1129,7 @@ export function renderValuationChart(history) {
     valuationChart = new Chart(canvas, {
 
         data: {
-            labels: validData.map(
-                item => formatChartDate(item.date)
-            ),
+            labels: validData.map(item => item.date),
 
             datasets: [
                 {
