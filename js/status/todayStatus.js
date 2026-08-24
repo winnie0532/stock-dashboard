@@ -218,15 +218,27 @@ function buildMovingAverageStatus({
 }
 
 function createMAStatus(price, ma) {
-    if (price >= ma) {
+    if (price == null || ma == null || ma === 0) {
         return {
-            type: "positive",
-            text: "站上"
+            type: "neutral",
+            text: "--",
+            deviation: null
         };
     }
 
+    const deviation = ((price - ma) / ma) * 100;
+
+    let type = "neutral";
+
+    if (deviation > 1) {
+        type = "positive";
+    } else if (deviation < -1) {
+        type = "danger";
+    }
+
     return {
-        type: "danger",
-        text: "跌破"
+        type,
+        text: deviation >= 0 ? "站上" : "跌破",
+        deviation
     };
 }

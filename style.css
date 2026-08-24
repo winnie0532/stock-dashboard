@@ -251,40 +251,76 @@ body {
     font-size: 15px;
 }
 
-.ma-status-grid {
+.ma-position-track {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
 }
 
-.ma-status-item {
+.ma-position-item {
+    position: relative;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-
-    padding: 12px 14px;
-
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
+    gap: 8px;
 }
 
-.ma-label {
+/* 每兩個點之間的連接線 */
+.ma-position-item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 34px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+    z-index: 0;
+}
+
+.ma-position-label {
     color: var(--muted);
+    font-size: 13px;
+}
+
+.ma-position-dot {
+    position: relative;
+    z-index: 1;
+    width: 14px;
+    height: 14px;
+    border: 3px solid var(--card);
+    border-radius: 50%;
+    background: var(--muted);
+    box-shadow: 0 0 0 1px var(--border);
+}
+
+.ma-position-value {
     font-size: 14px;
+    font-weight: 700;
 }
 
-.ma-light {
-    font-weight: 600;
+.ma-position-dot.positive {
+    background: #dc2626;
 }
 
-.ma-light.positive {
-    color: #047857;
+.ma-position-dot.danger {
+    background: #059669;
 }
 
-.ma-light.danger {
-    color: #b91c1c;
+.ma-position-dot.neutral {
+    background: #9ca3af;
 }
+
+.ma-position-value.positive {
+    color: #dc2626;
+}
+
+.ma-position-value.danger {
+    color: #059669;
+}
+
+.ma-position-value.neutral {
+    color: var(--muted);
+}
+
 
 /* =========================
    技術數據

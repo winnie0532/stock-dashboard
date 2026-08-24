@@ -68,37 +68,31 @@ export function renderDashboard(stockData) {
     }
 
     // 均線狀態
-    function renderMAStatus(elementId, status) {
-        const element = document.getElementById(elementId);
+    function renderMAStatus(period, status) {
+        const valueElement = document.getElementById(`ma${period}Status`);
+        const dotElement = document.getElementById(`ma${period}Dot`);
 
-        element.textContent = status.text;
-        element.className = `ma-light ${status.type}`;
+        if (!valueElement || !dotElement || !status) {
+            return;
+        }
+
+        valueElement.className = `ma-position-value ${status.type}`;
+        dotElement.className = `ma-position-dot ${status.type}`;
+
+        if (status.deviation == null) {
+            valueElement.textContent = "--";
+            return;
+        }
+
+        valueElement.textContent =
+            `${status.deviation >= 0 ? "+" : ""}${status.deviation.toFixed(1)}%`;
     }
 
-    renderMAStatus(
-        "ma5Status",
-        stockData.todayStatus.movingAverages.ma5
-    );
-
-    renderMAStatus(
-        "ma20Status",
-        stockData.todayStatus.movingAverages.ma20
-    );
-
-    renderMAStatus(
-        "ma60Status",
-        stockData.todayStatus.movingAverages.ma60
-    );
-
-    renderMAStatus(
-        "ma120Status",
-        stockData.todayStatus.movingAverages.ma120
-    );
-
-    renderMAStatus(
-        "ma240Status",
-        stockData.todayStatus.movingAverages.ma240
-    );
+    renderMAStatus(5, stockData.todayStatus.movingAverages.ma5);
+    renderMAStatus(20, stockData.todayStatus.movingAverages.ma20);
+    renderMAStatus(60, stockData.todayStatus.movingAverages.ma60);
+    renderMAStatus(120, stockData.todayStatus.movingAverages.ma120);
+    renderMAStatus(240, stockData.todayStatus.movingAverages.ma240);
 
     // MA
     document.getElementById("ma5").textContent = stockData.technical.ma5.toFixed(2);
