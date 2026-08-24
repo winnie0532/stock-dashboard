@@ -18,7 +18,8 @@ export function analyzeMarketStatus({
     marginIndicators,
     shortSaleIndicators,
     profitability,
-    valuation
+    valuation,
+    growth
 }) {
     return {
         trend: analyzeTrend(latestPrice, ma20, ma60, ma120, ma240),
@@ -42,7 +43,8 @@ export function analyzeMarketStatus({
             shortSaleIndicators
         ),
         profitability: analyzeProfitabilityStatus(profitability),
-        valuation: analyzeValuationStatus(valuation)            
+        valuation: analyzeValuationStatus(valuation),
+        growth: analyzeGrowthStatus(growth)            
     };
 }
 
@@ -1053,5 +1055,131 @@ function analyzeValuationStatus(valuation) {
         dividendYieldPercentile,
         description:
             "目前 P/E 與 P/B 位於近 5 年歷史中間區間"
+    };
+}
+
+// =========================
+// 首頁欄位：成長
+// 判斷依據：月營收 YoY
+// 最近 3 個月判斷目前成長強度
+// 前 3 個月 vs 最近 3 個月判斷成長加速 / 減速
+// =========================
+
+function analyzeGrowthStatus(growth) {
+    const history = growth?.revenueYoYHistory;
+
+    if (!history || history.length < 6) {
+        return {
+            text: "資料不足",
+            type: "neutral",
+            latestYoY: null,
+            avg3M: null,
+            avg6M: null,
+            momentum: null,
+            description: "目前月營收歷史資料不足，無法判斷成長趨勢"
+        };
+    }
+
+    const recent6 = history.slice(-6);
+    const previous3 = recent6.slice(0, 3);
+    const recent3 = recent6.slice(3);
+
+    const average = items => items.reduce((sum, item) => sum + item.yoy, 0) / items.length;
+
+    const latestYoY = recent3.at(-1).yoy;
+    const avg3M = average(recent3);
+    const previous3Avg = average(previous3);
+    const avg6M = average(recent6);
+    const momentum = avg3M - previous3Avg;
+
+    const positiveMonths = recent3.filter(item => item.yoy > 0).length;
+    const negativeMonths = recent3.filter(item => item.yoy < 0).length;
+
+    // 明顯衰退
+    if (avg3M <= -10 || (negativeMonths >= 2 && latestYoY <= -10)) {
+        return {
+            text: "營收衰退",
+            type: "danger",
+            latestYoY,
+            avg3M,
+            avg6M,
+            momentum,
+            description: "近期月營收年增率明顯為負，營收成長進入衰退狀態"
+        };
+    }
+
+    // 由正轉負 / 多數月份負成長
+    if (avg3M < 0 || negativeMonths >= 2) {
+        return {
+            text: "成長轉弱",
+            type: "warning",
+            latestYoY,
+            avg3M,
+            avg6M,
+            momentum,
+            description: "近期月營收成長轉弱，最近 3 個月平均年增率已接近或跌破零"
+        };
+    }
+
+    // 高成長且明顯加速
+    if (avg3M >= 10 && momentum >= 5 && positiveMonths === 3) {
+        return {
+            text: "成長加速",
+            type: "positive",
+            latestYoY,
+            avg3M,
+            avg6M,
+            momentum,
+            description: "近期月營收持續正成長，且最近 3 個月平均年增率明顯高於前 3 個月"
+        };
+    }
+
+    // 仍成長，但速度下降
+    if (avg3M > 0 && momentum <= -5) {
+        return {
+            text: "成長減速",
+            type: "warning",
+            latestYoY,
+            avg3M,
+            avg6M,
+            momentum,
+            description: "月營收仍維持正成長，但最近 3 個月平均年增率較前 3 個月明顯下降"
+        };
+    }
+
+    // 穩定正成長
+    if (avg3M >= 10 && positiveMonths >= 2) {
+        return {
+            text: "穩健成長",
+            type: "positive",
+            latestYoY,
+            avg3M,
+            avg6M,
+            momentum,
+            description: "近期月營收維持穩定正成長，成長動能沒有明顯惡化"
+        };
+    }
+
+    // 小幅正成長
+    if (avg3M > 0) {
+        return {
+            text: "溫和成長",
+            type: "neutral",
+            latestYoY,
+            avg3M,
+            avg6M,
+            momentum,
+            description: "近期月營收維持正成長，但成長幅度相對有限"
+        };
+    }
+
+    return {
+        text: "成長持平",
+        type: "neutral",
+        latestYoY,
+        avg3M,
+        avg6M,
+        momentum,
+        description: "近期月營收年增率接近持平，尚未形成明確成長方向"
     };
 }

@@ -51,6 +51,11 @@ function formatQuarter(date) {
     return `${year} Q${quarter}`;
 }
 
+function formatRevenueMonth(date) {
+    const [year, month] = date.split("-");
+
+    return `${year.slice(2)}/${month}`;
+}
 // =========================
 // Chart instances
 // =========================
@@ -65,6 +70,7 @@ let creditChart = null;
 let shortPositionChart = null;
 let profitabilityChartInstance = null;
 let valuationChart = null;
+let growthChart = null;
 
 // =========================
 // 成交量趨勢圖
@@ -1232,6 +1238,99 @@ export function renderValuationChart(history) {
             plugins: {
                 legend: {
                     display: true
+                },
+
+                zoom: createZoomOptions()
+            }
+        }
+    });
+}
+
+// =========================
+// 月營收 YoY
+// =========================
+
+export function renderGrowthChart(history) {
+    if (!history || history.length === 0) return;
+
+    const canvas = document.getElementById("growthChart");
+    if (!canvas) return;
+
+    const data = history
+        .filter(item => item.date && item.yoy != null)
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .slice(-18);
+
+    if (data.length === 0) return;
+
+    if (growthChart) {
+        growthChart.destroy();
+    }
+
+    growthChart = new Chart(canvas, {
+        type: "bar",
+
+        data: {
+            labels: data.map(item => formatRevenueMonth(item.date)),
+
+            datasets: [{
+                label: "月營收 YoY",
+                data: data.map(item => item.yoy),
+
+                backgroundColor: context => {
+                    const value = context.raw;
+
+                    return value >= 0
+                        ? "rgba(76, 175, 80, 0.55)"
+                        : "rgba(244, 67, 54, 0.55)";
+                },
+
+                borderWidth: 0,
+                borderRadius: 3
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            interaction: {
+                mode: "index",
+                intersect: false
+            },
+
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
+
+                y: {
+                    title: {
+                        display: true,
+                        text: "YoY（%）"
+                    },
+
+                    ticks: {
+                        callback: value => `${value}%`
+                    }
+                }
+            },
+
+            plugins: {
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+                    callbacks: {
+                        label: context => {
+                            const value = context.raw;
+
+                            return `YoY ${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
+                        }
+                    }
                 },
 
                 zoom: createZoomOptions()

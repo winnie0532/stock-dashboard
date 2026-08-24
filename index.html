@@ -96,6 +96,11 @@
                     <span id="valuationStatus">--</span>
                 </div>
 
+                <div class="status-row" id="growthToggle">
+                    <span>成長</span>
+                    <span id="growthStatus">--</span>
+                </div>
+
                 <!-- 詳細頁區塊 -->
                 <div class="detail-overlay" id="detailOverlay">
                     <div class="detail-panel">
@@ -541,6 +546,50 @@
 
                             <div class="valuation-chart-container">
                                 <canvas id="valuationChart"></canvas>
+                            </div>
+
+                        </div>
+
+                        <!-- 成長 -->
+                        <div class="detail-chart" id="growthChartSection">
+
+                            <div class="growth-header">
+                                <div>
+                                    <span id="growthDetailStatus" class="status-value">--</span>
+                                    <p id="growthDetailDescription" class="growth-description">--</p>
+                                </div>
+                            </div>
+
+                            <div class="growth-summary">
+
+                                <div class="growth-card">
+                                    <span class="growth-label">最新營收 YoY</span>
+                                    <strong id="growthLatestYoY" class="growth-value">--</strong>
+                                    <span class="growth-sub">最新月份</span>
+                                </div>
+
+                                <div class="growth-card">
+                                    <span class="growth-label">近 3 月平均</span>
+                                    <strong id="growthAvg3M" class="growth-value">--</strong>
+                                    <span class="growth-sub">短期成長</span>
+                                </div>
+
+                                <div class="growth-card">
+                                    <span class="growth-label">近 6 月平均</span>
+                                    <strong id="growthAvg6M" class="growth-value">--</strong>
+                                    <span class="growth-sub">中期成長</span>
+                                </div>
+
+                                <div class="growth-card">
+                                    <span class="growth-label">成長動能</span>
+                                    <strong id="growthMomentum" class="growth-value">--</strong>
+                                    <span class="growth-sub">近 3 月 vs 前 3 月</span>
+                                </div>
+
+                            </div>
+
+                            <div class="growth-chart-container">
+                                <canvas id="growthChart"></canvas>
                             </div>
 
                         </div>

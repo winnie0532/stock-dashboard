@@ -51,8 +51,7 @@ import {
     calculateEPSYoYHistory,
     calculateValuationIndicators,
     calculateValuationPercentiles,
-    calculateRevenueYoY,
-    calculateROE,
+    calculateRevenueYoYHistory,
     calculateROEHistory
 } from "./indicators/fundamental.js";
 
@@ -73,7 +72,11 @@ async function init(stockId = "2330") {
         // =========================
 
         const perData = await fetchPERData(stockId, "2021-01-01");
-        const monthlyRevenueData = await fetchMonthlyRevenue(stockId, "2025-01-01");
+
+        const revenueStartDate = new Date();
+        revenueStartDate.setMonth(revenueStartDate.getMonth() - 30);
+        const monthlyRevenueData = await fetchMonthlyRevenue(stockId, revenueStartDate.toISOString().slice(0, 10));
+
         const financialStatements = await fetchFinancialStatements(stockId, "2022-01-01");
         const balanceSheet = await fetchBalanceSheet(stockId, "2022-01-01");
 
@@ -137,7 +140,8 @@ async function init(stockId = "2330") {
         const eps = ttmEPSHistory.at(-1)?.eps ?? null;
         
         // YoY
-        const revenueYoY = calculateRevenueYoY(monthlyRevenueData);
+        const revenueYoYHistory = calculateRevenueYoYHistory(monthlyRevenueData);
+        const revenueYoY = revenueYoYHistory.at(-1)?.yoy ?? null;
         
         //ROE
         const roeHistory = calculateROEHistory(financialStatements, balanceSheet);
@@ -166,7 +170,8 @@ async function init(stockId = "2330") {
             },
 
             growth: {
-                revenueYoY
+                revenueYoY,
+                revenueYoYHistory
             }
         };
 
@@ -205,7 +210,8 @@ async function init(stockId = "2330") {
             shortSaleIndicators,
 
             profitability: fundamentalIndicators.profitability,
-            valuation: fundamentalIndicators.valuation
+            valuation: fundamentalIndicators.valuation,
+            growth: fundamentalIndicators.growth
         });
 
         const priceVolumeStatus = analyzePriceVolume(
@@ -239,9 +245,6 @@ async function init(stockId = "2330") {
         });
 
         console.log("今日狀態:", todayStatus);
-
-        console.log("估值資料:", fundamentalIndicators.valuation);
-        console.log("估值狀態:", marketStatus.valuation);
         
 
         // =========================
@@ -290,6 +293,11 @@ async function init(stockId = "2330") {
 
             marketStatus,
             todayStatus,
+
+            growth: {
+                revenueYoY,
+                revenueYoYHistory
+            }
         };
 
         renderDashboard(stockData);
@@ -377,6 +385,15 @@ async function init(stockId = "2330") {
                 ...fundamentalIndicators.valuation,
                 status: marketStatus.valuation,
                 score: marketStatus.valuation.score
+            },
+
+            growth: {
+                ...fundamentalIndicators.growth,
+                status: marketStatus.growth,
+                latestYoY: marketStatus.growth.latestYoY,
+                avg3M: marketStatus.growth.avg3M,
+                avg6M: marketStatus.growth.avg6M,
+                momentum: marketStatus.growth.momentum
             }
             
         });
@@ -386,6 +403,9 @@ async function init(stockId = "2330") {
         // Debug
         // =========================
         console.log(roeHistory)
+
+        console.log("成長資料:", fundamentalIndicators.growth);
+        console.log("成長狀態:", marketStatus.growth);
 
 
     } catch (error) {

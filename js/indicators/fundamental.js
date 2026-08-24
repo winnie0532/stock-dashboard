@@ -147,29 +147,6 @@ export function calculateValuationPercentiles(perData) {
     };
 }
 
-// 最新月營收 YoY
-export function calculateRevenueYoY(monthlyRevenueData) {
-    if (!monthlyRevenueData || monthlyRevenueData.length === 0) {
-        return null;
-    }
-
-    const latest = monthlyRevenueData[monthlyRevenueData.length - 1];
-
-    const previousYear = monthlyRevenueData.find(item =>
-        item.revenue_year === latest.revenue_year - 1 &&
-        item.revenue_month === latest.revenue_month
-    );
-
-    if (!previousYear || !previousYear.revenue) {
-        return null;
-    }
-
-    return (
-        (latest.revenue - previousYear.revenue) /
-        previousYear.revenue
-    ) * 100;
-}
-
 // ROE
 export function calculateROE(financialStatements, balanceSheet) {
     const netIncomeData = financialStatements
@@ -204,6 +181,7 @@ export function calculateROE(financialStatements, balanceSheet) {
     return (ttmNetIncome / averageEquity) * 100;
 }
 
+// 歷史ROE
 export function calculateROEHistory(financialStatements, balanceSheet) {
     const netIncomeData = financialStatements
         .filter(item => item.type === "EquityAttributableToOwnersOfParent")
@@ -254,4 +232,63 @@ export function calculateROEHistory(financialStatements, balanceSheet) {
     }
 
     return result.slice(-8);
+}
+
+// 月營收 YoY 歷史
+
+export function calculateRevenueYoYHistory(
+    monthlyRevenueData
+) {
+    if (
+        !monthlyRevenueData ||
+        monthlyRevenueData.length === 0
+    ) {
+        return [];
+    }
+
+    const sortedData = [...monthlyRevenueData]
+        .sort((a, b) => {
+            if (a.revenue_year !== b.revenue_year) {
+                return a.revenue_year - b.revenue_year;
+            }
+
+            return a.revenue_month - b.revenue_month;
+        });
+
+    const result = [];
+
+    for (const current of sortedData) {
+        const previousYear = sortedData.find(
+            item =>
+                item.revenue_year ===
+                    current.revenue_year - 1 &&
+                item.revenue_month ===
+                    current.revenue_month
+        );
+
+        if (
+            !previousYear ||
+            previousYear.revenue == null ||
+            previousYear.revenue === 0
+        ) {
+            continue;
+        }
+
+        const yoy =
+            (
+                (current.revenue - previousYear.revenue) /
+                Math.abs(previousYear.revenue)
+            ) * 100;
+
+        result.push({
+            date:
+                `${current.revenue_year}-` +
+                `${String(current.revenue_month).padStart(2, "0")}`,
+
+            revenue: current.revenue,
+            yoy
+        });
+    }
+
+    return result;
 }
