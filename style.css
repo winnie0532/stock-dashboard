@@ -236,6 +236,18 @@ body {
     color: #b91c1c;
 }
 
+#summaryEvents {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.summary-events {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 /* =========================
    均線狀態
 ========================= */

@@ -826,7 +826,10 @@ function analyzeShortPositionStatus(
 // =========================
 
 function analyzeProfitabilityStatus(profitability) {
-    const { ttmEPSHistory, roeHistory } = profitability;
+    const {
+        ttmEPSHistory,
+        roeHistory
+    } = profitability ?? {};
     
 
     if (

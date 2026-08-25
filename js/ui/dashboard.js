@@ -47,7 +47,7 @@ export function renderDashboard(stockData) {
     const signalList = document.getElementById("signalList");
     signalList.innerHTML = "";
 
-    const events = stockData.todayStatus.events;
+    const events = stockData.summaryStatus.events;
 
     if (events.length === 0) {
         const signalItem = document.createElement("p");
@@ -88,11 +88,11 @@ export function renderDashboard(stockData) {
             `${status.deviation >= 0 ? "+" : ""}${status.deviation.toFixed(1)}%`;
     }
 
-    renderMAStatus(5, stockData.todayStatus.movingAverages.ma5);
-    renderMAStatus(20, stockData.todayStatus.movingAverages.ma20);
-    renderMAStatus(60, stockData.todayStatus.movingAverages.ma60);
-    renderMAStatus(120, stockData.todayStatus.movingAverages.ma120);
-    renderMAStatus(240, stockData.todayStatus.movingAverages.ma240);
+    renderMAStatus(5, stockData.summaryStatus.movingAverages.ma5);
+    renderMAStatus(20, stockData.summaryStatus.movingAverages.ma20);
+    renderMAStatus(60, stockData.summaryStatus.movingAverages.ma60);
+    renderMAStatus(120, stockData.summaryStatus.movingAverages.ma120);
+    renderMAStatus(240, stockData.summaryStatus.movingAverages.ma240);
 
     // MA
     document.getElementById("ma5").textContent = stockData.technical.ma5.toFixed(2);

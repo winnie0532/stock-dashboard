@@ -1,7 +1,7 @@
 import { renderDashboard } from "./ui/dashboard.js";
 import { renderVolumeChart } from "./utils/charts.js";
 
-import { analyzeTodayStatus } from "./status/todayStatus.js";
+import { analyzeSummaryStatus } from "./status/summaryStatus.js";
 
 import {
     analyzeMarketStatus,
@@ -221,10 +221,10 @@ async function init(stockId = "2330") {
         
 
         // =========================
-        // 今日狀態
+        // 綜合狀態
         // =========================
 
-        const todayStatus = analyzeTodayStatus({
+        const summaryStatus = analyzeSummaryStatus({
             latestPrice: latest.close,
 
             ma5: movingAverages.ma5,
@@ -241,10 +241,14 @@ async function init(stockId = "2330") {
 
             institutionalStatus: marketStatus.institutional,
             creditStatus: marketStatus.credit,
-            shortPositionStatus: marketStatus.shortPosition
+            shortPositionStatus: marketStatus.shortPosition,
+
+            profitabilityStatus: marketStatus.profitability,
+            valuationStatus: marketStatus.valuation,
+            growthStatus: marketStatus.growth
         });
 
-        console.log("今日狀態:", todayStatus);
+        console.log("綜合狀態:", summaryStatus);
         
 
         // =========================
@@ -292,7 +296,7 @@ async function init(stockId = "2330") {
             fundamentals: fundamentalIndicators,
 
             marketStatus,
-            todayStatus,
+            summaryStatus,
 
             growth: {
                 revenueYoY,
