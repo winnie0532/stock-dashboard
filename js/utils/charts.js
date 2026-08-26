@@ -275,7 +275,9 @@ export function renderShortTermChart(data, ma5History) {
                     data: priceData,
 
                     borderColor: "#2196f3",
-                    backgroundColor: "transparent",
+                    backgroundColor: "rgba(33, 150, 243, 0.10)",
+
+                    fill: true,
 
                     borderWidth: 2,
                     pointRadius: 0,
