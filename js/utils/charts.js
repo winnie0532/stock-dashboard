@@ -10,7 +10,6 @@ function formatChartDate(date) {
     return date.slice(5);
 }
 
-
 function createZoomOptions() {
     return {
         pan: {
@@ -92,7 +91,7 @@ export function renderVolumeChart(data) {
             const window = data.slice(index - 19, index + 1);
 
             const total = window.reduce(
-                (sum, item) => sum + item.volume,
+                (sum, item) => sum + Number(item.volume),
                 0
             );
 
@@ -110,17 +109,19 @@ export function renderVolumeChart(data) {
     // 最近 100 個交易日
     const recentData = volumeData.slice(-100);
 
-    const labels = recentData.map(
-        item => formatChartDate(item.date)
-    );
+    const toTimestamp = date => new Date(`${date}T00:00:00`).getTime();
 
-    const volumes = recentData.map(
-        item => item.volume
-    );
+    const volumes = recentData.map(item => ({
+        x: toTimestamp(item.date),
+        y: Number(item.volume)
+    }));
 
-    const average20 = recentData.map(
-        item => item.avgVolume20
-    );
+    const average20 = recentData.map(item => ({
+        x: toTimestamp(item.date),
+        y: item.avgVolume20 === null
+            ? null
+            : Number(item.avgVolume20)
+    }));
 
 
     // 避免重複建立 Chart instance
@@ -131,7 +132,6 @@ export function renderVolumeChart(data) {
 
     volumeChart = new Chart(canvas, {
         data: {
-            labels,
 
             datasets: [
                 {
@@ -156,6 +156,30 @@ export function renderVolumeChart(data) {
             responsive: true,
             maintainAspectRatio: false,
 
+            scales: {
+                x: {
+                    type: "time",
+
+                    time: {
+                        unit: "day",
+                        tooltipFormat: "yyyy-MM-dd",
+
+                        displayFormats: {
+                            day: "MM-dd"
+                        }
+                    },
+
+                    ticks: {
+                        maxTicksLimit: 8,
+                        autoSkip: true
+                    }
+                },
+
+                y: {
+                    beginAtZero: true
+                }
+            },
+
             plugins: {
                 zoom: createZoomOptions()
             }
@@ -169,68 +193,104 @@ export function renderVolumeChart(data) {
 // 股價 + MA5
 // =========================
 
-export function renderShortTermChart(
-    data,
-    ma5History
-) {
-    const canvas =
-        document.getElementById("shortTermChart");
+export function renderShortTermChart(data, ma5History) {
+    const canvas = document.getElementById("shortTermChart");
 
-    if (!canvas) {
+    if (!canvas || !Array.isArray(data)) {
         return;
     }
-
 
     const recentData = data.slice(-100);
     const recentMA5 = ma5History.slice(-100);
 
+    // 日期轉成時間戳，價格明確轉成 Number
+    const candles = recentData
+        .map(item => ({
+            x: new Date(`${item.date}T00:00:00`).getTime(),
+            o: Number(item.open),
+            h: Number(item.high),
+            l: Number(item.low),
+            c: Number(item.close)
+        }))
+        .filter(item =>
+            Number.isFinite(item.x) &&
+            Number.isFinite(item.o) &&
+            Number.isFinite(item.h) &&
+            Number.isFinite(item.l) &&
+            Number.isFinite(item.c)
+        );
+    
+    const priceData = recentData.map(item => ({
+        x: new Date(`${item.date}T00:00:00`).getTime(),
+        y: Number(item.close)
+    }));
 
-    const labels = recentData.map(
-        item => formatChartDate(item.date)
+    // 依日期對齊 MA5
+    const ma5Map = new Map(
+        recentMA5.map(item => [
+            item.date,
+            Number(item.value)
+        ])
     );
 
-    const prices = recentData.map(
-        item => item.close
-    );
-
-    const ma5 = recentMA5.map(
-        item => item.value
-    );
-
+    const ma5Data = recentData
+        .map(item => ({
+            x: new Date(`${item.date}T00:00:00`).getTime(),
+            y: ma5Map.get(item.date)
+        }))
+        .filter(item =>
+            Number.isFinite(item.x) &&
+            Number.isFinite(item.y)
+        );
 
     if (shortTermChart) {
         shortTermChart.destroy();
     }
 
-
     shortTermChart = new Chart(canvas, {
-        type: "line",
+        type: "candlestick",
 
         data: {
-            labels,
-
             datasets: [
                 {
                     label: "股價",
-                    data: prices,
+                    data: candles,
 
-                    borderColor: "#2196f3",
-                    backgroundColor: "rgba(33, 150, 243, 0.10)",
+                    color: {
+                        up: "#ef4444",
+                        down: "#22c55e",
+                        unchanged: "#94a3b8"
+                    },
 
-                    fill: true,
-
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    tension: 0.2
+                    borderColor: {
+                        up: "#ef4444",
+                        down: "#22c55e",
+                        unchanged: "#94a3b8"
+                    }
                 },
 
                 {
+                    type: "line",
+                    label: "股價",
+                    data: priceData,
+
+                    borderColor: "#2196f3",
+                    backgroundColor: "transparent",
+
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.2,
+                    order: 1
+                },
+
+                {
+                    type: "line",
                     label: "MA5",
-                    data: ma5,
+                    data: ma5Data,
+                    order: 10,
 
                     borderColor: "#ff6384",
-
-                    fill: false,
+                    backgroundColor: "transparent",
 
                     borderWidth: 2,
                     pointRadius: 0,
@@ -242,6 +302,34 @@ export function renderShortTermChart(
         options: {
             responsive: true,
             maintainAspectRatio: false,
+
+            interaction: {
+                mode: "index",
+                intersect: false
+            },
+
+            scales: {
+                x: {
+                    type: "time",
+
+                    time: {
+                        unit: "day",
+                        tooltipFormat: "yyyy-MM-dd",
+
+                        displayFormats: {
+                            day: "MM-dd"
+                        }
+                    },
+
+                    ticks: {
+                        maxTicksLimit: 8
+                    }
+                },
+
+                y: {
+                    beginAtZero: false
+                }
+            },
 
             plugins: {
                 zoom: createZoomOptions()
@@ -277,12 +365,29 @@ export function renderTrendChart(
     const recentMA120 = ma120History.slice(-250);
     const recentMA240 = ma240History.slice(-250);
 
-    const labels = recentData.map(item => formatChartDate(item.date));
-    const prices = recentData.map(item => item.close);
-    const ma20 = recentMA20.map(item => item.value);
-    const ma60 = recentMA60.map(item => item.value);
-    const ma120 = recentMA120.map(item => item.value);
-    const ma240 = recentMA240.map(item => item.value);
+    const toTimestamp = date => new Date(`${date}T00:00:00`).getTime();
+
+    const prices = recentData.map(item => ({
+        x: toTimestamp(item.date),
+        y: Number(item.close)
+    }));
+
+    function createMAData(history) {
+        return history
+            .map(item => ({
+                x: toTimestamp(item.date),
+                y: Number(item.value)
+            }))
+            .filter(item =>
+                Number.isFinite(item.x) &&
+                Number.isFinite(item.y)
+            );
+    }
+
+    const ma20 = createMAData(recentMA20);
+    const ma60 = createMAData(recentMA60);
+    const ma120 = createMAData(recentMA120);
+    const ma240 = createMAData(recentMA240);
 
 
     if (trendChart) {
@@ -294,7 +399,6 @@ export function renderTrendChart(
         type: "line",
 
         data: {
-            labels,
 
             datasets: [
                 {
@@ -368,6 +472,34 @@ export function renderTrendChart(
             responsive: true,
             maintainAspectRatio: false,
 
+            scales: {
+                x: {
+                    type: "time",
+
+                    time: {
+                        unit: "day",
+                        tooltipFormat: "yyyy-MM-dd",
+
+                        displayFormats: {
+                            day: "MM-dd"
+                        }
+                    },
+
+                    ticks: {
+                        maxTicksLimit: 8,
+                        autoSkip: true
+                    },
+
+                    grid: {
+                        display: true
+                    }
+                },
+
+                y: {
+                    beginAtZero: false
+                }
+            },
+
             plugins: {
                 zoom: createZoomOptions()
             }
@@ -386,6 +518,22 @@ export function renderRSIChart(rsiHistory) {
     }
 
     const recentData = rsiHistory.slice(-100);
+    const toTimestamp = date => new Date(`${date}T00:00:00`).getTime();
+
+    const rsiData = recentData.map(item => ({
+        x: toTimestamp(item.date),
+        y: Number(item.value)
+    }));
+
+    const overboughtData = recentData.map(item => ({
+        x: toTimestamp(item.date),
+        y: 70
+    }));
+
+    const oversoldData = recentData.map(item => ({
+        x: toTimestamp(item.date),
+        y: 30
+    }));
 
     const canvas = document.getElementById("rsiChart");
 
@@ -401,14 +549,11 @@ export function renderRSIChart(rsiHistory) {
         type: "line",
 
         data: {
-            labels: recentData.map(
-                item => formatChartDate(item.date)
-            ),
 
             datasets: [
                 {
                     label: "RSI(14)",
-                    data: recentData.map(item => item.value),
+                    data: rsiData,
 
                     borderColor: "#2196f3",
                     backgroundColor: "rgba(33, 150, 243, 0.08)",
@@ -421,7 +566,7 @@ export function renderRSIChart(rsiHistory) {
 
                 {
                     label: "70 過熱線",
-                    data: recentData.map(() => 70),
+                    data: overboughtData,
 
                     borderColor: "#ef4444",
                     borderDash: [6, 6],
@@ -433,7 +578,7 @@ export function renderRSIChart(rsiHistory) {
 
                 {
                     label: "30 超賣線",
-                    data: recentData.map(() => 30),
+                    data: oversoldData,
 
                     borderColor: "#10b981",
                     borderDash: [6, 6],
@@ -455,6 +600,24 @@ export function renderRSIChart(rsiHistory) {
             },
 
             scales: {
+                x: {
+                    type: "time",
+
+                    time: {
+                        unit: "day",
+                        tooltipFormat: "yyyy-MM-dd",
+
+                        displayFormats: {
+                            day: "MM-dd"
+                        }
+                    },
+
+                    ticks: {
+                        maxTicksLimit: 8,
+                        autoSkip: true
+                    }
+                },
+
                 y: {
                     min: 0,
                     max: 100,
@@ -1118,6 +1281,29 @@ export function renderValuationChart(history) {
                 new Date(a.date) - new Date(b.date)
         );
 
+    const toTimestamp = date => new Date(`${date}T00:00:00`).getTime();
+
+    const peData = validData.map(item => ({
+        x: toTimestamp(item.date),
+        y: Number(item.PER) > 0
+            ? Number(item.PER)
+            : null
+    }));
+
+    const pbData = validData.map(item => ({
+        x: toTimestamp(item.date),
+        y: Number(item.PBR) > 0
+            ? Number(item.PBR)
+            : null
+    }));
+
+    const yieldData = validData.map(item => ({
+        x: toTimestamp(item.date),
+        y: Number(item.dividend_yield) >= 0
+            ? Number(item.dividend_yield)
+            : null
+    }));
+
     if (validData.length === 0) {
         return;
     }
@@ -1129,19 +1315,13 @@ export function renderValuationChart(history) {
     valuationChart = new Chart(canvas, {
 
         data: {
-            labels: validData.map(item => item.date),
 
             datasets: [
                 {
                     type: "line",
                     label: "P/E",
 
-                    data: validData.map(
-                        item =>
-                            item.PER > 0
-                                ? item.PER
-                                : null
-                    ),
+                    data: peData,
 
                     yAxisID: "valuationAxis",
 
@@ -1157,12 +1337,7 @@ export function renderValuationChart(history) {
                     type: "line",
                     label: "P/B",
 
-                    data: validData.map(
-                        item =>
-                            item.PBR > 0
-                                ? item.PBR
-                                : null
-                    ),
+                    data: pbData,
 
                     yAxisID: "valuationAxis",
 
@@ -1179,12 +1354,7 @@ export function renderValuationChart(history) {
 
                     label: "殖利率",
 
-                    data: validData.map(
-                        item =>
-                            item.dividend_yield >= 0
-                                ? item.dividend_yield
-                                : null
-                    ),
+                    data: yieldData,
 
                     yAxisID: "yieldAxis",
 
@@ -1208,6 +1378,24 @@ export function renderValuationChart(history) {
             },
 
             scales: {
+                x: {
+                    type: "time",
+
+                    time: {
+                        unit: "month",
+                        tooltipFormat: "yyyy-MM-dd",
+
+                        displayFormats: {
+                            month: "yyyy-MM"
+                        }
+                    },
+
+                    ticks: {
+                        maxTicksLimit: 8,
+                        autoSkip: true
+                    }
+                },
+
                 valuationAxis: {
                     type: "linear",
                     position: "left",
