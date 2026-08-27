@@ -473,7 +473,7 @@ function analyzeInstitutionalEvent(indicators) {
 //
 // 主要判斷：
 // 20 日股價 × 20 日融資
-// 5 日用來偵測近期轉折
+// 5 日只用來偵測近期轉折
 // =========================
 
 function analyzeCreditStatus(
@@ -493,15 +493,33 @@ function analyzeCreditStatus(
         };
     }
 
-    const margin5 = indicators.margin.day5Percent;
-    const margin20 = indicators.margin.day20Percent;
+    const margin5 = Number(
+        indicators.margin.day5Percent
+    );
+
+    const margin20 = Number(
+        indicators.margin.day20Percent
+    );
+
+    if (
+        !Number.isFinite(priceChange5) ||
+        !Number.isFinite(priceChange20) ||
+        !Number.isFinite(margin5) ||
+        !Number.isFinite(margin20)
+    ) {
+        return {
+            type: "neutral",
+            text: "資料不足",
+            description: "目前資料不足，無法判斷信用籌碼"
+        };
+    }
 
 
     // =========================
     // 近期籌碼反轉
     // =========================
 
-    // 中期籌碼沉澱，但最近轉成弱勢加碼
+    // 中期籌碼沉澱，但短線轉弱
     if (
         priceChange20 >= 5 &&
         margin20 <= -3 &&
@@ -509,13 +527,14 @@ function analyzeCreditStatus(
         margin5 >= 3
     ) {
         return {
-            type: "warning",
-            text: "短線籌碼轉弱",
-            description: "中期籌碼偏健康，但近期股價轉弱、融資重新增加"
+            type: "danger",
+            text: "短線轉弱",
+            description: "中期籌碼偏健康，但近 5 日股價轉弱、融資重新增加"
         };
     }
 
-    // 中期偏弱，但最近開始改善
+
+    // 中期弱勢加碼，但短線開始改善
     if (
         priceChange20 <= -5 &&
         margin20 >= 3 &&
@@ -524,8 +543,8 @@ function analyzeCreditStatus(
     ) {
         return {
             type: "positive",
-            text: "短線籌碼改善",
-            description: "中期籌碼偏弱，但近期股價轉強、融資開始下降"
+            text: "短線改善",
+            description: "中期籌碼偏弱，但近 5 日股價轉強、融資開始下降"
         };
     }
 
@@ -534,75 +553,111 @@ function analyzeCreditStatus(
     // 20 日主要結構
     // =========================
 
-    // 股價上漲 + 融資下降
-    if (priceChange20 >= 5 && margin20 <= -3) {
+    // 股價上漲、融資下降
+    if (
+        priceChange20 >= 5 &&
+        margin20 <= -3
+    ) {
         return {
             type: "positive",
             text: "籌碼沉澱",
-            description: "股價走強，融資籌碼持續下降"
+            description: "近 20 日股價走強，融資籌碼同步下降"
         };
     }
 
-    // 股價上漲 + 融資增加
-    if (priceChange20 >= 5 && margin20 >= 3) {
-        if (margin20 >= 10) {
-            return {
-                type: "danger",
-                text: "融資過熱",
-                description: "股價走強，但融資大幅增加，槓桿籌碼快速升溫"
-            };
-        }
 
+    // 股價上漲、融資大幅增加
+    if (
+        priceChange20 >= 5 &&
+        margin20 >= 10
+    ) {
+        return {
+            type: "danger",
+            text: "融資過熱",
+            description: "近 20 日股價走強，但融資大幅增加，槓桿籌碼快速升溫"
+        };
+    }
+
+
+    // 股價上漲、融資增加
+    if (
+        priceChange20 >= 5 &&
+        margin20 >= 3
+    ) {
         return {
             type: "warning",
             text: "融資追價",
-            description: "股價走強，融資同步增加"
+            description: "近 20 日股價走強，融資籌碼同步增加"
         };
     }
 
-    // 股價下跌 + 融資下降
-    if (priceChange20 <= -5 && margin20 <= -3) {
+
+    // 股價下跌、融資下降
+    if (
+        priceChange20 <= -5 &&
+        margin20 <= -3
+    ) {
         return {
             type: "warning",
             text: "融資清洗",
-            description: "股價走弱，融資籌碼同步退出"
+            description: "近 20 日股價走弱，融資籌碼同步退出"
         };
     }
 
-    // 股價下跌 + 融資增加
-    if (priceChange20 <= -5 && margin20 >= 3) {
+
+    // 股價下跌、融資增加
+    if (
+        priceChange20 <= -5 &&
+        margin20 >= 3
+    ) {
         return {
             type: "danger",
             text: "弱勢加碼",
-            description: "股價走弱，但融資反而增加"
+            description: "近 20 日股價走弱，但融資籌碼反而增加"
         };
     }
 
 
     // =========================
-    // 股價沒有明顯方向
+    // 股價盤整
     // =========================
 
-    if (margin20 <= -3) {
+    // 股價介於 -5%～+5%、融資下降
+    if (
+        priceChange20 > -5 &&
+        priceChange20 < 5 &&
+        margin20 <= -3
+    ) {
         return {
             type: "positive",
             text: "融資減壓",
-            description: "股價震盪，融資籌碼持續下降"
+            description: "近 20 日股價震盪，融資籌碼持續下降"
         };
     }
 
-    if (margin20 >= 3) {
+
+    // 股價介於 -5%～+5%、融資增加
+    if (
+        priceChange20 > -5 &&
+        priceChange20 < 5 &&
+        margin20 >= 3
+    ) {
         return {
             type: "warning",
             text: "融資升溫",
-            description: "股價震盪，融資籌碼持續增加"
+            description: "近 20 日股價震盪，融資籌碼持續增加"
         };
     }
 
+
+    // =========================
+    // 無明顯融資變化
+    // =========================
+
     return {
         type: "neutral",
-        text: "信用籌碼穩定",
-        description: "股價與融資餘額皆未出現明顯變化"
+        text: "信用穩定",
+        description: "近 20 日融資餘額未出現明顯變化"
     };
 }
 

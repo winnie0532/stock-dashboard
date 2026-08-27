@@ -233,6 +233,9 @@ async function init(stockId = "2330") {
             ma120: movingAverages.ma120,
             ma240: movingAverages.ma240,
 
+            priceChange5: priceChanges.change5,
+            margin5: marginIndicators.margin.day5Percent,
+            
             todayKD: kd.today,
             yesterdayKD: kd.yesterday,
 

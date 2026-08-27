@@ -14,7 +14,9 @@ export function analyzeSummaryStatus({
     shortPositionStatus,
     profitabilityStatus,
     valuationStatus,
-    growthStatus
+    growthStatus,
+    priceChange5,
+    margin5
 }) {
     return {
         events: [
@@ -28,7 +30,9 @@ export function analyzeSummaryStatus({
             ...buildChipEvents({
                 institutionalStatus,
                 creditStatus,
-                shortPositionStatus
+                shortPositionStatus,
+                priceChange5,
+                margin5
             }),
 
             ...buildFundamentalEvents({
@@ -102,37 +106,77 @@ function buildTechnicalEvents({
 function buildChipEvents({
     institutionalStatus,
     creditStatus,
-    shortPositionStatus
+    shortPositionStatus,
+    priceChange5,
+    margin5
 }) {
-    const events = [];
+    const institutional = institutionalStatus?.type;
+    const credit = creditStatus?.type;
+    const short = shortPositionStatus?.type;
 
-    const institutional =
-        institutionalStatus?.type;
+    const validPriceChange5 =
+        Number(priceChange5);
 
-    const credit =
-        creditStatus?.type;
+    const validMargin5 =
+        Number(margin5);
 
-    const short =
-        shortPositionStatus?.type;
+    const hasFiveDayData =
+        Number.isFinite(validPriceChange5) &&
+        Number.isFinite(validMargin5);
 
 
-    // 三方壓力明顯
+    // =========================
+    // 三方籌碼共振
+    // =========================
+
+    // 法人、信用與空方同時出現壓力
     if (
         institutional === "danger" &&
         credit === "danger" &&
         short === "danger"
     ) {
-        events.push({
+        return [{
             type: "danger",
             text: "籌碼壓力明顯"
-        });
-
-        return events;
+        }];
     }
 
 
-    // 結構偏弱
-    // 信用結構本身惡化 + 另一項負面
+    // =========================
+    // 5 日特殊事件
+    // =========================
+
+    // 股價下跌，但融資明顯增加
+    if (
+        hasFiveDayData &&
+        validPriceChange5 < 0 &&
+        validMargin5 >= 3
+    ) {
+        return [{
+            type: "danger",
+            text: "短線融資弱勢加碼"
+        }];
+    }
+
+
+    // 股價明顯下跌，但融資大幅退出
+    if (
+        hasFiveDayData &&
+        validPriceChange5 <= -5 &&
+        validMargin5 <= -10
+    ) {
+        return [{
+            type: "positive",
+            text: "短線融資大幅清洗"
+        }];
+    }
+
+
+    // =========================
+    // 多方籌碼組合
+    // =========================
+
+    // 信用籌碼惡化，法人或空方也出現壓力
     if (
         credit === "danger" &&
         (
@@ -140,16 +184,13 @@ function buildChipEvents({
             short === "danger"
         )
     ) {
-        events.push({
+        return [{
             type: "danger",
             text: "籌碼結構轉弱"
-        });
-
-        return events;
+        }];
     }
 
 
-    // 籌碼分歧
     // 信用籌碼健康，但法人或空方出現壓力
     if (
         credit === "positive" &&
@@ -158,32 +199,14 @@ function buildChipEvents({
             short === "danger"
         )
     ) {
-        events.push({
+        return [{
             type: "warning",
             text: "籌碼出現分歧"
-        });
-
-        return events;
+        }];
     }
 
 
-    // 結構健康
-    // 信用籌碼健康，法人與空方皆無明顯壓力
-    if (
-        credit === "positive" &&
-        institutional !== "danger" &&
-        short !== "danger"
-    ) {
-        events.push({
-            type: "positive",
-            text: "籌碼結構健康"
-        });
-
-        return events;
-    }
-
-    // 多空拉鋸
-    // 法人與空方方向相反
+    // 法人與空方籌碼方向相反
     if (
         (
             institutional === "positive" &&
@@ -194,22 +217,28 @@ function buildChipEvents({
             short === "positive"
         )
     ) {
-        events.push({
+        return [{
             type: "warning",
             text: "多空籌碼拉鋸"
-        });
-
-        return events;
+        }];
     }
 
 
-    // 其他
-    events.push({
-        type: "warning",
-        text: "籌碼整理中"
-    });
+    // 信用籌碼健康，且沒有其他明顯壓力
+    if (
+        credit === "positive" &&
+        institutional !== "danger" &&
+        short !== "danger"
+    ) {
+        return [{
+            type: "positive",
+            text: "籌碼結構健康"
+        }];
+    }
 
-    return events;
+
+    // 沒有值得特別提示的籌碼事件
+    return [];
 }
 
 // =========================
@@ -300,19 +329,6 @@ function buildFundamentalEvents({
             text: "低估值基本面改善"
         }];
     }
-
-
-    // 獲利轉弱＋成長減速
-    if (
-        isProfitWeakening &&
-        isGrowthSlowing
-    ) {
-        return [{
-            type: "danger",
-            text: "基本面同步轉弱"
-        }];
-    }
-
 
     // 獲利改善＋成長加速
     if (
