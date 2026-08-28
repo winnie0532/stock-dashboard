@@ -1,4 +1,5 @@
 import {
+    formatGlobalMarketChange,
     formatGlobalMarketValue,
     getGlobalMarketChangeClass
 } from "../status/globalMarketStatus.js";
@@ -12,13 +13,12 @@ export function renderGlobalMarket({
     const sourceElement = document.getElementById("globalMarketSource");
     const updatedAtElement = document.getElementById("globalMarketUpdatedAt");
 
-    if (!grid || !sourceElement || !updatedAtElement) {
+    if (!grid || !sourceElement) {
         return;
     }
 
     grid.innerHTML = "";
     sourceElement.textContent = source;
-    updatedAtElement.textContent = `更新：${updatedAt}`;
 
     if (markets.length === 0) {
         const empty = document.createElement("p");
@@ -49,9 +49,7 @@ export function renderGlobalMarket({
         const change = document.createElement("span");
         change.className =
             `global-market-change ${getGlobalMarketChangeClass(market.change)}`;
-
-        change.textContent =
-            `${market.change >= 0 ? "+" : ""}${market.change.toFixed(2)}%`;
+        change.textContent = formatGlobalMarketChange(market);
 
         card.append(category, name, value, change);
         grid.appendChild(card);
