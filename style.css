@@ -816,6 +816,107 @@ body {
     font-size: 18px;
 }
 
+/* 國際市場*/
+.global-market-card-clickable {
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.global-market-card-clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.usd-twd-periods {
+    display: flex;
+    gap: 8px;
+
+    margin-bottom: 18px;
+}
+
+.usd-twd-period {
+    padding: 7px 13px;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    background: var(--card);
+    color: var(--muted);
+
+    cursor: pointer;
+}
+
+.usd-twd-period.active {
+    border-color: #2563eb;
+
+    background: #eff6ff;
+    color: #1d4ed8;
+
+    font-weight: 700;
+}
+
+.usd-twd-chart-container {
+    height: 330px;
+}
+
+.usd-twd-range {
+    margin-top: 24px;
+}
+
+.usd-twd-range-header,
+.usd-twd-range-labels {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.usd-twd-range-header {
+    margin-bottom: 10px;
+
+    font-size: 14px;
+}
+
+.usd-twd-range-labels {
+    margin-top: 7px;
+
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.usd-twd-range-track {
+    position: relative;
+
+    height: 8px;
+
+    border-radius: 999px;
+    background: #e5e7eb;
+}
+
+.usd-twd-range-track span {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 0;
+    height: 100%;
+
+    border-radius: inherit;
+    background: #2563eb;
+}
+
+@media (max-width: 700px) {
+    .usd-twd-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .usd-twd-chart-container {
+        height: 260px;
+    }
+}
+
 /* =========================
    手機版
 ========================= */

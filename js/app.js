@@ -55,14 +55,30 @@ import {
     calculateROEHistory
 } from "./indicators/fundamental.js";
 
-import { fetchGlobalMarketOverview } from "./globalMarketApi.js";
+import { fetchGlobalMarketRawData } from "./globalMarketApi.js";
+import {
+    calculateGlobalMarketIndicators
+} from "./indicators/globalMarket.js";
+
 import { renderGlobalMarket } from "./ui/globalMarket.js";
+
+import {
+    setupGlobalMarketDetail,
+    updateGlobalMarketDetailData
+} from "./ui/globalMarketDetail.js";
 
 async function initGlobalMarkets() {
     try {
-        const markets = await fetchGlobalMarketOverview();
+        const rawData = await fetchGlobalMarketRawData();
 
-        renderGlobalMarket(markets);
+        const indicators =
+            calculateGlobalMarketIndicators(rawData);
+
+        renderGlobalMarket(indicators.overview);
+
+        updateGlobalMarketDetailData(
+            indicators.usdTwd
+        );
     } catch (error) {
         console.error("取得國際市場資料失敗：", error);
 
@@ -457,5 +473,7 @@ stockInput.addEventListener("keydown", event => {
 
 
 setupDetailOverlay();
+setupGlobalMarketDetail();
+
 initGlobalMarkets();
 init();

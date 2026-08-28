@@ -895,6 +895,84 @@
                 </div>
             </div>
         </section>
+        
+        <!-- Details 美元台幣 --> 
+        <div class="detail-overlay" id="globalDetailOverlay">
+            <div class="detail-panel">
+                <div class="detail-header">
+                    <div>
+                        <h2>美元／台幣</h2>
+                        <p id="usdTwdDetailDescription">--</p>
+                    </div>
+
+                    <button id="closeGlobalDetail" class="detail-close">
+                        ×
+                    </button>
+                </div>
+
+                <div class="credit-summary">
+                    <div class="credit-summary-grid usd-twd-summary-grid">
+                        <div class="credit-summary-item">
+                            <span>最新匯率</span>
+                            <strong id="usdTwdLatest">--</strong>
+                        </div>
+
+                        <div class="credit-summary-item">
+                            <span>近 1 個月</span>
+                            <strong id="usdTwdChange1M">--</strong>
+                        </div>
+
+                        <div class="credit-summary-item">
+                            <span>近 3 個月</span>
+                            <strong id="usdTwdChange3M">--</strong>
+                        </div>
+
+                        <div class="credit-summary-item">
+                            <span>近 6 個月</span>
+                            <strong id="usdTwdChange6M">--</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="usd-twd-periods">
+                    <button class="usd-twd-period" data-usd-twd-period="1M">
+                        1M
+                    </button>
+
+                    <button class="usd-twd-period" data-usd-twd-period="3M">
+                        3M
+                    </button>
+
+                    <button class="usd-twd-period active" data-usd-twd-period="6M">
+                        6M
+                    </button>
+
+                    <button class="usd-twd-period" data-usd-twd-period="1Y">
+                        1Y
+                    </button>
+                </div>
+
+                <div class="credit-chart-container usd-twd-chart-container">
+                    <canvas id="usdTwdChart"></canvas>
+                </div>
+
+                <div class="usd-twd-range">
+                    <div class="usd-twd-range-header">
+                        <span>近一年區間位置</span>
+                        <strong id="usdTwdRangeText">--</strong>
+                    </div>
+
+                    <div class="usd-twd-range-track">
+                        <span id="usdTwdRangePosition"></span>
+                    </div>
+
+                    <div class="usd-twd-range-labels">
+                        <span id="usdTwdRangeLow">--</span>
+                        <span id="usdTwdRangeHigh">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>    
 
     </main>
 

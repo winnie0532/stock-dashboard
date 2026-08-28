@@ -1,6 +1,7 @@
 export function getGlobalMarketChangeClass(change) {
     if (change > 0) return "value-up";
     if (change < 0) return "value-down";
+
     return "value-neutral";
 }
 
@@ -20,6 +21,10 @@ export function formatGlobalMarketChange({
     change,
     changeType = "percent"
 }) {
+    if (change == null) {
+        return "--";
+    }
+
     const sign = change > 0 ? "+" : "";
 
     if (changeType === "basisPoint") {
