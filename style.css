@@ -82,6 +82,94 @@ body {
     font-size: 20px;
 }
 
+/* =========================
+   國際市場
+========================= */
+
+.section-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+
+    margin-bottom: 22px;
+}
+
+.section-heading h2 {
+    margin-bottom: 6px;
+}
+
+.section-note {
+    margin: 0;
+
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.data-badge {
+    padding: 5px 9px;
+
+    border: 1px solid var(--border);
+    border-radius: 999px;
+
+    color: var(--muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.global-market-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.global-market-card {
+    min-height: 126px;
+    padding: 16px;
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    background: var(--bg);
+}
+
+.global-market-category {
+    display: block;
+    margin-bottom: 8px;
+
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.global-market-name {
+    margin: 0 0 14px;
+    font-size: 15px;
+}
+
+.global-market-value {
+    display: block;
+    margin-bottom: 6px;
+
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.global-market-change {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.global-market-empty {
+    grid-column: 1 / -1;
+
+    padding: 18px;
+
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+
+    color: var(--muted);
+    text-align: center;
+}
 
 /* =========================
    市場狀態
@@ -745,6 +833,10 @@ body {
     .stock-header {
         align-items: flex-start;
     }
+
+    .global-market-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 520px) {
@@ -793,6 +885,15 @@ body {
     }
 
     .ma-status-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-heading {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .global-market-grid {
         grid-template-columns: 1fr;
     }
 }

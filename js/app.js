@@ -55,6 +55,21 @@ import {
     calculateROEHistory
 } from "./indicators/fundamental.js";
 
+import { fetchGlobalMarketOverview } from "./globalMarketApi.js";
+import { renderGlobalMarket } from "./ui/globalMarket.js";
+
+async function initGlobalMarkets() {
+    try {
+        const markets = await fetchGlobalMarketOverview();
+
+        renderGlobalMarket(markets);
+    } catch (error) {
+        console.error("取得國際市場資料失敗：", error);
+
+        renderGlobalMarket([]);
+    }
+}
+
 async function init(stockId = "2330") {
     try {
         // =========================
@@ -442,4 +457,5 @@ stockInput.addEventListener("keydown", event => {
 
 
 setupDetailOverlay();
+initGlobalMarkets();
 init();
