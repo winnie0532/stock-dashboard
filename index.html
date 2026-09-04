@@ -25,7 +25,13 @@
         <!-- 股票基本資訊 -->
         <section class="stock-header">
             <div>
-                <h1>
+                <h1
+                    class="stock-profile-trigger"
+                    id="stockProfileTrigger"
+                    role="button"
+                    tabindex="0"
+                    aria-disabled="true"
+                >
                     <span id="stockId">2330</span>
                     <span id="stockName">台積電</span>
                 </h1>
@@ -975,6 +981,62 @@
         </div>    
 
     </main>
+    <div class="detail-overlay" id="etfDetailOverlay">
+        <div class="detail-panel etf-detail-panel">
+
+            <div class="detail-header">
+                <div>
+                    <h2 id="etfDetailTitle">ETF 淨值與折溢價</h2>
+                    <p id="etfDetailSubtitle">--</p>
+                </div>
+
+                <button
+                    id="closeETFDetail"
+                    class="detail-close"
+                    type="button"
+                >
+                    ×
+                </button>
+            </div>
+
+            <div class="detail-summary">
+                <div class="detail-summary-card">
+                    <span class="detail-summary-label">市價</span>
+                    <strong
+                        class="detail-summary-value"
+                        id="etfMarketPrice"
+                    >
+                        --
+                    </strong>
+                </div>
+
+                <div class="detail-summary-card">
+                    <span class="detail-summary-label">淨值 NAV</span>
+                    <strong
+                        class="detail-summary-value"
+                        id="etfNav"
+                    >
+                        --
+                    </strong>
+                </div>
+
+                <div class="detail-summary-card">
+                    <span class="detail-summary-label">折溢價</span>
+                    <strong
+                        class="detail-summary-value"
+                        id="etfPremiumDiscount"
+                    >
+                        --
+                    </strong>
+                </div>
+            </div>
+
+            <div class="etf-nav-chart-container">
+                <canvas id="etfNavChart"></canvas>
+            </div>
+
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 

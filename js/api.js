@@ -1,5 +1,27 @@
 const FINMIND_URL = "https://api.finmindtrade.com/api/v4/data";
+const ETF_NAV_DATA_URL = "./public/data/etf-nav.json";
 
+// =========================
+// ETF API
+// =========================
+let etfNavDataPromise = null;
+
+export function fetchETFNavData() {
+    if (!etfNavDataPromise) {
+        etfNavDataPromise = fetch(ETF_NAV_DATA_URL)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(
+                        `ETF NAV data error: ${response.status}`
+                    );
+                }
+
+                return response.json();
+            });
+    }
+
+    return etfNavDataPromise;
+}
 
 // =========================
 // FinMind 共用 API

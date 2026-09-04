@@ -10,7 +10,15 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 
-ETF_IDS = ("00910",)
+ETF_IDS = (
+    "0050",
+    "00910",
+    "00935",
+    "00981A",
+    "006208",
+    "009816",
+    "00733",
+)
 TWSE_URL = "https://www.twse.com.tw/zh/ETFortune-institute/etfInfo/{etf_id}"
 OUTPUT_PATH = Path(__file__).resolve().parents[1] / "public" / "data" / "etf-nav.json"
 

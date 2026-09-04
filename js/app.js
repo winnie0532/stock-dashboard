@@ -21,6 +21,7 @@ import {
 
 import {
     fetchStockHistory,
+    fetchETFNavData,
     fetchInstitutionalHistory,
     fetchStockInfo,
     fetchMarginData,
@@ -67,6 +68,11 @@ import {
     updateGlobalMarketDetailData
 } from "./ui/globalMarketDetail.js";
 
+import {
+    setupETFDetailOverlay,
+    updateETFDetailData
+} from "./ui/etfDetailOverlay.js";
+
 async function initGlobalMarkets() {
     try {
         const rawData = await fetchGlobalMarketRawData();
@@ -92,7 +98,10 @@ async function init(stockId = "2330") {
         // 取得資料
         // =========================
 
-        const stockInfo = await fetchStockInfo(stockId);
+        const [stockInfo, etfNavRawData] = await Promise.all([
+            fetchStockInfo(stockId),
+            fetchETFNavData().catch(() => null)
+        ]);
         const data = await fetchStockHistory(stockId, "2023-05-01");
         const institutional = await fetchInstitutionalHistory(stockId, "2023-05-31");
         const marginData = await fetchMarginData(stockId, "2025-07-01");
@@ -339,6 +348,15 @@ async function init(stockId = "2330") {
         };
 
         renderDashboard(stockData);
+        updateETFDetailData(
+            etfNavRawData?.etfs?.[stockId]
+                ? {
+                    stockId: stockInfo.stockId,
+                    stockName: stockInfo.stockName,
+                    navData: etfNavRawData.etfs[stockId]
+                }
+                : null
+        );
         renderMarginStatus(marginStatus);
         renderVolumeChart(data);
 
@@ -474,6 +492,7 @@ stockInput.addEventListener("keydown", event => {
 
 setupDetailOverlay();
 setupGlobalMarketDetail();
+setupETFDetailOverlay();
 
 initGlobalMarkets();
 init();

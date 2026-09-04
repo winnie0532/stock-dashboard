@@ -47,6 +47,23 @@ body {
     font-size: 30px;
 }
 
+.stock-profile-trigger {
+    margin: 0;
+}
+
+.stock-profile-trigger.is-available {
+    cursor: pointer;
+}
+
+.stock-profile-trigger.is-available:hover {
+    color: #2563eb;
+}
+
+.etf-nav-chart-container {
+    position: relative;
+    height: 380px;
+}
+
 #stockId {
     margin-right: 8px;
 }
@@ -997,6 +1014,10 @@ body {
     .global-market-grid {
         grid-template-columns: 1fr;
     }
+
+    .etf-nav-chart-container {
+    height: 300px;
+}
 }
 
 @media (max-width: 520px) {
