@@ -134,6 +134,22 @@ function renderETFChart(history) {
                 responsive: true,
                 maintainAspectRatio: false,
 
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label(context) {
+                                const value = Number(context.parsed.y);
+
+                                if (context.dataset.yAxisID === "premium") {
+                                    return `${context.dataset.label}: ${value.toFixed(2)}%`;
+                                }
+
+                                return `${context.dataset.label}: ${value.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
+
                 interaction: {
                     mode: "index",
                     intersect: false
@@ -162,7 +178,7 @@ function renderETFChart(history) {
                         },
 
                         ticks: {
-                            callback: value => `${value}%`
+                            callback: value => `${Number(value).toFixed(1)}%`
                         }
                     },
 
