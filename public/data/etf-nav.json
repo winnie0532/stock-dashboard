@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-09-04T02:06:32.159874+00:00",
+  "source": "TWSE ETF e添富",
+  "etfs": {
+    "00910": {
+      "history": [
+        { "date": "2026-07-24", "marketPrice": 55.7, "nav": 54.91, "premiumDiscountPercent": 1.44 },
+        { "date": "2026-07-27", "marketPrice": 55.25, "nav": 55.46, "premiumDiscountPercent": -0.38 },
+        { "date": "2026-07-28", "marketPrice": 54.3, "nav": 54.58, "premiumDiscountPercent": -0.51 },
+        { "date": "2026-07-29", "marketPrice": 53, "nav": 52.23, "premiumDiscountPercent": 1.47 },
+        { "date": "2026-07-30", "marketPrice": 51.55, "nav": 53.94, "premiumDiscountPercent": -4.43 },
+        { "date": "2026-07-31", "marketPrice": 55.45, "nav": 54.8, "premiumDiscountPercent": 1.19 },
+        { "date": "2026-08-03", "marketPrice": 55.95, "nav": 58.01, "premiumDiscountPercent": -3.55 },
+        { "date": "2026-08-04", "marketPrice": 59, "nav": 61.59, "premiumDiscountPercent": -4.21 },
+        { "date": "2026-08-05", "marketPrice": 61.5, "nav": 61.51, "premiumDiscountPercent": -0.02 },
+        { "date": "2026-08-06", "marketPrice": 61.1, "nav": 61.8, "premiumDiscountPercent": -1.13 },
+        { "date": "2026-08-07", "marketPrice": 61.05, "nav": 63.81, "premiumDiscountPercent": -4.33 },
+        { "date": "2026-08-10", "marketPrice": 64.05, "nav": 63.51, "premiumDiscountPercent": 0.85 },
+        { "date": "2026-08-11", "marketPrice": 63, "nav": 64.1, "premiumDiscountPercent": -1.72 },
+        { "date": "2026-08-12", "marketPrice": 63.95, "nav": 65.08, "premiumDiscountPercent": -1.74 },
+        { "date": "2026-08-13", "marketPrice": 64.6, "nav": 64.31, "premiumDiscountPercent": 0.45 },
+        { "date": "2026-08-14", "marketPrice": 63.4, "nav": 64.25, "premiumDiscountPercent": -1.32 },
+        { "date": "2026-08-17", "marketPrice": 63.95, "nav": 64.35, "premiumDiscountPercent": -0.62 },
+        { "date": "2026-08-18", "marketPrice": 63.15, "nav": 62.69, "premiumDiscountPercent": 0.73 },
+        { "date": "2026-08-19", "marketPrice": 61.55, "nav": 61.13, "premiumDiscountPercent": 0.69 },
+        { "date": "2026-08-20", "marketPrice": 61.15, "nav": 60.12, "premiumDiscountPercent": 1.71 },
+        { "date": "2026-08-21", "marketPrice": 59.6, "nav": 60.29, "premiumDiscountPercent": -1.14 },
+        { "date": "2026-08-24", "marketPrice": 59.65, "nav": 58.3, "premiumDiscountPercent": 2.32 },
+        { "date": "2026-08-25", "marketPrice": 58.8, "nav": 58.51, "premiumDiscountPercent": 0.5 },
+        { "date": "2026-08-26", "marketPrice": 58.65, "nav": 58.24, "premiumDiscountPercent": 0.7 },
+        { "date": "2026-08-27", "marketPrice": 58.45, "nav": 58.46, "premiumDiscountPercent": -0.02 },
+        { "date": "2026-08-28", "marketPrice": 58.35, "nav": 56.97, "premiumDiscountPercent": 2.42 },
+        { "date": "2026-08-31", "marketPrice": 57.15, "nav": 56.92, "premiumDiscountPercent": 0.4 },
+        { "date": "2026-09-01", "marketPrice": 57.3, "nav": 55.95, "premiumDiscountPercent": 2.41 },
+        { "date": "2026-09-02", "marketPrice": 56.05, "nav": 56.59, "premiumDiscountPercent": -0.95 },
+        { "date": "2026-09-03", "marketPrice": 56.5, "nav": 56.6, "premiumDiscountPercent": -0.18 }
+      ],
+      "latest": {
+        "date": "2026-09-03",
+        "marketPrice": 56.5,
+        "nav": 56.6,
+        "premiumDiscountPercent": -0.18
+      },
+      "monthlyAum": [
+        { "date": "2025-10-31", "aumMillionTwd": 2648.59 },
+        { "date": "2025-11-30", "aumMillionTwd": 2877.55 },
+        { "date": "2025-12-31", "aumMillionTwd": 2696.36 },
+        { "date": "2026-01-31", "aumMillionTwd": 4629.24 },
+        { "date": "2026-02-28", "aumMillionTwd": 5192.21 },
+        { "date": "2026-03-31", "aumMillionTwd": 5154.74 },
+        { "date": "2026-04-30", "aumMillionTwd": 5837.75 },
+        { "date": "2026-05-31", "aumMillionTwd": 8681.47 },
+        { "date": "2026-06-30", "aumMillionTwd": 8017.82 },
+        { "date": "2026-07-31", "aumMillionTwd": 6629.50 },
+        { "date": "2026-09-01", "aumMillionTwd": 6605.53 }
+        ]
+    }
+  }
+}

@@ -1,0 +1,45 @@
+name: Update ETF NAV data
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 台灣時間週一至週五 18:30
+    - cron: "30 10 * * 1-5"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-etf-nav-data
+  cancel-in-progress: false
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch ETF NAV and premium-discount data
+        run: python scripts/fetch_etf_data.py
+
+      - name: Commit updated data
+        run: |
+          git add public/data/etf-nav.json
+
+          if git diff --cached --quiet; then
+            echo "No ETF data changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git commit -m "chore: update ETF NAV data"
+          git push
