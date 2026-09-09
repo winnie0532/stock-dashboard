@@ -433,6 +433,7 @@ export function setupDetailOverlay() {
 
         renderShortPositionChart(
             detailOverlayData.data,
+            detailOverlayData.marginData,
             detailOverlayData.shortSaleBalanceData
         );
 

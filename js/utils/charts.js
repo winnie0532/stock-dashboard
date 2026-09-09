@@ -974,26 +974,36 @@ export function renderCreditChart(
     });
 }
 
-
 // =========================
 // 空方籌碼趨勢圖
-// 股價 + 借券賣出餘額
+// 股價 + 融券／借券餘額相對變化
 // =========================
 
 export function renderShortPositionChart(
     priceData,
+    marginData,
     shortSaleBalanceData
 ) {
-    if (!priceData || !shortSaleBalanceData) {
+    if (!priceData || !marginData || !shortSaleBalanceData) {
         return;
     }
+    console.table(
+        shortSaleBalanceData
+            .filter(item => item.date >= "2026-05-26")
+            .slice(0, 10)
+    );
 
+    console.log("借券最早資料：", shortSaleBalanceData[0]);
+    console.log("借券最新資料：", shortSaleBalanceData.at(-1));
+    const recentPrices = priceData.slice(-100);
 
-    const recentPrices =
-        priceData.slice(-100);
+    const shortMarginMap = new Map(
+        marginData.map(item => [
+            item.date,
+            item.ShortSaleTodayBalance
+        ])
+    );
 
-
-    // 日期 → 借券賣出餘額
     const shortSaleMap = new Map(
         shortSaleBalanceData.map(item => [
             item.date,
@@ -1001,85 +1011,91 @@ export function renderShortPositionChart(
         ])
     );
 
-
-    // 用日期對齊
     const merged = recentPrices
         .map(item => ({
             date: item.date,
             price: item.close,
-            shortBalance:
-                shortSaleMap.get(item.date)
+            shortMargin: shortMarginMap.get(item.date),
+            shortBalance: shortSaleMap.get(item.date)
         }))
-        .filter(
-            item => item.shortBalance !== undefined
+        .filter(item =>
+            item.shortMargin !== undefined &&
+            item.shortBalance !== undefined
         );
-
 
     if (merged.length === 0) {
         return;
     }
 
+    // 第一個交易日 = 0%，比較兩種空方部位後續增減幅
+    const baseShortMargin = merged[0].shortMargin;
+    const baseShortBalance = merged[0].shortBalance;
 
-    const canvas =
-        document.getElementById(
-            "shortPositionChart"
-        );
+    const shortMarginChange = merged.map(item =>
+        baseShortMargin === 0
+            ? 0
+            : ((item.shortMargin - baseShortMargin) / baseShortMargin) * 100
+    );
+
+    const shortBalanceChange = merged.map(item =>
+        baseShortBalance === 0
+            ? 0
+            : ((item.shortBalance - baseShortBalance) / baseShortBalance) * 100
+    );
+
+    const canvas = document.getElementById("shortPositionChart");
 
     if (!canvas) {
         return;
     }
+    
 
 
     if (shortPositionChart) {
         shortPositionChart.destroy();
     }
 
-
     shortPositionChart = new Chart(canvas, {
-        type: "line",
+        type: "bar",
 
         data: {
-            labels: merged.map(
-                item => formatChartDate(item.date)
-            ),
+            labels: merged.map(item => formatChartDate(item.date)),
 
             datasets: [
                 {
+                    type: "line",
                     label: "股價",
-
-                    data: merged.map(
-                        item => item.price
-                    ),
-
+                    data: merged.map(item => item.price),
                     yAxisID: "priceAxis",
-
                     borderColor: "#36a2eb",
-                    backgroundColor:
-                        "rgba(54, 162, 235, 0.10)",
-
+                    backgroundColor: "rgba(54, 162, 235, 0.10)",
                     fill: true,
-
                     tension: 0.25,
                     pointRadius: 0,
-                    borderWidth: 2
+                    borderWidth: 2,
+                    order: 0
                 },
 
                 {
-                    label: "借券賣出餘額",
+                    label: "融券餘額變化",
+                    data: shortMarginChange,
+                    yAxisID: "changeAxis",
+                    backgroundColor: "rgba(255, 159, 64, 0.72)",
+                    borderRadius: 2,
+                    categoryPercentage: 0.82,
+                    barPercentage: 0.78,
+                    order: 2
+                },
 
-                    data: merged.map(
-                        item => item.shortBalance / 1000
-                    ),
-
-                    yAxisID: "shortAxis",
-
-                    borderColor: "#ff6384",
-
-                    fill: false,
-
-                    tension: 0.25,
-                    pointRadius: 0,
-                    borderWidth: 2
+                {
+                    label: "借券賣出餘額變化",
+                    data: shortBalanceChange,
+                    yAxisID: "changeAxis",
+                    backgroundColor: "rgba(255, 99, 132, 0.58)",
+                    borderRadius: 2,
+                    categoryPercentage: 0.82,
+                    barPercentage: 0.78,
+                    order: 1
                 }
             ]
         },
@@ -1097,22 +1113,24 @@ export function renderShortPositionChart(
                 priceAxis: {
                     type: "linear",
                     position: "left",
-
                     title: {
                         display: true,
                         text: "股價"
                     }
                 },
 
-                shortAxis: {
+                changeAxis: {
                     type: "linear",
                     position: "right",
-
                     title: {
                         display: true,
-                        text: "借券賣出餘額（張）"
+                        text: "空方餘額相對變化"
                     },
-
+                    ticks: {
+                        callback(value) {
+                            return `${value}%`;
+                        }
+                    },
                     grid: {
                         drawOnChartArea: false
                     }
@@ -1122,6 +1140,24 @@ export function renderShortPositionChart(
             plugins: {
                 legend: {
                     display: true
+                },
+
+                tooltip: {
+                    callbacks: {
+                        label(context) {
+                            const item = merged[context.dataIndex];
+
+                            if (context.dataset.label === "融券餘額變化") {
+                                return `融券餘額：${item.shortMargin.toLocaleString()} 張（${context.parsed.y.toFixed(2)}%）`;
+                            }
+
+                            if (context.dataset.label === "借券賣出餘額變化") {
+                                return `借券賣出餘額：${(item.shortBalance / 1000).toLocaleString()} 張（${context.parsed.y.toFixed(2)}%）`;
+                            }
+
+                            return `股價：${context.parsed.y.toFixed(2)}`;
+                        }
+                    }
                 },
 
                 zoom: createZoomOptions()
