@@ -17,6 +17,7 @@ ETF_IDS = (
     "006208",
     "009816",
     "00733",
+    "00830"
 )
 TWSE_URL = "https://www.twse.com.tw/zh/ETFortune-institute/etfInfo/{etf_id}"
 OUTPUT_PATH = Path(__file__).resolve().parents[1] / "public" / "data" / "etf-nav.json"
