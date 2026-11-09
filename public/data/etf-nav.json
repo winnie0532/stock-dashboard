@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-06T17:39:03.046734+00:00",
+  "generatedAt": "2026-11-09T20:59:37.348082+00:00",
   "source": "TWSE ETF e添富",
   "etfs": {
     "0050": {
@@ -429,13 +429,19 @@
           "marketPrice": 92.5,
           "nav": 92.3,
           "premiumDiscountPercent": 0.22
+        },
+        {
+          "date": "2026-11-09",
+          "marketPrice": 97.45,
+          "nav": 97.08,
+          "premiumDiscountPercent": 0.38
         }
       ],
       "latest": {
-        "date": "2026-11-06",
-        "marketPrice": 92.5,
-        "nav": 92.3,
-        "premiumDiscountPercent": 0.22
+        "date": "2026-11-09",
+        "marketPrice": 97.45,
+        "nav": 97.08,
+        "premiumDiscountPercent": 0.38
       },
       "monthlyAum": [
         {
@@ -909,13 +915,19 @@
           "marketPrice": 48.69,
           "nav": 46.26,
           "premiumDiscountPercent": 5.25
+        },
+        {
+          "date": "2026-11-06",
+          "marketPrice": 45.98,
+          "nav": 49.93,
+          "premiumDiscountPercent": -7.91
         }
       ],
       "latest": {
-        "date": "2026-11-05",
-        "marketPrice": 48.69,
-        "nav": 46.26,
-        "premiumDiscountPercent": 5.25
+        "date": "2026-11-06",
+        "marketPrice": 45.98,
+        "nav": 49.93,
+        "premiumDiscountPercent": -7.91
       },
       "monthlyAum": [
         {
@@ -1395,13 +1407,19 @@
           "marketPrice": 44.43,
           "nav": 44.4,
           "premiumDiscountPercent": 0.07
+        },
+        {
+          "date": "2026-11-09",
+          "marketPrice": 47.6,
+          "nav": 47.38,
+          "premiumDiscountPercent": 0.46
         }
       ],
       "latest": {
-        "date": "2026-11-06",
-        "marketPrice": 44.43,
-        "nav": 44.4,
-        "premiumDiscountPercent": 0.07
+        "date": "2026-11-09",
+        "marketPrice": 47.6,
+        "nav": 47.38,
+        "premiumDiscountPercent": 0.46
       },
       "monthlyAum": [
         {
@@ -1881,13 +1899,19 @@
           "marketPrice": 210.1,
           "nav": 211.45,
           "premiumDiscountPercent": -0.64
+        },
+        {
+          "date": "2026-11-09",
+          "marketPrice": 223.6,
+          "nav": 222.4,
+          "premiumDiscountPercent": 0.54
         }
       ],
       "latest": {
-        "date": "2026-11-06",
-        "marketPrice": 210.1,
-        "nav": 211.45,
-        "premiumDiscountPercent": -0.64
+        "date": "2026-11-09",
+        "marketPrice": 223.6,
+        "nav": 222.4,
+        "premiumDiscountPercent": 0.54
       },
       "monthlyAum": [
         {
@@ -2367,13 +2391,19 @@
           "marketPrice": 13.88,
           "nav": 13.86,
           "premiumDiscountPercent": 0.14
+        },
+        {
+          "date": "2026-11-09",
+          "marketPrice": 14.54,
+          "nav": 14.5,
+          "premiumDiscountPercent": 0.28
         }
       ],
       "latest": {
-        "date": "2026-11-06",
-        "marketPrice": 13.88,
-        "nav": 13.86,
-        "premiumDiscountPercent": 0.14
+        "date": "2026-11-09",
+        "marketPrice": 14.54,
+        "nav": 14.5,
+        "premiumDiscountPercent": 0.28
       },
       "monthlyAum": [
         {
@@ -2841,13 +2871,19 @@
           "marketPrice": 54.5,
           "nav": 54.62,
           "premiumDiscountPercent": -0.22
+        },
+        {
+          "date": "2026-11-09",
+          "marketPrice": 58.15,
+          "nav": 57.87,
+          "premiumDiscountPercent": 0.48
         }
       ],
       "latest": {
-        "date": "2026-11-06",
-        "marketPrice": 54.5,
-        "nav": 54.62,
-        "premiumDiscountPercent": -0.22
+        "date": "2026-11-09",
+        "marketPrice": 58.15,
+        "nav": 57.87,
+        "premiumDiscountPercent": 0.48
       },
       "monthlyAum": [
         {
@@ -3279,13 +3315,19 @@
           "marketPrice": 73.2,
           "nav": 65.58,
           "premiumDiscountPercent": 11.62
+        },
+        {
+          "date": "2026-11-06",
+          "marketPrice": 67.95,
+          "nav": 67.95,
+          "premiumDiscountPercent": 0
         }
       ],
       "latest": {
-        "date": "2026-11-05",
-        "marketPrice": 73.2,
-        "nav": 65.58,
-        "premiumDiscountPercent": 11.62
+        "date": "2026-11-06",
+        "marketPrice": 67.95,
+        "nav": 67.95,
+        "premiumDiscountPercent": 0
       },
       "monthlyAum": [
         {
